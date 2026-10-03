@@ -120,8 +120,8 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
     for (std::size_t i = 0; i < num_threads_; ++i) {
       workers_.emplace_back([this] {
         for (;;) {
-          ActionSlice raw_action = action_buffer_queue_->Dequeue();
-          if (stop_ == 1) {
+          ActionSlice raw_action;
+          if (!action_buffer_queue_->DequeueOrStop(&raw_action, stop_)) {
             break;
           }
           int env_id = raw_action.env_id;
@@ -154,9 +154,8 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
     stop_ = 1;
     // LOG(INFO) << "envpool send: " << dur_send_.count();
     // LOG(INFO) << "envpool recv: " << dur_recv_.count();
-    // send n actions to clear threadpool
-    std::vector<ActionSlice> empty_actions(workers_.size());
-    action_buffer_queue_->EnqueueBulk(empty_actions);
+    // Wake idle workers without overwriting actions still being dequeued.
+    action_buffer_queue_->WakeForShutdown(workers_.size());
     for (auto& worker : workers_) {
       worker.join();
     }

@@ -71,16 +71,40 @@ class ActionBufferQueue {
   ActionSlice Dequeue() {
     while (!sem_.wait()) {
     }
+    return DequeueReady();
+  }
+
+  // Shutdown wake permits do not represent queued actions. Check the caller's
+  // stop flag after acquiring a permit, before reserving or reading a slot.
+  bool DequeueOrStop(ActionSlice* action, const std::atomic<int>& stop) {
+    while (!sem_.wait()) {
+    }
+    if (stop.load(std::memory_order_acquire) != 0) {
+      return false;
+    }
+    *action = DequeueReady();
+    return true;
+  }
+
+  // Terminal shutdown only: publish stop first, quiesce producers, and use
+  // DequeueOrStop for every consumer. Wake at least all live consumers. No
+  // payload writes can race pending consumers.
+  void WakeForShutdown(std::size_t num_consumers) {
+    sem_.signal(num_consumers);
+  }
+
+  std::size_t SizeApprox() {
+    return static_cast<std::size_t>(alloc_ptr_ - done_ptr_);
+  }
+
+ private:
+  ActionSlice DequeueReady() {
     while (!sem_dequeue_.wait()) {
     }
     auto ptr = done_ptr_.fetch_add(1);
     auto ret = queue_[ptr % queue_size_];
     sem_dequeue_.signal(1);
     return ret;
-  }
-
-  std::size_t SizeApprox() {
-    return static_cast<std::size_t>(alloc_ptr_ - done_ptr_);
   }
 };
 

@@ -1,0 +1,603 @@
+Running main() from DEPENDENCIES/googletest-1.18.0/googletest/src/gtest_main.cc
+
+Repeating all tests (iteration 1) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (140 ms)
+[----------] 1 test from DummyEnvPoolTest (140 ms total)
+
+[==========] 1 test from 1 test suite ran. (140 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 2) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (119 ms)
+[----------] 1 test from DummyEnvPoolTest (119 ms total)
+
+[==========] 1 test from 1 test suite ran. (119 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 3) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (121 ms)
+[----------] 1 test from DummyEnvPoolTest (121 ms total)
+
+[==========] 1 test from 1 test suite ran. (121 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 4) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (121 ms)
+[----------] 1 test from DummyEnvPoolTest (121 ms total)
+
+[==========] 1 test from 1 test suite ran. (121 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 5) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (123 ms)
+[----------] 1 test from DummyEnvPoolTest (123 ms total)
+
+[==========] 1 test from 1 test suite ran. (123 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 6) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (132 ms)
+[----------] 1 test from DummyEnvPoolTest (132 ms total)
+
+[==========] 1 test from 1 test suite ran. (132 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 7) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (128 ms)
+[----------] 1 test from DummyEnvPoolTest (128 ms total)
+
+[==========] 1 test from 1 test suite ran. (128 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 8) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (139 ms)
+[----------] 1 test from DummyEnvPoolTest (139 ms total)
+
+[==========] 1 test from 1 test suite ran. (139 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 9) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (120 ms)
+[----------] 1 test from DummyEnvPoolTest (121 ms total)
+
+[==========] 1 test from 1 test suite ran. (121 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 10) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (122 ms)
+[----------] 1 test from DummyEnvPoolTest (122 ms total)
+
+[==========] 1 test from 1 test suite ran. (122 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 11) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (128 ms)
+[----------] 1 test from DummyEnvPoolTest (128 ms total)
+
+[==========] 1 test from 1 test suite ran. (128 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 12) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (130 ms)
+[----------] 1 test from DummyEnvPoolTest (130 ms total)
+
+[==========] 1 test from 1 test suite ran. (130 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 13) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (148 ms)
+[----------] 1 test from DummyEnvPoolTest (148 ms total)
+
+[==========] 1 test from 1 test suite ran. (148 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 14) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (145 ms)
+[----------] 1 test from DummyEnvPoolTest (145 ms total)
+
+[==========] 1 test from 1 test suite ran. (145 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 15) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (142 ms)
+[----------] 1 test from DummyEnvPoolTest (142 ms total)
+
+[==========] 1 test from 1 test suite ran. (142 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 16) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (145 ms)
+[----------] 1 test from DummyEnvPoolTest (145 ms total)
+
+[==========] 1 test from 1 test suite ran. (145 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 17) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (157 ms)
+[----------] 1 test from DummyEnvPoolTest (157 ms total)
+
+[==========] 1 test from 1 test suite ran. (157 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 18) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (157 ms)
+[----------] 1 test from DummyEnvPoolTest (157 ms total)
+
+[==========] 1 test from 1 test suite ran. (157 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 19) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (127 ms)
+[----------] 1 test from DummyEnvPoolTest (127 ms total)
+
+[==========] 1 test from 1 test suite ran. (127 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 20) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (146 ms)
+[----------] 1 test from DummyEnvPoolTest (146 ms total)
+
+[==========] 1 test from 1 test suite ran. (146 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 21) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (163 ms)
+[----------] 1 test from DummyEnvPoolTest (163 ms total)
+
+[==========] 1 test from 1 test suite ran. (163 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 22) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (156 ms)
+[----------] 1 test from DummyEnvPoolTest (156 ms total)
+
+[==========] 1 test from 1 test suite ran. (156 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 23) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (153 ms)
+[----------] 1 test from DummyEnvPoolTest (153 ms total)
+
+[==========] 1 test from 1 test suite ran. (153 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 24) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (149 ms)
+[----------] 1 test from DummyEnvPoolTest (149 ms total)
+
+[==========] 1 test from 1 test suite ran. (149 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 25) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (129 ms)
+[----------] 1 test from DummyEnvPoolTest (129 ms total)
+
+[==========] 1 test from 1 test suite ran. (129 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 26) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (124 ms)
+[----------] 1 test from DummyEnvPoolTest (124 ms total)
+
+[==========] 1 test from 1 test suite ran. (124 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 27) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (127 ms)
+[----------] 1 test from DummyEnvPoolTest (127 ms total)
+
+[==========] 1 test from 1 test suite ran. (127 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 28) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (126 ms)
+[----------] 1 test from DummyEnvPoolTest (127 ms total)
+
+[==========] 1 test from 1 test suite ran. (127 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 29) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (119 ms)
+[----------] 1 test from DummyEnvPoolTest (119 ms total)
+
+[==========] 1 test from 1 test suite ran. (119 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 30) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (122 ms)
+[----------] 1 test from DummyEnvPoolTest (122 ms total)
+
+[==========] 1 test from 1 test suite ran. (122 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 31) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (119 ms)
+[----------] 1 test from DummyEnvPoolTest (119 ms total)
+
+[==========] 1 test from 1 test suite ran. (119 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 32) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (121 ms)
+[----------] 1 test from DummyEnvPoolTest (121 ms total)
+
+[==========] 1 test from 1 test suite ran. (121 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 33) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (122 ms)
+[----------] 1 test from DummyEnvPoolTest (122 ms total)
+
+[==========] 1 test from 1 test suite ran. (122 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 34) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (117 ms)
+[----------] 1 test from DummyEnvPoolTest (117 ms total)
+
+[==========] 1 test from 1 test suite ran. (117 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 35) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (123 ms)
+[----------] 1 test from DummyEnvPoolTest (123 ms total)
+
+[==========] 1 test from 1 test suite ran. (123 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 36) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (127 ms)
+[----------] 1 test from DummyEnvPoolTest (127 ms total)
+
+[==========] 1 test from 1 test suite ran. (127 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 37) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (122 ms)
+[----------] 1 test from DummyEnvPoolTest (122 ms total)
+
+[==========] 1 test from 1 test suite ran. (122 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 38) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (124 ms)
+[----------] 1 test from DummyEnvPoolTest (124 ms total)
+
+[==========] 1 test from 1 test suite ran. (124 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 39) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (123 ms)
+[----------] 1 test from DummyEnvPoolTest (123 ms total)
+
+[==========] 1 test from 1 test suite ran. (123 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 40) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (119 ms)
+[----------] 1 test from DummyEnvPoolTest (119 ms total)
+
+[==========] 1 test from 1 test suite ran. (119 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 41) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (122 ms)
+[----------] 1 test from DummyEnvPoolTest (122 ms total)
+
+[==========] 1 test from 1 test suite ran. (122 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 42) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (126 ms)
+[----------] 1 test from DummyEnvPoolTest (126 ms total)
+
+[==========] 1 test from 1 test suite ran. (126 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 43) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (122 ms)
+[----------] 1 test from DummyEnvPoolTest (122 ms total)
+
+[==========] 1 test from 1 test suite ran. (122 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 44) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (123 ms)
+[----------] 1 test from DummyEnvPoolTest (123 ms total)
+
+[==========] 1 test from 1 test suite ran. (123 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 45) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (118 ms)
+[----------] 1 test from DummyEnvPoolTest (118 ms total)
+
+[==========] 1 test from 1 test suite ran. (118 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 46) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (128 ms)
+[----------] 1 test from DummyEnvPoolTest (128 ms total)
+
+[==========] 1 test from 1 test suite ran. (128 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 47) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (127 ms)
+[----------] 1 test from DummyEnvPoolTest (127 ms total)
+
+[==========] 1 test from 1 test suite ran. (127 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 48) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (133 ms)
+[----------] 1 test from DummyEnvPoolTest (133 ms total)
+
+[==========] 1 test from 1 test suite ran. (133 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 49) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (121 ms)
+[----------] 1 test from DummyEnvPoolTest (121 ms total)
+
+[==========] 1 test from 1 test suite ran. (121 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 50) . . .
+
+Note: Google Test filter = DummyEnvPoolTest.ShutdownWithPendingReset
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (121 ms)
+[----------] 1 test from DummyEnvPoolTest (121 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (121 ms total)
+[  PASSED  ] 1 test.

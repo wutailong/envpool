@@ -1,0 +1,54 @@
+{
+  "selected_code_commit": "e21633ddfb43fa22f8b7ad4445afc7cf17affea0",
+  "baseline_remote_commit": "f1728fec30423f5651584a849a4ea3f3c985674e",
+  "platform": "Linux x86_64",
+  "compiler": "GCC 14.2.0",
+  "python": "3.12.14",
+  "rebuilt_families": [
+    "Classic Control",
+    "MuJoCo Gym",
+    "Dummy"
+  ],
+  "source_sha256": {
+    "envpool/core/action_buffer_queue.h": "955b02fbfc5dfe8a3068ee156fbf17344b0d6cfe0b548fb21912492864230ad9",
+    "envpool/core/async_envpool.h": "f92b27810e8d5aaef7fbc3a0d6bd2690fdc82d79703356f532ff95fd881db2e1",
+    "envpool/core/action_buffer_queue_test.cc": "f83084fe4949ebcfccf85e5776f00b9b26a82300fab0e5becf0bfca7ea16b46f",
+    "envpool/dummy/dummy_envpool_test.cc": "1b73cf44966267a4c4066c3690cc0becdf66c33f41c8451b91069a2c04a748f9"
+  },
+  "selected_native_sha256": {
+    "envpool/dummy/dummy_envpool.so": "2c2bda5595ca972c8601e206f2825b13f064aa12edae06044277f4cfb2f5b729",
+    "envpool/classic_control/classic_control_envpool.so": "153e72a5c05fc1a801669e1d11578e2932c841afd488549a0397f78bada513e6",
+    "envpool/mujoco/mujoco_gym_envpool.so": "58feda2452e38603a3d3821aeb27cb166253d1e674b5d54217064d211bac366a"
+  },
+  "checks": {
+    "native_tests": 38,
+    "asan_ubsan_tests_per_repeat": 36,
+    "asan_ubsan_repeats": 5,
+    "tsan_tests_per_repeat": 36,
+    "tsan_repeats": 5,
+    "additional_pending_reset_lifecycles": 4800,
+    "admission_overlay_asan_ubsan": true,
+    "admission_overlay_tsan": true,
+    "python_tests": 16,
+    "rollout_arrays": 5499,
+    "rollout_mismatches": 0,
+    "cpu_xla_cases": 8,
+    "ppo_parity_passed": true,
+    "ppo_max_difference": 0,
+    "ppo_checkpoints": 101,
+    "ppo_arrays": 223,
+    "ppo_tensors": 4925,
+    "ppo_negative_controls_detected": 3,
+    "ppo_throughput_runs": 8,
+    "ppo_throughput_semantic_fingerprints_identical": true
+  },
+  "preserved_control_native_modules": 83,
+  "preserved_control_worktrees_clean": true,
+  "limitations": [
+    "Subset rebuild, not a full release wheel",
+    "No new other-family, GPU, or cross-platform validation",
+    "LeakSanitizer disabled; external dependencies not all sanitizer-instrumented",
+    "Throughput contains observed regressions and substantial A/A variation",
+    "No general performance-neutrality or speedup claim"
+  ]
+}

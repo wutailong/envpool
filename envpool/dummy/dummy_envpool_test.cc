@@ -16,7 +16,13 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
 #include <random>
+#include <thread>
+#include <utility>
 #include <vector>
 
 #include "absl/log/check.h"
@@ -24,6 +30,151 @@
 
 using DummyAction = typename dummy::DummyEnv::Action;
 using DummyState = typename dummy::DummyEnv::State;
+
+namespace {
+
+struct ResetGate {
+  std::mutex mutex;
+  std::condition_variable condition;
+  bool reset_entered{false};
+  bool release_reset{false};
+  bool reset_finished{false};
+  bool environment_destroyed{false};
+  bool reset_finished_before_environment_destroyed{false};
+  bool destruction_started{false};
+  bool destruction_finished{false};
+};
+
+struct GatedDummyEnvSpec : public dummy::DummyEnvSpec {
+  std::shared_ptr<ResetGate> gate;
+
+  GatedDummyEnvSpec(const dummy::DummyEnvSpec& spec,
+                    std::shared_ptr<ResetGate> reset_gate)
+      : dummy::DummyEnvSpec(spec), gate(std::move(reset_gate)) {}
+};
+
+class GatedDummyEnv : public dummy::DummyEnv {
+ public:
+  using Spec = GatedDummyEnvSpec;
+
+  GatedDummyEnv(const Spec& spec, int env_id)
+      : dummy::DummyEnv(spec, env_id), gate_(spec.gate) {}
+
+  ~GatedDummyEnv() override {
+    std::lock_guard<std::mutex> lock(gate_->mutex);
+    gate_->environment_destroyed = true;
+    gate_->reset_finished_before_environment_destroyed = gate_->reset_finished;
+  }
+
+  void Reset() override {
+    const auto gate = gate_;
+    {
+      std::unique_lock<std::mutex> lock(gate->mutex);
+      gate->reset_entered = true;
+      gate->condition.notify_all();
+      gate->condition.wait(lock, [&] { return gate->release_reset; });
+    }
+    dummy::DummyEnv::Reset();
+    {
+      std::lock_guard<std::mutex> lock(gate->mutex);
+      gate->reset_finished = true;
+    }
+    gate->condition.notify_all();
+  }
+
+ private:
+  std::shared_ptr<ResetGate> gate_;
+};
+
+void CheckPoolDestruction(bool pending_reset) {
+  constexpr int kIterations = 32;
+  const std::vector<std::pair<int, int>> shapes{{1, 2}, {1, 8}, {2, 3}};
+  for (const auto& [num_envs, num_threads] : shapes) {
+    SCOPED_TRACE(testing::Message()
+                 << "num_envs=" << num_envs << ", num_threads=" << num_threads);
+    auto config = dummy::DummyEnvSpec::kDefaultConfig;
+    config["num_envs"_] = num_envs;
+    config["batch_size"_] = num_envs;
+    config["num_threads"_] = num_threads;
+    config["max_num_players"_] = 1;
+    config["seed"_] = 42;
+    dummy::DummyEnvSpec spec(config);
+    Array all_env_ids(Spec<int>({num_envs}));
+    for (int i = 0; i < num_envs; ++i) {
+      all_env_ids[i] = i;
+    }
+    for (int iteration = 0; iteration < kIterations; ++iteration) {
+      SCOPED_TRACE(iteration);
+      dummy::DummyEnvPool envpool(spec);
+      if (pending_reset) {
+        envpool.Reset(all_env_ids);
+      }
+      // Destroy immediately, without a Recv or a concurrent public operation.
+      // The destructor must wake idle workers and join any pending reset
+      // workers before releasing their queues or environments.
+    }
+  }
+}
+
+}  // namespace
+
+TEST(DummyEnvPoolTest, ShutdownIdleWorkers) { CheckPoolDestruction(false); }
+
+TEST(DummyEnvPoolTest, ShutdownWithPendingReset) { CheckPoolDestruction(true); }
+
+TEST(DummyEnvPoolTest, ShutdownJoinsInFlightResetBeforeDestroyingEnvironment) {
+  auto config = dummy::DummyEnvSpec::kDefaultConfig;
+  config["num_envs"_] = 1;
+  config["batch_size"_] = 1;
+  config["num_threads"_] = 2;
+  config["max_num_players"_] = 1;
+  const auto gate = std::make_shared<ResetGate>();
+  GatedDummyEnvSpec spec(dummy::DummyEnvSpec(config), gate);
+  auto envpool = std::make_unique<AsyncEnvPool<GatedDummyEnv>>(spec);
+  Array env_ids(Spec<int>({1}));
+  env_ids[0] = 0;
+  envpool->Reset(env_ids);
+  {
+    std::unique_lock<std::mutex> lock(gate->mutex);
+    EXPECT_TRUE(gate->condition.wait_for(lock, std::chrono::seconds(5),
+                                         [&] { return gate->reset_entered; }));
+  }
+  // Reset() has returned to the caller, but its worker is held inside the
+  // environment. Transfer sole ownership before starting destruction.
+  std::thread destroyer([pool = std::move(envpool), gate]() mutable {
+    {
+      std::lock_guard<std::mutex> lock(gate->mutex);
+      gate->destruction_started = true;
+    }
+    gate->condition.notify_all();
+    pool.reset();
+    {
+      std::lock_guard<std::mutex> lock(gate->mutex);
+      gate->destruction_finished = true;
+    }
+    gate->condition.notify_all();
+  });
+  {
+    std::unique_lock<std::mutex> lock(gate->mutex);
+    EXPECT_TRUE(gate->condition.wait_for(lock, std::chrono::seconds(5), [&] {
+      return gate->destruction_started;
+    }));
+    EXPECT_FALSE(
+        gate->condition.wait_for(lock, std::chrono::milliseconds(50),
+                                 [&] { return gate->destruction_finished; }));
+    EXPECT_FALSE(gate->reset_finished);
+    EXPECT_FALSE(gate->environment_destroyed);
+    // Release even if an expectation failed: no worker may outlive its gate.
+    gate->release_reset = true;
+  }
+  gate->condition.notify_all();
+  destroyer.join();
+  std::lock_guard<std::mutex> lock(gate->mutex);
+  EXPECT_TRUE(gate->reset_finished);
+  EXPECT_TRUE(gate->environment_destroyed);
+  EXPECT_TRUE(gate->reset_finished_before_environment_destroyed);
+  EXPECT_TRUE(gate->destruction_finished);
+}
 
 TEST(DummyEnvPoolTest, SplitZeroAction) {
   auto config = dummy::DummyEnvSpec::kDefaultConfig;

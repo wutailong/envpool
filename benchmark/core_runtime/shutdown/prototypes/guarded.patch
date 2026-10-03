@@ -1,0 +1,277 @@
+diff --git a/envpool/core/action_buffer_queue.h b/envpool/core/action_buffer_queue.h
+index 4aacfde..abc2f0d 100644
+--- a/envpool/core/action_buffer_queue.h
++++ b/envpool/core/action_buffer_queue.h
+@@ -70,0 +71,10 @@ class ActionBufferQueue {
++  // Terminal shutdown only: the caller must publish stop, quiesce producers,
++  // and retain the worker's post-Dequeue stop check. Serialize sentinel writes
++  // with payload copies even when the worker count exceeds ring capacity.
++  void EnqueueForShutdown(const std::vector<ActionSlice>& action) {
++    while (!sem_dequeue_.wait()) {
++    }
++    EnqueueBulk(action);
++    sem_dequeue_.signal(1);
++  }
++
+diff --git a/envpool/core/action_buffer_queue_test.cc b/envpool/core/action_buffer_queue_test.cc
+index c013938..ca33633 100644
+--- a/envpool/core/action_buffer_queue_test.cc
++++ b/envpool/core/action_buffer_queue_test.cc
+@@ -18,0 +19,3 @@
++#include <atomic>
++#include <chrono>
++#include <future>
+@@ -20,0 +24 @@
++#include <thread>
+@@ -32,0 +37,86 @@ using ActionSlice = typename ActionBufferQueue::ActionSlice;
++namespace {
++
++class GatedActionBufferQueue : public ActionBufferQueue {
++ public:
++  using ActionBufferQueue::ActionBufferQueue;
++
++  ActionSlice DequeueWithCopyGate(std::promise<void>* ticket_reserved,
++                                  std::future<void>* copy_allowed) {
++    // Duplicate the small consumer protocol only to pause inside its existing
++    // critical section. This tests EnqueueForShutdown's serialization contract,
++    // rather than adding a production Dequeue hook or changing worker behavior.
++    while (!sem_.wait()) {
++    }
++    while (!sem_dequeue_.wait()) {
++    }
++    auto ptr = done_ptr_.fetch_add(1);
++    ticket_reserved->set_value();
++    copy_allowed->wait();
++    auto ret = queue_[ptr % queue_size_];
++    sem_dequeue_.signal(1);
++    return ret;
++  }
++};
++
++}  // namespace
++
++TEST(ActionBufferQueueTest, ShutdownWaitsForInFlightPayloadCopy) {
++  GatedActionBufferQueue queue(1);  // Two ring slots, two workers.
++  const ActionSlice original{.env_id = 0, .order = 17, .force_reset = true};
++  const ActionSlice sentinel{.env_id = -1, .order = -1, .force_reset = false};
++  queue.EnqueueBulk({original});
++
++  std::atomic<bool> stop{false};
++  std::promise<void> ticket_reserved;
++  auto reserved = ticket_reserved.get_future();
++  std::promise<void> allow_copy;
++  auto copy_allowed = allow_copy.get_future();
++  std::promise<void> shutdown_started;
++  auto started = shutdown_started.get_future();
++  std::promise<void> shutdown_finished;
++  auto finished = shutdown_finished.get_future();
++  ActionSlice copied{};
++  ActionSlice idle_copy{};
++  bool copying_worker_stopped = false;
++  bool idle_worker_stopped = false;
++
++  std::thread copying_worker([&] {
++    copied = queue.DequeueWithCopyGate(&ticket_reserved, &copy_allowed);
++    // Match the production worker's stop observation after Dequeue returns.
++    copying_worker_stopped = stop.load();
++  });
++  reserved.wait();  // Consume the real permit and reserve slot zero first.
++  std::thread idle_worker([&] {
++    idle_copy = queue.Dequeue();
++    idle_worker_stopped = stop.load();
++  });
++  std::thread shutdown([&] {
++    stop.store(true);
++    shutdown_started.set_value();
++    // Starting at slot one, two sentinels wrap onto the held original slot.
++    queue.EnqueueForShutdown({sentinel, sentinel});
++    shutdown_finished.set_value();
++  });
++  started.wait();
++  EXPECT_EQ(finished.wait_for(std::chrono::milliseconds(100)),
++            std::future_status::timeout);
++
++  // Always release the held copy, even after a failed expectation. All queue,
++  // payload, stop flag and gate owners remain alive until every thread joins.
++  // The outer test runner's subprocess timeout bounds a broken shutdown join.
++  allow_copy.set_value();
++  copying_worker.join();
++  shutdown.join();
++  idle_worker.join();
++
++  EXPECT_EQ(copied.env_id, original.env_id);
++  EXPECT_EQ(copied.order, original.order);
++  EXPECT_EQ(copied.force_reset, original.force_reset);
++  EXPECT_TRUE(copying_worker_stopped);
++  EXPECT_EQ(idle_copy.env_id, sentinel.env_id);
++  EXPECT_EQ(idle_copy.order, sentinel.order);
++  EXPECT_EQ(idle_copy.force_reset, sentinel.force_reset);
++  EXPECT_TRUE(idle_worker_stopped);
++  EXPECT_EQ(queue.SizeApprox(), 1);
++}
++
+diff --git a/envpool/core/async_envpool.h b/envpool/core/async_envpool.h
+index 4c50887..ff84fe3 100644
+--- a/envpool/core/async_envpool.h
++++ b/envpool/core/async_envpool.h
+@@ -159 +159 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
+-    action_buffer_queue_->EnqueueBulk(empty_actions);
++    action_buffer_queue_->EnqueueForShutdown(empty_actions);
+diff --git a/envpool/dummy/dummy_envpool_test.cc b/envpool/dummy/dummy_envpool_test.cc
+index 979b140..3f39333 100644
+--- a/envpool/dummy/dummy_envpool_test.cc
++++ b/envpool/dummy/dummy_envpool_test.cc
+@@ -18,0 +19,4 @@
++#include <chrono>
++#include <condition_variable>
++#include <memory>
++#include <mutex>
+@@ -19,0 +24,2 @@
++#include <thread>
++#include <utility>
+@@ -27,0 +34,145 @@ using DummyState = typename dummy::DummyEnv::State;
++namespace {
++
++struct ResetGate {
++  std::mutex mutex;
++  std::condition_variable condition;
++  bool reset_entered{false};
++  bool release_reset{false};
++  bool reset_finished{false};
++  bool environment_destroyed{false};
++  bool reset_finished_before_environment_destroyed{false};
++  bool destruction_started{false};
++  bool destruction_finished{false};
++};
++
++struct GatedDummyEnvSpec : public dummy::DummyEnvSpec {
++  std::shared_ptr<ResetGate> gate;
++
++  GatedDummyEnvSpec(const dummy::DummyEnvSpec& spec,
++                    std::shared_ptr<ResetGate> reset_gate)
++      : dummy::DummyEnvSpec(spec), gate(std::move(reset_gate)) {}
++};
++
++class GatedDummyEnv : public dummy::DummyEnv {
++ public:
++  using Spec = GatedDummyEnvSpec;
++
++  GatedDummyEnv(const Spec& spec, int env_id)
++      : dummy::DummyEnv(spec, env_id), gate_(spec.gate) {}
++
++  ~GatedDummyEnv() override {
++    std::lock_guard<std::mutex> lock(gate_->mutex);
++    gate_->environment_destroyed = true;
++    gate_->reset_finished_before_environment_destroyed = gate_->reset_finished;
++  }
++
++  void Reset() override {
++    const auto gate = gate_;
++    {
++      std::unique_lock<std::mutex> lock(gate->mutex);
++      gate->reset_entered = true;
++      gate->condition.notify_all();
++      gate->condition.wait(lock, [&] { return gate->release_reset; });
++    }
++    dummy::DummyEnv::Reset();
++    {
++      std::lock_guard<std::mutex> lock(gate->mutex);
++      gate->reset_finished = true;
++    }
++    gate->condition.notify_all();
++  }
++
++ private:
++  std::shared_ptr<ResetGate> gate_;
++};
++
++void CheckPoolDestruction(bool pending_reset) {
++  constexpr int kIterations = 32;
++  const std::vector<std::pair<int, int>> shapes{{1, 2}, {1, 8}, {2, 3}};
++  for (const auto& [num_envs, num_threads] : shapes) {
++    SCOPED_TRACE(testing::Message()
++                 << "num_envs=" << num_envs << ", num_threads=" << num_threads);
++    auto config = dummy::DummyEnvSpec::kDefaultConfig;
++    config["num_envs"_] = num_envs;
++    config["batch_size"_] = num_envs;
++    config["num_threads"_] = num_threads;
++    config["max_num_players"_] = 1;
++    config["seed"_] = 42;
++    dummy::DummyEnvSpec spec(config);
++    Array all_env_ids(Spec<int>({num_envs}));
++    for (int i = 0; i < num_envs; ++i) {
++      all_env_ids[i] = i;
++    }
++    for (int iteration = 0; iteration < kIterations; ++iteration) {
++      SCOPED_TRACE(iteration);
++      dummy::DummyEnvPool envpool(spec);
++      if (pending_reset) {
++        envpool.Reset(all_env_ids);
++      }
++      // Destroy immediately, without a Recv or a concurrent public operation.
++      // The destructor must wake idle workers and join any pending reset
++      // workers before releasing their queues or environments.
++    }
++  }
++}
++
++}  // namespace
++
++TEST(DummyEnvPoolTest, ShutdownIdleWorkers) { CheckPoolDestruction(false); }
++
++TEST(DummyEnvPoolTest, ShutdownWithPendingReset) { CheckPoolDestruction(true); }
++
++TEST(DummyEnvPoolTest, ShutdownJoinsInFlightResetBeforeDestroyingEnvironment) {
++  auto config = dummy::DummyEnvSpec::kDefaultConfig;
++  config["num_envs"_] = 1;
++  config["batch_size"_] = 1;
++  config["num_threads"_] = 2;
++  config["max_num_players"_] = 1;
++  const auto gate = std::make_shared<ResetGate>();
++  GatedDummyEnvSpec spec(dummy::DummyEnvSpec(config), gate);
++  auto envpool = std::make_unique<AsyncEnvPool<GatedDummyEnv>>(spec);
++  Array env_ids(Spec<int>({1}));
++  env_ids[0] = 0;
++  envpool->Reset(env_ids);
++  {
++    std::unique_lock<std::mutex> lock(gate->mutex);
++    EXPECT_TRUE(gate->condition.wait_for(lock, std::chrono::seconds(5),
++                                         [&] { return gate->reset_entered; }));
++  }
++  // Reset() has returned to the caller, but its worker is held inside the
++  // environment. Transfer sole ownership before starting destruction.
++  std::thread destroyer([pool = std::move(envpool), gate]() mutable {
++    {
++      std::lock_guard<std::mutex> lock(gate->mutex);
++      gate->destruction_started = true;
++    }
++    gate->condition.notify_all();
++    pool.reset();
++    {
++      std::lock_guard<std::mutex> lock(gate->mutex);
++      gate->destruction_finished = true;
++    }
++    gate->condition.notify_all();
++  });
++  {
++    std::unique_lock<std::mutex> lock(gate->mutex);
++    EXPECT_TRUE(gate->condition.wait_for(lock, std::chrono::seconds(5), [&] {
++      return gate->destruction_started;
++    }));
++    EXPECT_FALSE(
++        gate->condition.wait_for(lock, std::chrono::milliseconds(50),
++                                 [&] { return gate->destruction_finished; }));
++    EXPECT_FALSE(gate->reset_finished);
++    EXPECT_FALSE(gate->environment_destroyed);
++    // Release even if an expectation failed: no worker may outlive its gate.
++    gate->release_reset = true;
++  }
++  gate->condition.notify_all();
++  destroyer.join();
++  std::lock_guard<std::mutex> lock(gate->mutex);
++  EXPECT_TRUE(gate->reset_finished);
++  EXPECT_TRUE(gate->environment_destroyed);
++  EXPECT_TRUE(gate->reset_finished_before_environment_destroyed);
++  EXPECT_TRUE(gate->destruction_finished);
++}
++

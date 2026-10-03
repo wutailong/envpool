@@ -1,0 +1,324 @@
+diff --git a/envpool/core/action_buffer_queue.h b/envpool/core/action_buffer_queue.h
+index 4aacfde..b457b76 100644
+--- a/envpool/core/action_buffer_queue.h
++++ b/envpool/core/action_buffer_queue.h
+@@ -73,0 +74,28 @@ class ActionBufferQueue {
++    return DequeueReady();
++  }
++
++  // Shutdown wake permits do not represent queued actions. Check the caller's
++  // stop flag after acquiring a permit, before reserving or reading a slot.
++  bool DequeueOrStop(ActionSlice* action, const std::atomic<int>& stop) {
++    while (!sem_.wait()) {
++    }
++    if (stop.load(std::memory_order_acquire) != 0) {
++      return false;
++    }
++    *action = DequeueReady();
++    return true;
++  }
++
++  // Terminal shutdown only: publish stop first, quiesce producers, and use
++  // DequeueOrStop for every consumer. Wake at least all live consumers. No
++  // payload writes can race pending consumers.
++  void WakeForShutdown(std::size_t num_consumers) {
++    sem_.signal(num_consumers);
++  }
++
++  std::size_t SizeApprox() {
++    return static_cast<std::size_t>(alloc_ptr_ - done_ptr_);
++  }
++
++ private:
++  ActionSlice DequeueReady() {
+@@ -81,4 +108,0 @@ class ActionBufferQueue {
+-
+-  std::size_t SizeApprox() {
+-    return static_cast<std::size_t>(alloc_ptr_ - done_ptr_);
+-  }
+diff --git a/envpool/core/action_buffer_queue_test.cc b/envpool/core/action_buffer_queue_test.cc
+index c013938..51c56a7 100644
+--- a/envpool/core/action_buffer_queue_test.cc
++++ b/envpool/core/action_buffer_queue_test.cc
+@@ -18,0 +19,3 @@
++#include <array>
++#include <atomic>
++#include <cstdint>
+@@ -20,0 +24 @@
++#include <thread>
+@@ -32,0 +37,101 @@ using ActionSlice = typename ActionBufferQueue::ActionSlice;
++namespace {
++
++class InspectableActionBufferQueue : public ActionBufferQueue {
++ public:
++  using ActionBufferQueue::ActionBufferQueue;
++
++  uint64_t Allocated() const { return alloc_ptr_.load(); }
++  uint64_t Dequeued() const { return done_ptr_.load(); }
++  ActionSlice Slot(std::size_t index) const { return queue_[index]; }
++};
++
++void ExpectSameAction(const ActionSlice& actual, const ActionSlice& expected) {
++  EXPECT_EQ(actual.env_id, expected.env_id);
++  EXPECT_EQ(actual.order, expected.order);
++  EXPECT_EQ(actual.force_reset, expected.force_reset);
++}
++
++void ExpectShutdownWakesConsumers(ActionBufferQueue* queue,
++                                  std::atomic<int>* stop) {
++  constexpr std::size_t kNumConsumers = 8;
++  const ActionSlice untouched{.env_id = -7, .order = 91, .force_reset = true};
++  std::array<ActionSlice, kNumConsumers> outputs;
++  outputs.fill(untouched);
++  std::array<bool, kNumConsumers> dequeued{};
++  std::atomic<std::size_t> started{0};
++  std::vector<std::thread> consumers;
++  consumers.reserve(kNumConsumers);
++  for (std::size_t i = 0; i < kNumConsumers; ++i) {
++    consumers.emplace_back([&, i] {
++      started.fetch_add(1);
++      dequeued[i] = queue->DequeueOrStop(&outputs[i], *stop);
++    });
++  }
++  while (started.load() != kNumConsumers) {
++    std::this_thread::yield();
++  }
++  stop->store(1, std::memory_order_release);
++  queue->WakeForShutdown(kNumConsumers);
++  for (auto& consumer : consumers) {
++    consumer.join();
++  }
++  // Keep the queue, stop flag, and output storage alive until every join.
++  for (std::size_t i = 0; i < kNumConsumers; ++i) {
++    SCOPED_TRACE(i);
++    EXPECT_FALSE(dequeued[i]);
++    ExpectSameAction(outputs[i], untouched);
++  }
++}
++
++}  // namespace
++
++TEST(ActionBufferQueueTest, ShutdownWakesEmptyQueueWithoutAdvancingCursors) {
++  // More consumers than ring slots must not require enqueueing fake actions.
++  InspectableActionBufferQueue queue(1);
++  std::atomic<int> stop{0};
++  ExpectShutdownWakesConsumers(&queue, &stop);
++  EXPECT_EQ(queue.Allocated(), 0);
++  EXPECT_EQ(queue.Dequeued(), 0);
++  EXPECT_EQ(queue.SizeApprox(), 0);
++}
++
++TEST(ActionBufferQueueTest, ShutdownWakePreservesPendingAction) {
++  InspectableActionBufferQueue queue(1);
++  const ActionSlice action{.env_id = 0, .order = 37, .force_reset = true};
++  queue.EnqueueBulk({action});
++  const ActionSlice unused_slot = queue.Slot(1);
++  // Stop before starting consumers so even the real item's permit cannot
++  // advance the dequeue cursor or read its payload.
++  std::atomic<int> stop{1};
++  ExpectShutdownWakesConsumers(&queue, &stop);
++  EXPECT_EQ(queue.Allocated(), 1);
++  EXPECT_EQ(queue.Dequeued(), 0);
++  EXPECT_EQ(queue.SizeApprox(), 1);
++  ExpectSameAction(queue.Slot(0), action);
++  ExpectSameAction(queue.Slot(1), unused_slot);
++}
++
++TEST(ActionBufferQueueTest, StopAwareDequeuePreservesActiveDelivery) {
++  InspectableActionBufferQueue queue(3);
++  std::atomic<int> stop{0};
++  // Traverse the ring more than once using normal live-consumer permits.
++  for (int batch = 0; batch < 4; ++batch) {
++    std::vector<ActionSlice> actions;
++    for (int env_id = 0; env_id < 3; ++env_id) {
++      actions.push_back(ActionSlice{.env_id = env_id,
++                                    .order = batch * 3 + env_id,
++                                    .force_reset = (batch + env_id) % 2 == 0});
++    }
++    queue.EnqueueBulk(actions);
++    EXPECT_EQ(queue.SizeApprox(), actions.size());
++    for (const auto& expected : actions) {
++      ActionSlice actual{};
++      ASSERT_TRUE(queue.DequeueOrStop(&actual, stop));
++      ExpectSameAction(actual, expected);
++    }
++    EXPECT_EQ(queue.SizeApprox(), 0);
++  }
++  EXPECT_EQ(queue.Allocated(), 12);
++  EXPECT_EQ(queue.Dequeued(), 12);
++}
++
+diff --git a/envpool/core/async_envpool.h b/envpool/core/async_envpool.h
+index 4c50887..49c2b0b 100644
+--- a/envpool/core/async_envpool.h
++++ b/envpool/core/async_envpool.h
+@@ -123 +123,4 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
+-          ActionSlice raw_action = action_buffer_queue_->Dequeue();
++          ActionSlice raw_action;
++          if (!action_buffer_queue_->DequeueOrStop(&raw_action, stop_)) {
++            break;
++          }
+@@ -157,3 +160,2 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
+-    // send n actions to clear threadpool
+-    std::vector<ActionSlice> empty_actions(workers_.size());
+-    action_buffer_queue_->EnqueueBulk(empty_actions);
++    // Wake idle workers without overwriting actions still being dequeued.
++    action_buffer_queue_->WakeForShutdown(workers_.size());
+diff --git a/envpool/dummy/dummy_envpool_test.cc b/envpool/dummy/dummy_envpool_test.cc
+index 979b140..3f39333 100644
+--- a/envpool/dummy/dummy_envpool_test.cc
++++ b/envpool/dummy/dummy_envpool_test.cc
+@@ -18,0 +19,4 @@
++#include <chrono>
++#include <condition_variable>
++#include <memory>
++#include <mutex>
+@@ -19,0 +24,2 @@
++#include <thread>
++#include <utility>
+@@ -27,0 +34,145 @@ using DummyState = typename dummy::DummyEnv::State;
++namespace {
++
++struct ResetGate {
++  std::mutex mutex;
++  std::condition_variable condition;
++  bool reset_entered{false};
++  bool release_reset{false};
++  bool reset_finished{false};
++  bool environment_destroyed{false};
++  bool reset_finished_before_environment_destroyed{false};
++  bool destruction_started{false};
++  bool destruction_finished{false};
++};
++
++struct GatedDummyEnvSpec : public dummy::DummyEnvSpec {
++  std::shared_ptr<ResetGate> gate;
++
++  GatedDummyEnvSpec(const dummy::DummyEnvSpec& spec,
++                    std::shared_ptr<ResetGate> reset_gate)
++      : dummy::DummyEnvSpec(spec), gate(std::move(reset_gate)) {}
++};
++
++class GatedDummyEnv : public dummy::DummyEnv {
++ public:
++  using Spec = GatedDummyEnvSpec;
++
++  GatedDummyEnv(const Spec& spec, int env_id)
++      : dummy::DummyEnv(spec, env_id), gate_(spec.gate) {}
++
++  ~GatedDummyEnv() override {
++    std::lock_guard<std::mutex> lock(gate_->mutex);
++    gate_->environment_destroyed = true;
++    gate_->reset_finished_before_environment_destroyed = gate_->reset_finished;
++  }
++
++  void Reset() override {
++    const auto gate = gate_;
++    {
++      std::unique_lock<std::mutex> lock(gate->mutex);
++      gate->reset_entered = true;
++      gate->condition.notify_all();
++      gate->condition.wait(lock, [&] { return gate->release_reset; });
++    }
++    dummy::DummyEnv::Reset();
++    {
++      std::lock_guard<std::mutex> lock(gate->mutex);
++      gate->reset_finished = true;
++    }
++    gate->condition.notify_all();
++  }
++
++ private:
++  std::shared_ptr<ResetGate> gate_;
++};
++
++void CheckPoolDestruction(bool pending_reset) {
++  constexpr int kIterations = 32;
++  const std::vector<std::pair<int, int>> shapes{{1, 2}, {1, 8}, {2, 3}};
++  for (const auto& [num_envs, num_threads] : shapes) {
++    SCOPED_TRACE(testing::Message()
++                 << "num_envs=" << num_envs << ", num_threads=" << num_threads);
++    auto config = dummy::DummyEnvSpec::kDefaultConfig;
++    config["num_envs"_] = num_envs;
++    config["batch_size"_] = num_envs;
++    config["num_threads"_] = num_threads;
++    config["max_num_players"_] = 1;
++    config["seed"_] = 42;
++    dummy::DummyEnvSpec spec(config);
++    Array all_env_ids(Spec<int>({num_envs}));
++    for (int i = 0; i < num_envs; ++i) {
++      all_env_ids[i] = i;
++    }
++    for (int iteration = 0; iteration < kIterations; ++iteration) {
++      SCOPED_TRACE(iteration);
++      dummy::DummyEnvPool envpool(spec);
++      if (pending_reset) {
++        envpool.Reset(all_env_ids);
++      }
++      // Destroy immediately, without a Recv or a concurrent public operation.
++      // The destructor must wake idle workers and join any pending reset
++      // workers before releasing their queues or environments.
++    }
++  }
++}
++
++}  // namespace
++
++TEST(DummyEnvPoolTest, ShutdownIdleWorkers) { CheckPoolDestruction(false); }
++
++TEST(DummyEnvPoolTest, ShutdownWithPendingReset) { CheckPoolDestruction(true); }
++
++TEST(DummyEnvPoolTest, ShutdownJoinsInFlightResetBeforeDestroyingEnvironment) {
++  auto config = dummy::DummyEnvSpec::kDefaultConfig;
++  config["num_envs"_] = 1;
++  config["batch_size"_] = 1;
++  config["num_threads"_] = 2;
++  config["max_num_players"_] = 1;
++  const auto gate = std::make_shared<ResetGate>();
++  GatedDummyEnvSpec spec(dummy::DummyEnvSpec(config), gate);
++  auto envpool = std::make_unique<AsyncEnvPool<GatedDummyEnv>>(spec);
++  Array env_ids(Spec<int>({1}));
++  env_ids[0] = 0;
++  envpool->Reset(env_ids);
++  {
++    std::unique_lock<std::mutex> lock(gate->mutex);
++    EXPECT_TRUE(gate->condition.wait_for(lock, std::chrono::seconds(5),
++                                         [&] { return gate->reset_entered; }));
++  }
++  // Reset() has returned to the caller, but its worker is held inside the
++  // environment. Transfer sole ownership before starting destruction.
++  std::thread destroyer([pool = std::move(envpool), gate]() mutable {
++    {
++      std::lock_guard<std::mutex> lock(gate->mutex);
++      gate->destruction_started = true;
++    }
++    gate->condition.notify_all();
++    pool.reset();
++    {
++      std::lock_guard<std::mutex> lock(gate->mutex);
++      gate->destruction_finished = true;
++    }
++    gate->condition.notify_all();
++  });
++  {
++    std::unique_lock<std::mutex> lock(gate->mutex);
++    EXPECT_TRUE(gate->condition.wait_for(lock, std::chrono::seconds(5), [&] {
++      return gate->destruction_started;
++    }));
++    EXPECT_FALSE(
++        gate->condition.wait_for(lock, std::chrono::milliseconds(50),
++                                 [&] { return gate->destruction_finished; }));
++    EXPECT_FALSE(gate->reset_finished);
++    EXPECT_FALSE(gate->environment_destroyed);
++    // Release even if an expectation failed: no worker may outlive its gate.
++    gate->release_reset = true;
++  }
++  gate->condition.notify_all();
++  destroyer.join();
++  std::lock_guard<std::mutex> lock(gate->mutex);
++  EXPECT_TRUE(gate->reset_finished);
++  EXPECT_TRUE(gate->environment_destroyed);
++  EXPECT_TRUE(gate->reset_finished_before_environment_destroyed);
++  EXPECT_TRUE(gate->destruction_finished);
++}
++
