@@ -54,7 +54,7 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
   std::unique_ptr<StateBufferQueue> state_buffer_queue_;
   std::vector<std::unique_ptr<Env>> envs_;
   std::vector<std::atomic<int>> stepping_env_;
-  std::chrono::duration<double> dur_send_, dur_recv_, dur_send_all_;
+  std::chrono::duration<double> dur_send_{0}, dur_recv_{0}, dur_send_all_{0};
 
   template <typename V>
   void SendImpl(V&& action) {

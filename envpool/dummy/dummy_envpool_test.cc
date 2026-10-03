@@ -33,6 +33,16 @@ using DummyState = typename dummy::DummyEnv::State;
 
 namespace {
 
+class TimingDummyEnvPool : public dummy::DummyEnvPool {
+ public:
+  explicit TimingDummyEnvPool(const dummy::DummyEnvSpec& spec)
+      : dummy::DummyEnvPool(spec) {}
+
+  double SendDurationCount() const { return dur_send_.count(); }
+  double RecvDurationCount() const { return dur_recv_.count(); }
+  double SendAllDurationCount() const { return dur_send_all_.count(); }
+};
+
 struct ResetGate {
   std::mutex mutex;
   std::condition_variable condition;
@@ -117,6 +127,20 @@ void CheckPoolDestruction(bool pending_reset) {
 }
 
 }  // namespace
+
+TEST(DummyEnvPoolTest, TimingAccumulatorsStartAtZero) {
+  auto config = dummy::DummyEnvSpec::kDefaultConfig;
+  config["num_envs"_] = 1;
+  config["batch_size"_] = 1;
+  config["num_threads"_] = 1;
+  config["max_num_players"_] = 1;
+  dummy::DummyEnvSpec spec(config);
+  TimingDummyEnvPool envpool(spec);
+  // No public Reset, Send, or Recv has run yet.
+  EXPECT_EQ(envpool.SendDurationCount(), 0.0);
+  EXPECT_EQ(envpool.RecvDurationCount(), 0.0);
+  EXPECT_EQ(envpool.SendAllDurationCount(), 0.0);
+}
 
 TEST(DummyEnvPoolTest, ShutdownIdleWorkers) { CheckPoolDestruction(false); }
 
@@ -368,6 +392,18 @@ void Runner(int num_envs, int batch, int seed, int total_iter, int num_threads,
   double t = dur.count();
   double fps = (total_iter * batch) / t;
   LOG(INFO) << "time(s): " << t << ", FPS: " << fps;
+}
+
+TEST(DummyEnvPoolTest, SmokeSynchronousSinglePlayer) {
+  Runner(1, 1, 3, 32, 1, 1);
+}
+
+TEST(DummyEnvPoolTest, SmokeAsynchronousSinglePlayer) {
+  Runner(8, 4, 3, 64, 2, 1);
+}
+
+TEST(DummyEnvPoolTest, SmokeAsynchronousMultiPlayer) {
+  Runner(8, 4, 3, 64, 2, 4);
 }
 
 TEST(DummyEnvPoolTest, SinglePlayer) {

@@ -1,0 +1,56 @@
+{
+  "hypothesis": "Two atomic RMW operations protected by existing semaphores can be replaced by relaxed load/store without synchronization changes.",
+  "comparison": "timing-initialized shutdown baseline vs same plus cursor optimization",
+  "blocks": 8,
+  "seconds": 3,
+  "warmup": 400,
+  "affinity": "default (all allowed CPUs)",
+  "order": "Two controls a/b and two treatments c/d; ABBA/BAAB by treatment, each label visits every position in four blocks.",
+  "case_count": 7,
+  "expected_samples": 224,
+  "retention": "Require correctness, useful net gain beyond same-binary A/A variability, and no material realistic-default/PPO regression. Reject if the evidence is inconclusive; no additional fishing in this cycle.",
+  "cases": [
+    {
+      "env": "CartPole-v1",
+      "n": 20,
+      "batch": 20,
+      "threads": 1
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 20,
+      "batch": 20,
+      "threads": 2
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 256,
+      "batch": 256,
+      "threads": 1
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 256,
+      "batch": 256,
+      "threads": 4
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 1024,
+      "batch": 256,
+      "threads": 8
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "n": 64,
+      "batch": 64,
+      "threads": 4
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "n": 256,
+      "batch": 64,
+      "threads": 4
+    }
+  ]
+}

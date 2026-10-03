@@ -1,0 +1,15 @@
+diff --git a/envpool/core/action_buffer_queue.h b/envpool/core/action_buffer_queue.h
+index b457b76..c8dc15d 100644
+--- a/envpool/core/action_buffer_queue.h
++++ b/envpool/core/action_buffer_queue.h
+@@ -63 +63,4 @@ class ActionBufferQueue {
+-    uint64_t pos = alloc_ptr_.fetch_add(action.size());
++    // Writers are serialized by the enqueue semaphore. Keep the cursor atomic
++    // for approximate readers without a redundant read-modify-write.
++    uint64_t pos = alloc_ptr_.load(std::memory_order_relaxed);
++    alloc_ptr_.store(pos + action.size(), std::memory_order_relaxed);
+@@ -104 +107,3 @@ class ActionBufferQueue {
+-    auto ptr = done_ptr_.fetch_add(1);
++    // Reservation and payload copy remain in this same critical section.
++    auto ptr = done_ptr_.load(std::memory_order_relaxed);
++    done_ptr_.store(ptr + 1, std::memory_order_relaxed);

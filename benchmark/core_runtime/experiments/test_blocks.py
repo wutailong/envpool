@@ -97,6 +97,52 @@ class BlockTests(unittest.TestCase):
                     patterns[group[0]["block"]],
                 )
 
+    def test_paired_replicates_order(self):
+        """Each treatment is ABBA/BAAB; each same-binary label visits every slot."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ["control", "treatment"]:
+                package = root / name / "envpool"
+                package.mkdir(parents=True)
+                (package / "__init__.py").touch()
+            command = [
+                sys.executable,
+                str(HERE / "run_blocks.py"),
+                "--python",
+                sys.executable,
+                "--out",
+                str(root / "unused"),
+                "--cases",
+                str(HERE / "shutdown-cases.json"),
+                "--blocks",
+                "4",
+                "--affinities",
+                "default",
+                "--dry-run",
+                "--paired-replicates",
+            ]
+            for label in "abcd":
+                name = "control" if label in "ab" else "treatment"
+                command += ["--variant", f"{label}={root / name}"]
+            result = subprocess.run(
+                command, check=True, text=True, capture_output=True
+            )
+            rows = [json.loads(line) for line in result.stdout.splitlines()]
+            self.assertEqual(len(rows), 4 * 4 * 4)
+            for start in range(0, len(rows), 4):
+                group = rows[start : start + 4]
+                self.assertEqual(
+                    "".join(row["label"] for row in group),
+                    ["acdb", "cabd", "bdca", "dbac"][group[0]["block"]],
+                )
+                self.assertEqual(
+                    "".join(
+                        "A" if row["label"] in "ab" else "B" for row in group
+                    ),
+                    ["ABBA", "BAAB"][group[0]["block"] % 2],
+                )
+            self.assertFalse((root / "unused").exists())
+
     def test_incomplete_rejected(self):
         """Never summarize an empty experiment as success."""
         with tempfile.TemporaryDirectory() as directory:

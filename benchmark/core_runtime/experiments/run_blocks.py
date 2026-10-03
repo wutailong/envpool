@@ -34,6 +34,11 @@ p.add_argument("--seconds", type=float, default=4)
 p.add_argument("--affinities", nargs="+", default=["default", "pinned"])
 p.add_argument("--warmup", type=int, default=400)
 p.add_argument("--dry-run", action="store_true")
+p.add_argument(
+    "--paired-replicates",
+    action="store_true",
+    help="Four labels: first two share control, last two share treatment; ABBA/BAAB by treatment",
+)
 a = p.parse_args()
 cases_spec = json.loads(pathlib.Path(a.cases).read_text())
 assert cases_spec and len({
@@ -43,6 +48,10 @@ roots = dict(v.split("=", 1) for v in a.variant)
 assert len(roots) in (2, 4)
 roots = {k: str(pathlib.Path(v).resolve()) for k, v in roots.items()}
 labels = list(roots)
+if a.paired_replicates:
+    assert len(labels) == 4
+    assert roots[labels[0]] == roots[labels[1]]
+    assert roots[labels[2]] == roots[labels[3]]
 assert all(
     (pathlib.Path(v) / "envpool/__init__.py").exists() for v in roots.values()
 )
@@ -79,6 +88,14 @@ with tempfile.TemporaryDirectory(prefix="envpool-diagnosis-") as cwd:
                     if block % 2 == 0
                     else [labels[1], labels[0], labels[0], labels[1]]
                 )
+            elif a.paired_replicates:
+                patterns = [
+                    [0, 2, 3, 1],
+                    [2, 0, 1, 3],
+                    [1, 3, 2, 0],
+                    [3, 1, 0, 2],
+                ]
+                order = [labels[i] for i in patterns[block % 4]]
             else:
                 patterns = [
                     [0, 1, 3, 2],

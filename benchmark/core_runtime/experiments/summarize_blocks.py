@@ -25,6 +25,26 @@ from pathlib import Path
 def summarize(path: Path, baseline: str) -> list[dict]:
     """Keep every case and variant; bootstrap blocks only as descriptive evidence."""
     rows = [json.loads(line) for line in path.read_text().splitlines()]
+    return summarize_rows(rows, baseline)
+
+
+def summarize_log_differences(diffs: list[float], rng: random.Random) -> dict:
+    """Resample complete block log contrasts, using the existing percentile rule."""
+    if not diffs or any(not math.isfinite(value) for value in diffs):
+        raise ValueError("empty or invalid block log contrasts")
+    bootstrap = sorted(
+        math.expm1(statistics.mean(rng.choices(diffs, k=len(diffs)))) * 100
+        for _ in range(10000)
+    )
+    return {
+        "block_geomean_effect_pct": 100 * math.expm1(statistics.mean(diffs)),
+        "block_effects_pct": [100 * math.expm1(value) for value in diffs],
+        "exploratory_block_bootstrap_95pct": [bootstrap[250], bootstrap[9749]],
+    }
+
+
+def summarize_rows(rows: list[dict], baseline: str) -> list[dict]:
+    """Validate and summarize a single in-memory snapshot of a block experiment."""
     if not rows or any(row["expected_samples"] != len(rows) for row in rows):
         raise ValueError("empty or incomplete experiment")
     groups = collections.defaultdict(list)
@@ -115,23 +135,10 @@ def summarize(path: Path, baseline: str) -> list[dict]:
                     block_means[label], block_means[baseline], strict=True
                 )
             ]
-            bootstrap = sorted(
-                math.expm1(statistics.mean(rng.choices(diffs, k=len(diffs))))
-                * 100
-                for _ in range(10000)
-            )
             contrasts[label] = {
                 "ratio_of_medians_pct": 100
                 * (metrics[label]["median"] / metrics[baseline]["median"] - 1),
-                "block_geomean_effect_pct": 100
-                * math.expm1(statistics.mean(diffs)),
-                "block_effects_pct": [
-                    100 * math.expm1(value) for value in diffs
-                ],
-                "exploratory_block_bootstrap_95pct": [
-                    bootstrap[250],
-                    bootstrap[9749],
-                ],
+                **summarize_log_differences(diffs, rng),
             }
         output.append({
             "config": list(key),

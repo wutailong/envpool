@@ -1,0 +1,14 @@
+{
+  "defined": {
+    "envpool/core/async_envpool.h": "bcdd3c5d158d5600b18e57ee672ab508e6973b2c1b4eeb48a4f73b5c6b9b0dd7",
+    "envpool/core/action_buffer_queue.h": "955b02fbfc5dfe8a3068ee156fbf17344b0d6cfe0b548fb21912492864230ad9",
+    "envpool/core/action_buffer_queue_test.cc": "3f0534f82944afd4e1ee572e40ba4241aebfba67b72ef4763422438c530bcad9",
+    "envpool/dummy/dummy_envpool_test.cc": "5e1a15141be5f761421491410e93f8bf8216a985c356514fa3dabbabf9328a3c"
+  },
+  "cursor": {
+    "envpool/core/async_envpool.h": "bcdd3c5d158d5600b18e57ee672ab508e6973b2c1b4eeb48a4f73b5c6b9b0dd7",
+    "envpool/core/action_buffer_queue.h": "5866f25386bf65a83096832e1e05e180261c1dcd62175f39dc89893d0aec3b9c",
+    "envpool/core/action_buffer_queue_test.cc": "3f0534f82944afd4e1ee572e40ba4241aebfba67b72ef4763422438c530bcad9",
+    "envpool/dummy/dummy_envpool_test.cc": "5e1a15141be5f761421491410e93f8bf8216a985c356514fa3dabbabf9328a3c"
+  }
+}
