@@ -1,0 +1,25 @@
+{
+  "python": "PPO_PYTHON_ENV/bin/python",
+  "envpool_package": "CANDIDATE_RUNTIME/envpool/__init__.py",
+  "native_binary": "CANDIDATE_RUNTIME/envpool/classic_control/classic_control_envpool.so",
+  "native_sha256": "1fcef0bf818cf51b3a398736f4aba61facecf8c8aa42f71e3ed7fbb5844e81d2",
+  "versions": {
+    "envpool": "1.2.7",
+    "torch": "2.5.1+cpu",
+    "tianshou": "0.5.1",
+    "numpy": "1.26.4",
+    "gymnasium": "1.3.0"
+  },
+  "torch_threads": 1,
+  "torch_interop_threads": 1,
+  "torch_deterministic": true,
+  "environment": {
+    "PYTHONHASHSEED": "0",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMBA_NUM_THREADS": "1"
+  },
+  "script_sha256": "de3a0c8cf98896df6ab5ea366cd201363ac5df76bed2cd1da27d28bf5a46a370"
+}

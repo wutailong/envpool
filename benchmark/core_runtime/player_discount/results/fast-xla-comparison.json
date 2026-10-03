@@ -1,0 +1,5 @@
+{
+  "passed": true,
+  "cases": 8,
+  "comparison": "Exact canonical case records against published initialized baseline"
+}

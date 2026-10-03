@@ -184,6 +184,17 @@ cc_library(
     ],
 )
 
+cc_test(
+    name = "env_discount_test",
+    srcs = ["env_discount_test.cc"],
+    deps = [
+        ":env",
+        ":env_spec",
+        ":state_buffer_queue",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "envpool",
     hdrs = ["envpool.h"],

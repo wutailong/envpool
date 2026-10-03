@@ -1,0 +1,144 @@
+Running main() from ${WORKSPACE}/envpool-core-work/deps/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = EnvDiscountTest.*:DummyEnvPoolTest.DiscountMatchesDoneForEveryPlayer
+[==========] Running 5 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 4 tests from EnvDiscountTest
+[ RUN      ] EnvDiscountTest.SinglePlayerDiscountMatchesDone
+[       OK ] EnvDiscountTest.SinglePlayerDiscountMatchesDone (0 ms)
+[ RUN      ] EnvDiscountTest.NonterminalDiscountIncludesEveryPlayer
+${DIRECT_SOURCE}/envpool/core/env_discount_test.cc:87: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/core/env_discount_test.cc:72: num_players=4, done=false
+
+${DIRECT_SOURCE}/envpool/core/env_discount_test.cc:87: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/core/env_discount_test.cc:72: num_players=4, done=false
+
+${DIRECT_SOURCE}/envpool/core/env_discount_test.cc:87: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/core/env_discount_test.cc:72: num_players=4, done=false
+
+[  FAILED  ] EnvDiscountTest.NonterminalDiscountIncludesEveryPlayer (0 ms)
+[ RUN      ] EnvDiscountTest.TerminalDiscountIncludesEveryPlayer
+[       OK ] EnvDiscountTest.TerminalDiscountIncludesEveryPlayer (0 ms)
+[ RUN      ] EnvDiscountTest.ZeroPlayersDoNotOverwriteNextEnvironment
+${DIRECT_SOURCE}/envpool/core/env_discount_test.cc:144: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][0])
+    Which is: 0
+  1.0F
+    Which is: 1
+
+[  FAILED  ] EnvDiscountTest.ZeroPlayersDoNotOverwriteNextEnvironment (0 ms)
+[----------] 4 tests from EnvDiscountTest (1 ms total)
+
+[----------] 1 test from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.DiscountMatchesDoneForEveryPlayer
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:170: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:160: 1
+
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:170: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:160: 2
+
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:170: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:160: 2
+
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:170: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:160: 4
+
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:170: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:160: 5
+
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:170: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:160: 5
+
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:170: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:160: 7
+
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:170: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:160: 8
+
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:170: Failure
+Expected equality of these values:
+  static_cast<float>(state["discount"_][player])
+    Which is: 0
+  done ? 0.0F : 1.0F
+    Which is: 1
+Google Test trace:
+${DIRECT_SOURCE}/envpool/dummy/dummy_envpool_test.cc:160: 8
+
+[  FAILED  ] DummyEnvPoolTest.DiscountMatchesDoneForEveryPlayer (0 ms)
+[----------] 1 test from DummyEnvPoolTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 5 tests from 2 test suites ran. (2 ms total)
+[  PASSED  ] 2 tests.
+[  FAILED  ] 3 tests, listed below:
+[  FAILED  ] EnvDiscountTest.NonterminalDiscountIncludesEveryPlayer
+[  FAILED  ] EnvDiscountTest.ZeroPlayersDoNotOverwriteNextEnvironment
+[  FAILED  ] DummyEnvPoolTest.DiscountMatchesDoneForEveryPlayer
+
+ 3 FAILED TESTS

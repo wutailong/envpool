@@ -1,0 +1,11 @@
+diff --git a/envpool/core/env.h b/envpool/core/env.h
+index 1390e0d..3cf9a63 100644
+--- a/envpool/core/env.h
++++ b/envpool/core/env.h
+@@ -242,5 +242 @@ class Env {
+-    if (player_num == 1) {
+-      state["discount"_] = static_cast<float>(!done);
+-    } else {
+-      state["discount"_].Fill(static_cast<float>(!done));
+-    }
++    state["discount"_].Fill(static_cast<float>(!done));

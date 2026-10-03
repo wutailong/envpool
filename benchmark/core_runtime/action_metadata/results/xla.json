@@ -1,0 +1,127 @@
+{
+  "envpool_module": "CANDIDATE_RUNTIME/envpool/__init__.py",
+  "jax": "0.11.1",
+  "jaxlib": "0.11.1",
+  "backend": "cpu",
+  "numpy": "2.5.3",
+  "cases": [
+    {
+      "env": "CartPole-v1",
+      "mode": "jit_step",
+      "config": {
+        "num_envs": 8,
+        "batch_size": 8,
+        "num_threads": 2,
+        "seed": 65,
+        "max_episode_steps": 37
+      },
+      "calls": 128,
+      "env_responses": 1024,
+      "arrays": 896,
+      "sha256": "50c9a8743af6cf80a535cb1b3bb8a6b75247d8043a6e1a1f385a889dce07917b"
+    },
+    {
+      "env": "CartPole-v1",
+      "mode": "jit_send_recv",
+      "config": {
+        "num_envs": 8,
+        "batch_size": 8,
+        "num_threads": 2,
+        "seed": 65,
+        "max_episode_steps": 37
+      },
+      "calls": 128,
+      "env_responses": 1024,
+      "arrays": 896,
+      "sha256": "50c9a8743af6cf80a535cb1b3bb8a6b75247d8043a6e1a1f385a889dce07917b"
+    },
+    {
+      "env": "CartPole-v1",
+      "mode": "scan",
+      "config": {
+        "num_envs": 8,
+        "batch_size": 8,
+        "num_threads": 2,
+        "seed": 65,
+        "max_episode_steps": 37
+      },
+      "calls": 128,
+      "env_responses": 1024,
+      "arrays": 896,
+      "sha256": "50c9a8743af6cf80a535cb1b3bb8a6b75247d8043a6e1a1f385a889dce07917b"
+    },
+    {
+      "env": "CartPole-v1",
+      "mode": "async_send_recv",
+      "config": {
+        "num_envs": 32,
+        "batch_size": 8,
+        "num_threads": 4,
+        "seed": 65,
+        "max_episode_steps": 37
+      },
+      "env_responses": 4096,
+      "arrays": 28672,
+      "sha256": "0266e5e5656f356ace200c56b127af3b6e6819bcc40481ef350b7d048ea4d782"
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "mode": "jit_step",
+      "config": {
+        "num_envs": 8,
+        "batch_size": 8,
+        "num_threads": 2,
+        "seed": 65,
+        "max_episode_steps": 37
+      },
+      "calls": 128,
+      "env_responses": 1024,
+      "arrays": 1408,
+      "sha256": "be311bab6ddbb5a9d87e1161446bf6642d0bf059b080683c678b6e79366840e1"
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "mode": "jit_send_recv",
+      "config": {
+        "num_envs": 8,
+        "batch_size": 8,
+        "num_threads": 2,
+        "seed": 65,
+        "max_episode_steps": 37
+      },
+      "calls": 128,
+      "env_responses": 1024,
+      "arrays": 1408,
+      "sha256": "be311bab6ddbb5a9d87e1161446bf6642d0bf059b080683c678b6e79366840e1"
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "mode": "scan",
+      "config": {
+        "num_envs": 8,
+        "batch_size": 8,
+        "num_threads": 2,
+        "seed": 65,
+        "max_episode_steps": 37
+      },
+      "calls": 128,
+      "env_responses": 1024,
+      "arrays": 1408,
+      "sha256": "be311bab6ddbb5a9d87e1161446bf6642d0bf059b080683c678b6e79366840e1"
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "mode": "async_send_recv",
+      "config": {
+        "num_envs": 32,
+        "batch_size": 8,
+        "num_threads": 4,
+        "seed": 65,
+        "max_episode_steps": 37
+      },
+      "env_responses": 4096,
+      "arrays": 45056,
+      "sha256": "7511aefb8bbdcb728fff25a7c55b95f9557fd69ac580dcf31826a1b113153f39"
+    }
+  ]
+}

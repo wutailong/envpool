@@ -239,7 +239,11 @@ class Env {
     bool done = IsDone();
     int max_episode_steps = CurrentMaxEpisodeSteps();
     state["done"_] = done;
-    state["discount"_] = static_cast<float>(!done);
+    if (player_num == 1) {
+      state["discount"_] = static_cast<float>(!done);
+    } else {
+      state["discount"_].Fill(static_cast<float>(!done));
+    }
     // dm_env.StepType.FIRST == 0
     // dm_env.StepType.MID == 1
     // dm_env.StepType.LAST == 2

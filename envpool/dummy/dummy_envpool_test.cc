@@ -142,6 +142,47 @@ TEST(DummyEnvPoolTest, TimingAccumulatorsStartAtZero) {
   EXPECT_EQ(envpool.SendAllDurationCount(), 0.0);
 }
 
+TEST(DummyEnvPoolTest, DiscountMatchesDoneForEveryPlayer) {
+  auto config = dummy::DummyEnvSpec::kDefaultConfig;
+  config["num_envs"_] = 1;
+  config["batch_size"_] = 1;
+  config["num_threads"_] = 1;
+  config["max_num_players"_] = 4;
+  config["seed"_] = 10;
+  dummy::DummyEnvSpec spec(config);
+  dummy::DummyEnvPool envpool(spec);
+  TArray env_ids(Spec<int>({1}));
+  env_ids[0] = 0;
+  TArray list_action(Spec<double>({1, 6}));
+  list_action.Fill(0.0);
+  envpool.Reset(env_ids);
+  for (int step = 0; step <= 10; ++step) {
+    SCOPED_TRACE(step);
+    DummyState state(envpool.Recv());
+    const int num_players = step % 3 + 1;
+    const bool done = step == 10;
+    ASSERT_EQ(state["discount"_].Shape(0), num_players);
+    ASSERT_EQ(state["info:players.env_id"_].Shape(0), num_players);
+    EXPECT_EQ(static_cast<int>(state["elapsed_step"_][0]), step);
+    EXPECT_EQ(static_cast<bool>(state["done"_][0]), done);
+    // Step 1 has two nonterminal players; step 10 has two terminal players.
+    for (int player = 0; player < num_players; ++player) {
+      EXPECT_FLOAT_EQ(static_cast<float>(state["discount"_][player]),
+                      done ? 0.0F : 1.0F);
+      EXPECT_EQ(static_cast<int>(state["info:players.env_id"_][player]), 0);
+    }
+    if (!done) {
+      DummyAction action;
+      action["env_id"_] = state["info:env_id"_];
+      action["players.env_id"_] = state["info:players.env_id"_];
+      action["list_action"_] = list_action;
+      action["players.action"_] = state["info:players.id"_];
+      action["players.id"_] = state["info:players.id"_];
+      envpool.Send(action);
+    }
+  }
+}
+
 TEST(DummyEnvPoolTest, ShutdownIdleWorkers) { CheckPoolDestruction(false); }
 
 TEST(DummyEnvPoolTest, ShutdownWithPendingReset) { CheckPoolDestruction(true); }

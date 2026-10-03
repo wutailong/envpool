@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "warmed_env_steps": 10000,
+  "reset_steps": 969,
+  "nonreset_steps": 9031,
+  "nonreset_calls_before": 7,
+  "nonreset_calls_after": 5,
+  "nonreset_bytes_before": 624,
+  "nonreset_bytes_after": 608,
+  "reset_calls_before_and_after": 5,
+  "reset_bytes_before_and_after": 608,
+  "scope": "Intercepted global scalar operator new calls during direct serial EnvStep, after 10 warmup calls; not a throughput measurement or whole-process allocation census.",
+  "recv_caveat": "Wait allocation counts vary with asynchronous state-buffer refill availability; retain raw values but do not attribute their difference to this patch."
+}

@@ -1,0 +1,556 @@
+diff --git a/envpool/core/BUILD b/envpool/core/BUILD
+index 8ff8486739a22c88e8aba6dbd927d2fe7a4e8317..2d6707fe76cd916ed3ae3c510b79d78d3abf872c 100644
+--- a/envpool/core/BUILD
++++ b/envpool/core/BUILD
+@@ -186,0 +187,15 @@ cc_library(
++cc_test(
++    name = "env_action_test",
++    srcs = ["env_action_test.cc"],
++    deps = [
++        ":array",
++        ":async_envpool",
++        ":dict",
++        ":env",
++        ":env_spec",
++        ":spec",
++        ":state_buffer_queue",
++        "@com_google_googletest//:gtest_main",
++    ],
++)
++
+diff --git a/envpool/core/array.h b/envpool/core/array.h
+index 472ae807e8af53807890d0e3ef4013704fa4710e..f2555cdcc15f735ec4ea03fbd61aa2978c505336 100644
+--- a/envpool/core/array.h
++++ b/envpool/core/array.h
+@@ -30,0 +31,3 @@ class Array {
++  template <typename>
++  friend class Env;
++
+diff --git a/envpool/core/env.h b/envpool/core/env.h
+index 32e290123e9445563d15f339b0b514ae4e913adf..f0d4986b406830e7f9ed3bf65bcb0561a2cb26d5 100644
+--- a/envpool/core/env.h
++++ b/envpool/core/env.h
+@@ -91,0 +92,38 @@ class Env {
++  // Rebind a non-owning action view without discarding its shape capacity.
++  void RebindSinglePlayerAction(const Array& batch, bool is_player_action,
++                                Array* action) {
++    DCHECK_GT(batch.ndim, static_cast<std::size_t>(0));
++    std::size_t offset = 0;
++    if (is_player_action) {
++      const std::size_t start = env_index_;
++      const std::size_t end = env_index_ + 1;
++      CHECK_GE(batch.shape_[0], end);
++      CHECK_GE(end, start);
++      if (batch.shape_[0] > 0) {
++        offset = start * batch.size / batch.shape_[0];
++      }
++    } else {
++      offset = env_index_;
++      for (std::size_t i = 1; i < batch.ndim; ++i) {
++        offset *= batch.shape_[i];
++      }
++    }
++
++    const std::size_t skip = is_player_action ? 0 : 1;
++    action->shape_.resize(batch.shape_.size() - skip);
++    action->size = 1;
++    for (std::size_t i = 0; i < action->shape_.size(); ++i) {
++      action->shape_[i] =
++          is_player_action && i == 0 ? 1 : batch.shape_[i + skip];
++      action->size *= action->shape_[i];
++    }
++    action->ndim = action->shape_.size();
++    action->element_size = batch.element_size;
++    char* data = batch.ptr_.get();
++    const std::size_t byte_offset = offset * batch.element_size;
++    if (byte_offset != 0) {
++      data += byte_offset;
++    }
++    action->ptr_ = std::shared_ptr<char>(std::shared_ptr<char>(), data);
++  }
++
+@@ -135 +172,0 @@ class Env {
+-    raw_action_.clear();
+@@ -137,0 +175 @@ class Env {
++      raw_action_.resize(action_size);
+@@ -139,6 +177,2 @@ class Env {
+-        if (is_player_action_[i]) {
+-          raw_action_.emplace_back(
+-              (*action_batch_)[i].Slice(env_index_, env_index_ + 1));
+-        } else {
+-          raw_action_.emplace_back((*action_batch_)[i][env_index_]);
+-        }
++        RebindSinglePlayerAction((*action_batch_)[i], is_player_action_[i],
++                                 &raw_action_[i]);
+@@ -146,0 +181 @@ class Env {
++      raw_action_.clear();
+@@ -190,2 +225,18 @@ class Env {
+-      Step(Action(std::move(raw_action_)));
+-      raw_action_.clear();
++      if (is_single_player_) {
++        Action action(std::move(raw_action_));
++        Step(action);
++        // TupleFromVector moves the entries, leaving raw_action_ in place.
++        std::size_t i = 0;
++        std::apply(
++            [&](auto&... field) {
++              ((raw_action_[i++] = std::move(static_cast<Array&>(field))), ...);
++            },
++            action.AllValues());
++        // Keep only metadata before PostProcess publishes the completed step.
++        for (Array& field : raw_action_) {
++          field.ptr_.reset();
++        }
++      } else {
++        Step(Action(std::move(raw_action_)));
++        raw_action_.clear();
++      }
+diff --git a/envpool/core/env_action_test.cc b/envpool/core/env_action_test.cc
+new file mode 100644
+index 0000000000000000000000000000000000000000..1b5160ce1b3080e3cb866ee673026349d0977342
+--- /dev/null
++++ b/envpool/core/env_action_test.cc
+@@ -0,0 +1,443 @@
++// Copyright 2026 Garena Online Private Limited
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//      http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++#include <gtest/gtest.h>
++
++#include <array>
++#include <cstddef>
++#include <cstdint>
++#include <functional>
++#include <memory>
++#include <stdexcept>
++#include <tuple>
++#include <utility>
++#include <vector>
++
++#include "envpool/core/array.h"
++#include "envpool/core/async_envpool.h"
++#include "envpool/core/dict.h"
++#include "envpool/core/env.h"
++#include "envpool/core/env_spec.h"
++#include "envpool/core/spec.h"
++#include "envpool/core/state_buffer_queue.h"
++
++namespace {
++
++struct ActionProbeFns {
++  static auto DefaultConfig() { return MakeDict(); }
++
++  template <typename Config>
++  static auto StateSpec(const Config&) {
++    return MakeDict("obs:checksum"_.Bind(Spec<double>({})));
++  }
++
++  template <typename Config>
++  static auto ActionSpec(const Config&) {
++    return MakeDict("scalar"_.Bind(Spec<std::int64_t>({})),
++                    "players.scalar"_.Bind(Spec<float>({-1})),
++                    "tensor"_.Bind(Spec<std::uint8_t>({2, 3})),
++                    "players.tensor"_.Bind(Spec<double>({-1, 2, 3, 2})));
++  }
++};
++
++using ActionProbeSpec = EnvSpec<ActionProbeFns>;
++using ProbeAction = Env<ActionProbeSpec>::Action;
++constexpr std::array kPlayerFields = {false, true, false, true, false, true};
++static_assert(kPlayerFields.size() == ProbeAction::kSize);
++
++template <typename T>
++double FieldChecksum(const TArray<T>& field) {
++  double sum = static_cast<double>(field.ndim + field.size);
++  for (std::size_t i = 0; i < field.ndim; ++i) {
++    sum += static_cast<double>((i + 1) * field.Shape(i));
++  }
++  const auto* data = static_cast<const T*>(field.Data());
++  for (std::size_t i = 0; i < field.size; ++i) {
++    sum += static_cast<double>(data[i]);
++  }
++  return sum;
++}
++
++double ActionChecksum(const ProbeAction& action) {
++  double sum = 0;
++  std::apply(
++      [&](const auto&... field) { ((sum += FieldChecksum(field)), ...); },
++      action.AllValues());
++  return sum;
++}
++
++class ActionProbeEnv : public Env<ActionProbeSpec> {
++ public:
++  using Env<ActionProbeSpec>::Env;
++  std::function<void(const Action&)> inspect;
++  int reset_count{0};
++  int step_count{0};
++
++  void Reset() override {
++    ++reset_count;
++    WriteState(-1.0);
++  }
++
++  void Step(const Action& action) override {
++    ++step_count;
++    if (inspect) {
++      // Exceptions in these tests happen before Allocate: a failed Step must
++      // not leave an unpublished slot in the state queue.
++      inspect(action);
++    }
++    WriteState(ActionChecksum(action));
++  }
++
++  bool IsDone() override { return false; }
++
++ private:
++  void WriteState(double checksum) {
++    auto state = Allocate();
++    state["obs:checksum"_] = checksum;
++    state["reward"_] = 0.0F;
++  }
++};
++
++ActionProbeSpec MakeSpec(int num_envs = 4, int num_threads = 2) {
++  auto config = ActionProbeSpec::kDefaultConfig;
++  config["num_envs"_] = num_envs;
++  config["batch_size"_] = num_envs;
++  config["num_threads"_] = num_threads;
++  return ActionProbeSpec(config);
++}
++
++std::vector<int> BatchShape(int batch, const std::vector<int>& tail) {
++  std::vector<int> shape{batch};
++  shape.insert(shape.end(), tail.begin(), tail.end());
++  return shape;
++}
++
++std::shared_ptr<std::vector<Array>> MakeBatch(
++    const std::vector<int>& env_ids, const std::vector<int>& env_tail = {2, 3},
++    const std::vector<int>& player_tail = {2, 3, 2}, int seed = 1) {
++  const int batch_size = static_cast<int>(env_ids.size());
++  auto batch = std::make_shared<std::vector<Array>>();
++  batch->emplace_back(Spec<int>({batch_size}));
++  batch->emplace_back(Spec<int>({batch_size}));
++  batch->emplace_back(Spec<std::int64_t>({batch_size}));
++  batch->emplace_back(Spec<float>({batch_size}));
++  batch->emplace_back(Spec<std::uint8_t>(BatchShape(batch_size, env_tail)));
++  batch->emplace_back(Spec<double>(BatchShape(batch_size, player_tail)));
++  ProbeAction action(*batch);
++  for (int i = 0; i < batch_size; ++i) {
++    action["env_id"_][i] = env_ids[i];
++    action["players.env_id"_][i] = env_ids[i];
++    action["scalar"_][i] = seed * 1000 + i;
++    action["players.scalar"_][i] = seed * 100 + i + 0.5F;
++  }
++  auto* bytes = static_cast<std::uint8_t*>(action["tensor"_].Data());
++  for (std::size_t i = 0; i < action["tensor"_].size; ++i) {
++    bytes[i] = static_cast<std::uint8_t>((seed + i) % 251);
++  }
++  auto* doubles = static_cast<double*>(action["players.tensor"_].Data());
++  for (std::size_t i = 0; i < action["players.tensor"_].size; ++i) {
++    doubles[i] = seed * 1000 + static_cast<double>(i) + 0.25;
++  }
++  return batch;
++}
++
++// Use the established public slicing operations as the metadata/data oracle.
++// Variable trailing ranks intentionally exercise the actual batch metadata;
++// Env's parser classifies player fields from the spec, not their batch rank.
++std::vector<Array> ActionViews(const std::vector<Array>& batch, int index) {
++  std::vector<Array> views;
++  for (std::size_t i = 0; i < batch.size(); ++i) {
++    views.push_back(kPlayerFields[i] ? batch[i].Slice(index, index + 1)
++                                     : batch[i][index]);
++  }
++  return views;
++}
++
++void ExpectAction(const ProbeAction& action, const std::vector<Array>& batch,
++                  int index) {
++  const auto expected = ActionViews(batch, index);
++  std::size_t i = 0;
++  std::apply(
++      [&](const auto&... field) {
++        auto check = [&](const Array& actual) {
++          SCOPED_TRACE(i);
++          EXPECT_EQ(actual.Shape(), expected[i].Shape());
++          EXPECT_EQ(actual.ndim, expected[i].ndim);
++          EXPECT_EQ(actual.size, expected[i].size);
++          EXPECT_EQ(actual.element_size, expected[i].element_size);
++          EXPECT_EQ(actual.Data(), expected[i].Data());
++          EXPECT_EQ(actual.SharedPtr().use_count(), 0);
++          ++i;
++        };
++        (check(field), ...);
++      },
++      action.AllValues());
++}
++
++class EnvActionTest : public testing::Test {
++ protected:
++  ActionProbeSpec spec_{MakeSpec()};
++  StateBufferQueue queue_{1, 4, 1, spec_.state_spec.AllValues<ShapeSpec>()};
++  ActionProbeEnv env_{spec_, 1};
++
++  ActionProbeEnv::State Run(bool reset = false) {
++    env_.EnvStep(&queue_, 0, reset, reset);
++    return ActionProbeEnv::State(queue_.Wait());
++  }
++};
++
++TEST_F(EnvActionTest, MixedDtypesUseReorderedBatchIndexAndReplacementStorage) {
++  auto batch = MakeBatch({3, 0, 1, 2});
++  env_.inspect = [&](const ProbeAction& action) {
++    ExpectAction(action, *batch, 2);
++    EXPECT_TRUE(action["scalar"_].Shape().empty());
++    EXPECT_EQ(action["scalar"_].size, 1U);
++    EXPECT_EQ(action["players.scalar"_].Shape(), std::vector<std::size_t>({1}));
++    EXPECT_EQ(static_cast<std::int64_t>(action["scalar"_]), 1002);
++    EXPECT_EQ(static_cast<float>(action["players.scalar"_][0]), 102.5F);
++  };
++  env_.SetAction(batch, 2);
++  Run();
++
++  batch = MakeBatch({1, 2}, {2, 3}, {2, 3, 2}, 7);
++  env_.inspect = [&](const ProbeAction& action) {
++    ExpectAction(action, *batch, 0);
++    EXPECT_EQ(static_cast<std::int64_t>(action["scalar"_]), 7000);
++    EXPECT_EQ(static_cast<float>(action["players.scalar"_][0]), 700.5F);
++  };
++  env_.SetAction(batch, 0);
++  Run();
++}
++
++TEST_F(EnvActionTest, ReusesShapeStorageAfterRankGrowthShrinkAndEmptyTails) {
++  const std::vector<std::vector<int>> tails{{2},    {2, 1, 3, 1, 2, 1, 1, 1},
++                                            {},     {2, 0, 3},
++                                            {3, 2}, {2, 1, 3, 1, 2, 1, 1, 1}};
++  std::array<std::uintptr_t, 2> shape_addresses{};
++  std::array<std::size_t, 2> capacities{};
++  for (std::size_t iteration = 0; iteration < tails.size(); ++iteration) {
++    SCOPED_TRACE(iteration);
++    const auto batch = MakeBatch({0, 1, 2}, tails[iteration], tails[iteration]);
++    env_.inspect = [&](const ProbeAction& action) {
++      ExpectAction(action, *batch, 1);
++      const std::array<const Array*, 2> fields{&action["tensor"_],
++                                               &action["players.tensor"_]};
++      for (std::size_t i = 0; i < fields.size(); ++i) {
++        const auto& shape = fields[i]->Shape();
++        if (iteration == 1) {
++          shape_addresses[i] = reinterpret_cast<std::uintptr_t>(shape.data());
++          capacities[i] = shape.capacity();
++        } else if (iteration > 1) {
++          EXPECT_EQ(shape.capacity(), capacities[i]);
++          if (!shape.empty()) {
++            EXPECT_EQ(reinterpret_cast<std::uintptr_t>(shape.data()),
++                      shape_addresses[i]);
++          }
++        }
++      }
++    };
++    env_.SetAction(batch, 1);
++    // Re-parsing before Step must also preserve a valid, independently sized
++    // cache, rather than depending on the preceding Action's moved-from state.
++    env_.ParseAction();
++    Run();
++  }
++}
++
++TEST_F(EnvActionTest, CopiedActionAndFieldMetadataRemainIndependent) {
++  const auto original = MakeBatch({2, 1, 0}, {2, 3, 4}, {2, 1, 3}, 5);
++  std::unique_ptr<ProbeAction> saved_action;
++  std::unique_ptr<TArray<double>> saved_field;
++  env_.inspect = [&](const ProbeAction& action) {
++    saved_action = std::make_unique<ProbeAction>(action);
++    saved_field = std::make_unique<TArray<double>>(action["players.tensor"_]);
++    EXPECT_NE(saved_field->Shape().data(),
++              action["players.tensor"_].Shape().data());
++    EXPECT_NE((*saved_action)["tensor"_].Shape().data(),
++              action["tensor"_].Shape().data());
++  };
++  env_.SetAction(original, 1);
++  Run();
++  env_.inspect = {};
++  for (const auto& tail : std::vector<std::vector<int>>{{}, {0, 2}, {3, 2}}) {
++    env_.SetAction(MakeBatch({1, 0}, tail, tail, 9), 0);
++    Run();
++    ExpectAction(*saved_action, *original, 1);
++    EXPECT_EQ(saved_field->Shape(), std::vector<std::size_t>({1, 2, 1, 3}));
++    EXPECT_EQ(saved_field->size, 6U);
++    EXPECT_EQ(static_cast<double>((*saved_field)(0, 1, 0, 2)), 5011.25);
++  }
++  saved_field->TruncateInPlace(0);
++  EXPECT_EQ(saved_field->size, 0U);
++  EXPECT_EQ((*saved_action)["players.tensor"_].Shape(0), 1U);
++  EXPECT_EQ((*original)[5].Shape(0), 3U);
++}
++
++TEST_F(EnvActionTest, BorrowedCopiesDoNotExtendOwningBatchLifetime) {
++  int delete_count = 0;
++  auto batch = MakeBatch({0, 1});
++  const ShapeSpec tensor_spec(sizeof(std::uint8_t), {2, 2, 3});
++  auto* storage = new char[12]{};
++  (*batch)[4] = Array(tensor_spec, storage, [&](char* ptr) {
++    ++delete_count;
++    delete[] ptr;
++  });
++  const std::weak_ptr<char> owner = (*batch)[4].SharedPtr();
++  std::unique_ptr<ProbeAction> saved;
++  std::shared_ptr<char> borrowed;
++  env_.inspect = [&](const ProbeAction& action) {
++    saved = std::make_unique<ProbeAction>(action);
++    borrowed = action["tensor"_].SharedPtr();
++    EXPECT_EQ(borrowed.get(), storage + 6);
++    EXPECT_EQ(borrowed.use_count(), 0);
++  };
++  env_.SetAction(batch, 1);
++  Run();
++  batch.reset();
++  EXPECT_FALSE(owner.expired());
++  EXPECT_EQ(delete_count, 0);
++  Run(true);
++  EXPECT_FALSE(owner.expired());
++  EXPECT_EQ(delete_count, 0);
++
++  // SetAction replaces the Env's owning batch. Neither cached views nor copies
++  // retained by Step may change the backing storage's existing lifetime.
++  env_.inspect = {};
++  env_.SetAction(MakeBatch({1}), 0);
++  EXPECT_TRUE(owner.expired());
++  EXPECT_EQ(delete_count, 1);
++  saved.reset();
++  borrowed.reset();
++  Run();
++  EXPECT_EQ(delete_count, 1);
++}
++
++TEST_F(EnvActionTest, ResetStepResetStepAndThrowingStepCanParseAgain) {
++  auto state = Run(true);
++  EXPECT_EQ(static_cast<int>(state["elapsed_step"_][0]), 0);
++  env_.SetAction(MakeBatch({1}), 0);
++  state = Run();
++  EXPECT_EQ(static_cast<int>(state["elapsed_step"_][0]), 1);
++  state = Run(true);
++  EXPECT_EQ(static_cast<int>(state["elapsed_step"_][0]), 0);
++  const auto next = MakeBatch({2, 1}, {}, {2, 1, 3, 1, 2}, 4);
++  env_.SetAction(next, 1);
++  env_.inspect = [](const ProbeAction&) { throw std::runtime_error("step"); };
++  EXPECT_THROW(env_.EnvStep(&queue_, 0, false, false), std::runtime_error);
++  env_.inspect = [&](const ProbeAction& action) {
++    ExpectAction(action, *next, 1);
++  };
++  env_.ParseAction();
++  state = Run();
++  EXPECT_EQ(env_.reset_count, 2);
++  EXPECT_EQ(env_.step_count, 3);
++  EXPECT_EQ(static_cast<int>(state["elapsed_step"_][0]), 2);
++  EXPECT_EQ(static_cast<double>(state["obs:checksum"_][0]),
++            ActionChecksum(ProbeAction(ActionViews(*next, 1))));
++}
++
++TEST(EnvActionMetadataTest, ExplicitArrayBaseMovesRoundTripThroughTypedAction) {
++  const auto batch = MakeBatch({0, 1}, {2, 3, 4}, {2, 1, 3});
++  auto raw = ActionViews(*batch, 1);
++  std::array<std::uintptr_t, ProbeAction::kSize> shape_addresses{};
++  for (std::size_t i = 0; i < raw.size(); ++i) {
++    shape_addresses[i] =
++        reinterpret_cast<std::uintptr_t>(raw[i].Shape().data());
++  }
++  {
++    ProbeAction action(std::move(raw));
++    ExpectAction(action, *batch, 1);
++    ASSERT_EQ(raw.size(), ProbeAction::kSize);
++    std::size_t i = 0;
++    std::apply(
++        [&](auto&... field) {
++          ((raw[i++] = std::move(static_cast<Array&>(field))), ...);
++        },
++        action.AllValues());
++    std::apply(
++        [](const auto&... field) {
++          auto check = [](const Array& moved) {
++            EXPECT_EQ(moved.Data(), nullptr);
++          };
++          (check(field), ...);
++        },
++        action.AllValues());
++  }
++  for (std::size_t i = 0; i < raw.size(); ++i) {
++    if (!raw[i].Shape().empty()) {
++      EXPECT_EQ(reinterpret_cast<std::uintptr_t>(raw[i].Shape().data()),
++                shape_addresses[i]);
++    }
++  }
++  ProbeAction restored(std::move(raw));
++  ExpectAction(restored, *batch, 1);
++}
++
++TEST(EnvActionDeathTest, SinglePlayerRejectsZeroLeadingPlayerDimension) {
++  const auto spec = MakeSpec();
++  ActionProbeEnv env(spec, 1);
++  const auto batch = MakeBatch({1});
++  (*batch)[1] = Array(Spec<int>({0}));
++  env.SetAction(batch, 0);
++  EXPECT_DEATH_IF_SUPPORTED(env.ParseAction(), "Check failed");
++}
++
++TEST(EnvActionDeathTest, SinglePlayerRetainsPlayerSliceUpperBoundCheck) {
++  const auto spec = MakeSpec();
++  ActionProbeEnv env(spec, 1);
++  const auto batch = MakeBatch({0, 1});
++  (*batch)[5] = Array(Spec<double>({1, 2, 3}));
++  env.SetAction(batch, 1);
++  EXPECT_DEATH_IF_SUPPORTED(env.ParseAction(), "Check failed");
++}
++
++TEST(EnvActionMetadataTest, ImmediateRecvSendReusesEnvsAcrossWorkerThreads) {
++  const auto spec = MakeSpec(4, 3);
++  AsyncEnvPool<ActionProbeEnv> pool(spec);
++  Array ids(Spec<int>({4}));
++  for (int i = 0; i < 4; ++i) {
++    ids[i] = i;
++  }
++  pool.Reset(ids);
++  pool.Recv();
++  constexpr int kIterations = 128;
++  const std::array<std::vector<int>, 3> tails{{{2, 1, 3, 1}, {}, {2, 0, 3}}};
++  for (int iteration = 0; iteration < kIterations; ++iteration) {
++    SCOPED_TRACE(iteration);
++    const std::vector<int> order = iteration % 2 == 0
++                                       ? std::vector<int>{3, 1, 0, 2}
++                                       : std::vector<int>{1, 2, 3, 0};
++    auto batch = MakeBatch(order, tails[iteration % tails.size()],
++                           tails[(iteration + 1) % tails.size()], iteration);
++    std::array<double, 4> expected{};
++    for (int i = 0; i < 4; ++i) {
++      expected[i] = ActionChecksum(ProbeAction(ActionViews(*batch, i)));
++    }
++    // Only this caller uses public APIs. Recv publishes completion while worker
++    // threads may still be returning from EnvStep; immediately replacing the
++    // owning batch exercises the required action cleanup-before-publication.
++    pool.Send(std::move(*batch));
++    batch.reset();
++    ActionProbeEnv::State state(pool.Recv());
++    for (int i = 0; i < 4; ++i) {
++      EXPECT_EQ(static_cast<int>(state["info:env_id"_][i]), order[i]);
++      EXPECT_EQ(static_cast<double>(state["obs:checksum"_][i]), expected[i]);
++    }
++  }
++}
++
++// Multiplayer zero/contiguous/gathered action behavior remains covered by
++// DummyEnvPoolTest.SplitZeroAction in //envpool/dummy:dummy_envpool_test.
++
++}  // namespace

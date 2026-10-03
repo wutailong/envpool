@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "labels": {
+    "a": "initialized baseline",
+    "b": "same initialized baseline",
+    "direct": "direct Fill",
+    "fast": "actual-count scalar-preserving repair"
+  },
+  "native_modules_checked_per_runtime": 21,
+  "all_three_frozen_manifests_match_after_final_timing": true,
+  "both_source_and_header_manifests_match_after_final_timing": true,
+  "row_level_binary_hashes_present": false,
+  "provenance": "Label pair a/b uses one identical runtime root; independently frozen complete native manifests were checked before and after both measurement windows. No in-place module replacement occurred."
+}

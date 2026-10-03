@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="53" failures="0" disabled="0" errors="0" time="7.197" timestamp="2026-10-04T06:30:38.025" name="AllTests">
+  <testsuite name="ActionBufferQueueTest" tests="12" failures="0" disabled="0" skipped="0" errors="0" time="0.258" timestamp="2026-10-04T06:30:51.678">
+    <testcase name="ShutdownWakesEmptyQueueWithoutAdvancingCursors" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="142" status="run" result="completed" time="0.002" timestamp="2026-10-04T06:30:51.678" classname="ActionBufferQueueTest" />
+    <testcase name="ShutdownWakePreservesPendingAction" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="152" status="run" result="completed" time="0.001" timestamp="2026-10-04T06:30:51.680" classname="ActionBufferQueueTest" />
+    <testcase name="StopAwareDequeuePreservesActiveDelivery" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="168" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.681" classname="ActionBufferQueueTest" />
+    <testcase name="SmallRingWraparoundPreservesPayloadsAndCounters" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="192" status="run" result="completed" time="0.003" timestamp="2026-10-04T06:30:51.681" classname="ActionBufferQueueTest" />
+    <testcase name="BoundedMultipleProducersAndConsumersExactlyOnce" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="224" status="run" result="completed" time="0.035" timestamp="2026-10-04T06:30:51.685" classname="ActionBufferQueueTest" />
+    <testcase name="DelayedConsumerKeepsPayloadAcrossRingReuse" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="304" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.720" classname="ActionBufferQueueTest" />
+    <testcase name="ConcurrentProducerBulksRemainContiguous" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="346" status="run" result="completed" time="0.144" timestamp="2026-10-04T06:30:51.721" classname="ActionBufferQueueTest" />
+    <testcase name="Concurrent" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="408" status="run" result="completed" time="0.058" timestamp="2026-10-04T06:30:51.866" classname="ActionBufferQueueTest" />
+    <testcase name="BulkWrapPreservesOrderWithNonPowerOfTwoCapacity" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="453" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.924" classname="ActionBufferQueueTest" />
+    <testcase name="ConcurrentConsumersPreserveEveryWrappedAction" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="498" status="run" result="completed" time="0.011" timestamp="2026-10-04T06:30:51.924" classname="ActionBufferQueueTest" />
+    <testcase name="BulkWrapMatchesUnsignedCounterRollover" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="554" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.936" classname="ActionBufferQueueTest" />
+    <testcase name="EmptyBulkIsSafeWithZeroCapacity" file="${FAST_SOURCE}/envpool/core/action_buffer_queue_test.cc" line="583" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.936" classname="ActionBufferQueueTest" />
+  </testsuite>
+  <testsuite name="ArrayTest" tests="8" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-10-04T06:30:51.936">
+    <testcase name="ViewsPreserveHighDimensionalShapesAndData" file="${FAST_SOURCE}/envpool/core/array_test.cc" line="27" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.936" classname="ArrayTest" />
+    <testcase name="TruncateAndSharedPtrKeepOwnedStorageAlive" file="${FAST_SOURCE}/envpool/core/array_test.cc" line="42" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.936" classname="ArrayTest" />
+    <testcase name="SharedPtrPreservesNonOwningDataPointer" file="${FAST_SOURCE}/envpool/core/array_test.cc" line="67" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.936" classname="ArrayTest" />
+    <testcase name="ViewsDoNotExtendBackingStorageLifetime" file="${FAST_SOURCE}/envpool/core/array_test.cc" line="76" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.936" classname="ArrayTest" />
+    <testcase name="TypedTruncateSharesData" file="${FAST_SOURCE}/envpool/core/array_test.cc" line="98" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.936" classname="ArrayTest" />
+    <testcase name="TruncateInPlacePreservesHighDimensionalShapeAndData" file="${FAST_SOURCE}/envpool/core/array_test.cc" line="113" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.936" classname="ArrayTest" />
+    <testcase name="TruncateInPlaceHandlesEmptyDimensions" file="${FAST_SOURCE}/envpool/core/array_test.cc" line="144" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.936" classname="ArrayTest" />
+    <testcase name="TruncateInPlaceRetainsSharedOwnershipAndCustomDeleter" file="${FAST_SOURCE}/envpool/core/array_test.cc" line="160" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.936" classname="ArrayTest" />
+  </testsuite>
+  <testsuite name="CircularBufferTest" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.02" timestamp="2026-10-04T06:30:51.936">
+    <testcase name="Basic" file="${FAST_SOURCE}/envpool/core/circular_buffer_test.cc" line="26" status="run" result="completed" time="0.02" timestamp="2026-10-04T06:30:51.936" classname="CircularBufferTest" />
+  </testsuite>
+  <testsuite name="DictTest" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-10-04T06:30:51.957">
+    <testcase name="Keys" file="${FAST_SOURCE}/envpool/core/dict_test.cc" line="25" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.957" classname="DictTest" />
+    <testcase name="Values" file="${FAST_SOURCE}/envpool/core/dict_test.cc" line="37" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.957" classname="DictTest" />
+    <testcase name="Lookup" file="${FAST_SOURCE}/envpool/core/dict_test.cc" line="49" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.957" classname="DictTest" />
+    <testcase name="Modification" file="${FAST_SOURCE}/envpool/core/dict_test.cc" line="56" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.957" classname="DictTest" />
+  </testsuite>
+  <testsuite name="EnvDiscountTest" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0.004" timestamp="2026-10-04T06:30:51.957">
+    <testcase name="SinglePlayerDiscountMatchesDone" file="${FAST_SOURCE}/envpool/core/env_discount_test.cc" line="95" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.957" classname="EnvDiscountTest" />
+    <testcase name="NonterminalDiscountIncludesEveryPlayer" file="${FAST_SOURCE}/envpool/core/env_discount_test.cc" line="100" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.958" classname="EnvDiscountTest" />
+    <testcase name="TerminalDiscountIncludesEveryPlayer" file="${FAST_SOURCE}/envpool/core/env_discount_test.cc" line="104" status="run" result="completed" time="0.001" timestamp="2026-10-04T06:30:51.958" classname="EnvDiscountTest" />
+    <testcase name="ZeroPlayersDoNotOverwriteNextEnvironment" file="${FAST_SOURCE}/envpool/core/env_discount_test.cc" line="108" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:51.960" classname="EnvDiscountTest" />
+  </testsuite>
+  <testsuite name="StateBufferQueueTest" tests="6" failures="0" disabled="0" skipped="0" errors="0" time="6.238" timestamp="2026-10-04T06:30:51.961">
+    <testcase name="Basic" file="${FAST_SOURCE}/envpool/core/state_buffer_queue_test.cc" line="26" status="run" result="completed" time="0.004" timestamp="2026-10-04T06:30:51.961" classname="StateBufferQueueTest" />
+    <testcase name="SinglePlayerSync" file="${FAST_SOURCE}/envpool/core/state_buffer_queue_test.cc" line="53" status="run" result="completed" time="0.11" timestamp="2026-10-04T06:30:51.965" classname="StateBufferQueueTest" />
+    <testcase name="NumPlayers" file="${FAST_SOURCE}/envpool/core/state_buffer_queue_test.cc" line="101" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:52.076" classname="StateBufferQueueTest" />
+    <testcase name="MultipleTimes" file="${FAST_SOURCE}/envpool/core/state_buffer_queue_test.cc" line="123" status="run" result="completed" time="0.669" timestamp="2026-10-04T06:30:52.076" classname="StateBufferQueueTest" />
+    <testcase name="ConcurrentSinglePlayer" file="${FAST_SOURCE}/envpool/core/state_buffer_queue_test.cc" line="148" status="run" result="completed" time="2.763" timestamp="2026-10-04T06:30:52.746" classname="StateBufferQueueTest" />
+    <testcase name="ConcurrentMultiPlayer" file="${FAST_SOURCE}/envpool/core/state_buffer_queue_test.cc" line="179" status="run" result="completed" time="2.689" timestamp="2026-10-04T06:30:55.509" classname="StateBufferQueueTest" />
+  </testsuite>
+  <testsuite name="StateBufferTest" tests="9" failures="0" disabled="0" skipped="0" errors="0" time="0.224" timestamp="2026-10-04T06:30:58.199">
+    <testcase name="Basic" file="${FAST_SOURCE}/envpool/core/state_buffer_test.cc" line="33" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:58.199" classname="StateBufferTest" />
+    <testcase name="SinglePlayerSync" file="${FAST_SOURCE}/envpool/core/state_buffer_test.cc" line="55" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:58.199" classname="StateBufferTest" />
+    <testcase name="Truncate" file="${FAST_SOURCE}/envpool/core/state_buffer_test.cc" line="85" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:58.200" classname="StateBufferTest" />
+    <testcase name="MultiPlayers" file="${FAST_SOURCE}/envpool/core/state_buffer_test.cc" line="101" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:58.200" classname="StateBufferTest" />
+    <testcase name="PartialSyncShuffledOutputsSurviveBufferDestruction" file="${FAST_SOURCE}/envpool/core/state_buffer_test.cc" line="126" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:58.200" classname="StateBufferTest" />
+    <testcase name="PartialMultiPlayerOutputsIncludeZeroPlayerEnvironments" file="${FAST_SOURCE}/envpool/core/state_buffer_test.cc" line="170" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:58.200" classname="StateBufferTest" />
+    <testcase name="NoPlayersReturnsEmptyPlayerShapesAndSharedData" file="${FAST_SOURCE}/envpool/core/state_buffer_test.cc" line="240" status="run" result="completed" time="0." timestamp="2026-10-04T06:30:58.200" classname="StateBufferTest" />
+    <testcase name="PartialWaitRequiresEveryAllocatedWriterToComplete" file="${FAST_SOURCE}/envpool/core/state_buffer_test.cc" line="270" status="run" result="completed" time="0.021" timestamp="2026-10-04T06:30:58.200" classname="StateBufferTest" />
+    <testcase name="CompletionAllowsImmediateDestruction" file="${FAST_SOURCE}/envpool/core/state_buffer_test.cc" line="311" status="run" result="completed" time="0.201" timestamp="2026-10-04T06:30:58.222" classname="StateBufferTest" />
+  </testsuite>
+  <testsuite name="DummyEnvPoolTest" tests="9" failures="0" disabled="0" skipped="0" errors="0" time="0.451" timestamp="2026-10-04T06:30:58.424">
+    <testcase name="TimingAccumulatorsStartAtZero" file="${FAST_SOURCE}/envpool/dummy/dummy_envpool_test.cc" line="131" status="run" result="completed" time="0.001" timestamp="2026-10-04T06:30:58.424" classname="DummyEnvPoolTest" />
+    <testcase name="DiscountMatchesDoneForEveryPlayer" file="${FAST_SOURCE}/envpool/dummy/dummy_envpool_test.cc" line="145" status="run" result="completed" time="0.002" timestamp="2026-10-04T06:30:58.426" classname="DummyEnvPoolTest" />
+    <testcase name="ShutdownIdleWorkers" file="${FAST_SOURCE}/envpool/dummy/dummy_envpool_test.cc" line="186" status="run" result="completed" time="0.196" timestamp="2026-10-04T06:30:58.428" classname="DummyEnvPoolTest" />
+    <testcase name="ShutdownWithPendingReset" file="${FAST_SOURCE}/envpool/dummy/dummy_envpool_test.cc" line="188" status="run" result="completed" time="0.162" timestamp="2026-10-04T06:30:58.624" classname="DummyEnvPoolTest" />
+    <testcase name="ShutdownJoinsInFlightResetBeforeDestroyingEnvironment" file="${FAST_SOURCE}/envpool/dummy/dummy_envpool_test.cc" line="190" status="run" result="completed" time="0.052" timestamp="2026-10-04T06:30:58.787" classname="DummyEnvPoolTest" />
+    <testcase name="SplitZeroAction" file="${FAST_SOURCE}/envpool/dummy/dummy_envpool_test.cc" line="244" status="run" result="completed" time="0.005" timestamp="2026-10-04T06:30:58.840" classname="DummyEnvPoolTest" />
+    <testcase name="SmokeSynchronousSinglePlayer" file="${FAST_SOURCE}/envpool/dummy/dummy_envpool_test.cc" line="438" status="run" result="completed" time="0.004" timestamp="2026-10-04T06:30:58.845" classname="DummyEnvPoolTest" />
+    <testcase name="SmokeAsynchronousSinglePlayer" file="${FAST_SOURCE}/envpool/dummy/dummy_envpool_test.cc" line="442" status="run" result="completed" time="0.01" timestamp="2026-10-04T06:30:58.850" classname="DummyEnvPoolTest" />
+    <testcase name="SmokeAsynchronousMultiPlayer" file="${FAST_SOURCE}/envpool/dummy/dummy_envpool_test.cc" line="446" status="run" result="completed" time="0.013" timestamp="2026-10-04T06:30:58.861" classname="DummyEnvPoolTest" />
+  </testsuite>
+</testsuites>

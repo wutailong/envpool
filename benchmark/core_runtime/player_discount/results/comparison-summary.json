@@ -1,0 +1,510 @@
+[
+  {
+    "config": [
+      "CartPole-v1",
+      20,
+      20,
+      1,
+      false
+    ],
+    "blocks": 8,
+    "metrics": {
+      "a": {
+        "n": 8,
+        "median": 358165.2435350033,
+        "min": 341690.55635308987,
+        "max": 373050.2973011151,
+        "cv": 0.030239594246520906,
+        "cpu_us_per_response": 3.7883264763437015,
+        "runnable_wait_ns_per_response": 5.9090796366294045,
+        "voluntary_switches_per_1m_responses": 152053.85732110328,
+        "scheduler_thread_sets_stable": true
+      },
+      "b": {
+        "n": 8,
+        "median": 347909.81111958827,
+        "min": 322655.63358039764,
+        "max": 406651.5647990299,
+        "cv": 0.07248768340353182,
+        "cpu_us_per_response": 3.9165074548315184,
+        "runnable_wait_ns_per_response": 6.552070797552814,
+        "voluntary_switches_per_1m_responses": 152769.26495437528,
+        "scheduler_thread_sets_stable": true
+      },
+      "fast": {
+        "n": 8,
+        "median": 373800.8852873321,
+        "min": 334961.016990975,
+        "max": 395696.30908131413,
+        "cv": 0.06935797046299011,
+        "cpu_us_per_response": 3.696749164238329,
+        "runnable_wait_ns_per_response": 5.034329347362089,
+        "voluntary_switches_per_1m_responses": 152347.8261699658,
+        "scheduler_thread_sets_stable": true
+      },
+      "direct": {
+        "n": 8,
+        "median": 354929.08211983414,
+        "min": 330155.17576256226,
+        "max": 400974.0060856567,
+        "cv": 0.06989561470406958,
+        "cpu_us_per_response": 3.8784007861461953,
+        "runnable_wait_ns_per_response": 5.681239312869932,
+        "voluntary_switches_per_1m_responses": 151569.29563076905,
+        "scheduler_thread_sets_stable": true
+      }
+    },
+    "contrasts": {
+      "direct_vs_control": {
+        "block_geomean_effect_pct": 0.723040651705229,
+        "block_effects_pct": [
+          -0.7651678234451235,
+          9.425004584259526,
+          2.4123051707355025,
+          8.597544642252508,
+          1.1557157627463326,
+          -4.087568880306682,
+          -4.12502016546996,
+          -5.7009863945426
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -2.671688569794439,
+          4.587166942350805
+        ]
+      },
+      "fast_vs_control": {
+        "block_geomean_effect_pct": 2.8463448697272957,
+        "block_effects_pct": [
+          -3.433374421818204,
+          -5.64663770573854,
+          12.825032432560812,
+          6.229673635829301,
+          8.705201443165603,
+          8.22572221969319,
+          11.26331957561007,
+          -12.432629050871482
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -3.3548961576839655,
+          8.68025444234243
+        ]
+      },
+      "fast_vs_direct": {
+        "block_geomean_effect_pct": 2.1080620722763292,
+        "block_effects_pct": [
+          -2.688780279918152,
+          -13.773490206612319,
+          10.167457166856902,
+          -2.180409340030262,
+          7.463231932564307,
+          12.838055459811645,
+          16.05042292330977,
+          -7.138614073413063
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -4.60530223295344,
+          9.008893876741121
+        ]
+      },
+      "b_over_a": {
+        "block_geomean_effect_pct": -0.7554248669173589,
+        "block_effects_pct": [
+          -3.469264032402404,
+          8.075276912390091,
+          -1.1929041309374155,
+          -2.037999343387944,
+          -0.6879252479546046,
+          -5.415371093048733,
+          -12.208421882018488,
+          13.016273899958206
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -5.524083511273801,
+          4.469817185930739
+        ]
+      }
+    },
+    "caveat": "Descriptive block bootstrap on a shared host; no significance or universal-neutrality guarantee."
+  },
+  {
+    "config": [
+      "CartPole-v1",
+      256,
+      256,
+      4,
+      false
+    ],
+    "blocks": 8,
+    "metrics": {
+      "a": {
+        "n": 8,
+        "median": 1198199.9762983988,
+        "min": 1119478.7072746926,
+        "max": 1455512.0513223545,
+        "cv": 0.09787410663926428,
+        "cpu_us_per_response": 2.5662062861799395,
+        "runnable_wait_ns_per_response": 2.503590156789946,
+        "voluntary_switches_per_1m_responses": 24518.370955914976,
+        "scheduler_thread_sets_stable": true
+      },
+      "b": {
+        "n": 8,
+        "median": 1284819.7134137112,
+        "min": 1130866.1209076305,
+        "max": 1672659.5835709318,
+        "cv": 0.14005417658082245,
+        "cpu_us_per_response": 2.411000074603848,
+        "runnable_wait_ns_per_response": 2.827060112586388,
+        "voluntary_switches_per_1m_responses": 24572.57036892873,
+        "scheduler_thread_sets_stable": true
+      },
+      "fast": {
+        "n": 8,
+        "median": 1199533.023983012,
+        "min": 1164837.323009245,
+        "max": 1512439.404609001,
+        "cv": 0.09168623288896503,
+        "cpu_us_per_response": 2.5786543033121845,
+        "runnable_wait_ns_per_response": 2.281870179927637,
+        "voluntary_switches_per_1m_responses": 24312.607371255734,
+        "scheduler_thread_sets_stable": true
+      },
+      "direct": {
+        "n": 8,
+        "median": 1349619.2570727612,
+        "min": 1121448.3596686183,
+        "max": 1655016.274149813,
+        "cv": 0.1263331555616194,
+        "cpu_us_per_response": 2.2807226835681544,
+        "runnable_wait_ns_per_response": 17.65195231834856,
+        "voluntary_switches_per_1m_responses": 24389.849668209645,
+        "scheduler_thread_sets_stable": true
+      }
+    },
+    "contrasts": {
+      "direct_vs_control": {
+        "block_geomean_effect_pct": 7.982689606600718,
+        "block_effects_pct": [
+          1.6486230850972414,
+          11.524230402713753,
+          15.083744315717507,
+          -11.965895785841377,
+          6.6901368592598685,
+          13.00310194763768,
+          -7.759160129747318,
+          44.730336079225665
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -1.7315629544117972,
+          19.866143597855974
+        ]
+      },
+      "fast_vs_control": {
+        "block_geomean_effect_pct": -2.0843472624161814,
+        "block_effects_pct": [
+          -15.747621263270856,
+          31.249228744429615,
+          1.6711165302617637,
+          -8.5598463788033,
+          2.833556655610053,
+          -15.131124835658971,
+          -15.068401058936972,
+          10.879411618039255
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -11.140794308990921,
+          9.191803572373185
+        ]
+      },
+      "fast_vs_direct": {
+        "block_geomean_effect_pct": -9.322824709861205,
+        "block_effects_pct": [
+          -17.114097388023126,
+          17.686737913804862,
+          -11.654667533809047,
+          3.869011262671857,
+          -3.614748576747273,
+          -24.896862385541617,
+          -7.924083236309362,
+          -23.38896279675351
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -17.474015357770835,
+          0.3213582660560071
+        ]
+      },
+      "b_over_a": {
+        "block_geomean_effect_pct": 5.5185119398190405,
+        "block_effects_pct": [
+          -3.153987099640295,
+          0.7544744714978603,
+          9.514956126498596,
+          11.25281406131682,
+          -4.862238151740824,
+          1.9895593528799498,
+          30.421906306610463,
+          2.1502769092682206
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -0.34974501635236055,
+          13.137304807165414
+        ]
+      }
+    },
+    "caveat": "Descriptive block bootstrap on a shared host; no significance or universal-neutrality guarantee."
+  },
+  {
+    "config": [
+      "CartPole-v1",
+      1024,
+      256,
+      8,
+      false
+    ],
+    "blocks": 8,
+    "metrics": {
+      "a": {
+        "n": 8,
+        "median": 2903649.1359820478,
+        "min": 2630405.700061122,
+        "max": 3077003.360905749,
+        "cv": 0.058099536168135686,
+        "cpu_us_per_response": 2.6726944224740827,
+        "runnable_wait_ns_per_response": 153.22551887585962,
+        "voluntary_switches_per_1m_responses": 8043.852684006841,
+        "scheduler_thread_sets_stable": true
+      },
+      "b": {
+        "n": 8,
+        "median": 2803160.3346420447,
+        "min": 2550862.6111793756,
+        "max": 3351928.489599551,
+        "cv": 0.09733776671738047,
+        "cpu_us_per_response": 2.79311120860013,
+        "runnable_wait_ns_per_response": 156.3548488998968,
+        "voluntary_switches_per_1m_responses": 7489.0870657982505,
+        "scheduler_thread_sets_stable": true
+      },
+      "fast": {
+        "n": 8,
+        "median": 2711723.264843562,
+        "min": 2572889.744940206,
+        "max": 3355366.9387381473,
+        "cv": 0.096097670448571,
+        "cpu_us_per_response": 2.890338307549671,
+        "runnable_wait_ns_per_response": 148.9875778823703,
+        "voluntary_switches_per_1m_responses": 7366.539104667054,
+        "scheduler_thread_sets_stable": true
+      },
+      "direct": {
+        "n": 8,
+        "median": 2690060.6401420766,
+        "min": 2530942.2533504,
+        "max": 3319680.415666846,
+        "cv": 0.11171035053778701,
+        "cpu_us_per_response": 2.93845957894091,
+        "runnable_wait_ns_per_response": 162.47892346969343,
+        "voluntary_switches_per_1m_responses": 7472.533482440477,
+        "scheduler_thread_sets_stable": true
+      }
+    },
+    "contrasts": {
+      "direct_vs_control": {
+        "block_geomean_effect_pct": -1.564117968459509,
+        "block_effects_pct": [
+          -3.691328406649829,
+          -12.562369821581129,
+          -12.948955771380778,
+          -6.72745979133235,
+          17.663751905327974,
+          -0.24603575983403095,
+          11.798901281379532,
+          -1.7515868360992712
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -7.794011141711757,
+          5.68935145039098
+        ]
+      },
+      "fast_vs_control": {
+        "block_geomean_effect_pct": -1.2492191945965037,
+        "block_effects_pct": [
+          -9.463052974225183,
+          10.541832597687408,
+          -9.324252309741233,
+          1.095938935270332,
+          -7.332120040616894,
+          3.175965992230706,
+          4.803682562982478,
+          -1.6300093433023548
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -5.880317029986128,
+          3.5639659809398796
+        ]
+      },
+      "fast_vs_direct": {
+        "block_geomean_effect_pct": 0.3199024251767323,
+        "block_effects_pct": [
+          -5.992943804630232,
+          26.423637479794206,
+          4.163882804346505,
+          8.387676275461477,
+          -21.243476891724903,
+          3.4304418657748608,
+          -6.256965532059419,
+          0.12374499381898141
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -8.132879339446957,
+          9.447271900958487
+        ]
+      },
+      "b_over_a": {
+        "block_geomean_effect_pct": -0.4128328787737046,
+        "block_effects_pct": [
+          1.1867880900500418,
+          2.5824655942176067,
+          -10.718688513341748,
+          -11.870616101333287,
+          -8.27316443695697,
+          -4.560043806898129,
+          27.430095270918226,
+          6.181813552559554
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -7.160595220864067,
+          8.558564746156245
+        ]
+      }
+    },
+    "caveat": "Descriptive block bootstrap on a shared host; no significance or universal-neutrality guarantee."
+  },
+  {
+    "config": [
+      "HalfCheetah-v4",
+      256,
+      64,
+      4,
+      false
+    ],
+    "blocks": 8,
+    "metrics": {
+      "a": {
+        "n": 8,
+        "median": 96219.00233517964,
+        "min": 93278.83031843221,
+        "max": 97899.39595941993,
+        "cv": 0.01675746363642384,
+        "cpu_us_per_response": 43.14370378621419,
+        "runnable_wait_ns_per_response": 18.76134575737847,
+        "voluntary_switches_per_1m_responses": 33070.543077256945,
+        "scheduler_thread_sets_stable": true
+      },
+      "b": {
+        "n": 8,
+        "median": 94524.90616187704,
+        "min": 88886.28728286573,
+        "max": 96248.14915896609,
+        "cv": 0.026779511048102018,
+        "cpu_us_per_response": 43.652440970284594,
+        "runnable_wait_ns_per_response": 185.48185560438367,
+        "voluntary_switches_per_1m_responses": 32428.898887028772,
+        "scheduler_thread_sets_stable": true
+      },
+      "fast": {
+        "n": 8,
+        "median": 95711.00475944167,
+        "min": 93448.97004557299,
+        "max": 97447.74820496039,
+        "cv": 0.01519257605086076,
+        "cpu_us_per_response": 43.36779627966502,
+        "runnable_wait_ns_per_response": 32.427052525111606,
+        "voluntary_switches_per_1m_responses": 32921.53979104663,
+        "scheduler_thread_sets_stable": true
+      },
+      "direct": {
+        "n": 8,
+        "median": 95667.73367965475,
+        "min": 91693.8873788602,
+        "max": 98908.32856149373,
+        "cv": 0.02554785395743312,
+        "cpu_us_per_response": 43.25327799309625,
+        "runnable_wait_ns_per_response": 15.981494867234003,
+        "voluntary_switches_per_1m_responses": 33493.0419921875,
+        "scheduler_thread_sets_stable": true
+      }
+    },
+    "contrasts": {
+      "direct_vs_control": {
+        "block_geomean_effect_pct": 0.2542324609486839,
+        "block_effects_pct": [
+          -2.1098436494118964,
+          0.20649751904105812,
+          -0.025985103400380207,
+          -2.002836110121518,
+          4.176643670573934,
+          6.980091832030308,
+          -1.4386590956671443,
+          -3.326764304038759
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -1.7822343126625457,
+          2.661882367926467
+        ]
+      },
+      "fast_vs_control": {
+        "block_geomean_effect_pct": 0.45923896454047686,
+        "block_effects_pct": [
+          3.5047056089551125,
+          -0.5886649372771032,
+          0.9373300661679407,
+          -2.9229046766659432,
+          -1.573505533791491,
+          3.50200394549851,
+          -0.18217918679261996,
+          1.1778911914873391
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -0.9833649940223828,
+          1.9516122095481432
+        ]
+      },
+      "fast_vs_direct": {
+        "block_geomean_effect_pct": 0.20448663219445384,
+        "block_effects_pct": [
+          5.735560619863366,
+          -0.7935238492564476,
+          0.9635655530736176,
+          -0.9388726469455035,
+          -5.519614571715781,
+          -3.2511543287817997,
+          1.2748202260094132,
+          4.659671793435472
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -2.2145005465793,
+          2.7204710607931895
+        ]
+      },
+      "b_over_a": {
+        "block_geomean_effect_pct": -2.292112883603063,
+        "block_effects_pct": [
+          -4.594550032381132,
+          -3.5658819985654384,
+          0.5389025606850549,
+          -1.4688809171002128,
+          -2.29100586648439,
+          -4.709046008157834,
+          -1.9181903230229773,
+          -0.19533627860757855
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -3.5360689571545625,
+          -1.039357212565482
+        ]
+      }
+    },
+    "caveat": "Descriptive block bootstrap on a shared host; no significance or universal-neutrality guarantee."
+  }
+]

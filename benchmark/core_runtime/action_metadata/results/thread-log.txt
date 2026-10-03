@@ -1,0 +1,774 @@
+Running main() from WORKSPACE/envpool-core-work/deps/googletest-1.18.0/googletest/src/gtest_main.cc
+
+Repeating all tests (iteration 1) . . .
+
+Note: Google Test filter = *-DummyEnvPoolTest.SinglePlayer:DummyEnvPoolTest.MultiPlayers
+[==========] Running 57 tests from 10 test suites.
+[----------] Global test environment set-up.
+[----------] 2 tests from EnvActionDeathTest
+[ RUN      ] EnvActionDeathTest.SinglePlayerRejectsZeroLeadingPlayerDimension
+[       OK ] EnvActionDeathTest.SinglePlayerRejectsZeroLeadingPlayerDimension (13 ms)
+[ RUN      ] EnvActionDeathTest.SinglePlayerRetainsPlayerSliceUpperBoundCheck
+[       OK ] EnvActionDeathTest.SinglePlayerRetainsPlayerSliceUpperBoundCheck (15 ms)
+[----------] 2 tests from EnvActionDeathTest (28 ms total)
+
+[----------] 12 tests from ActionBufferQueueTest
+[ RUN      ] ActionBufferQueueTest.ShutdownWakesEmptyQueueWithoutAdvancingCursors
+[       OK ] ActionBufferQueueTest.ShutdownWakesEmptyQueueWithoutAdvancingCursors (2 ms)
+[ RUN      ] ActionBufferQueueTest.ShutdownWakePreservesPendingAction
+[       OK ] ActionBufferQueueTest.ShutdownWakePreservesPendingAction (1 ms)
+[ RUN      ] ActionBufferQueueTest.StopAwareDequeuePreservesActiveDelivery
+[       OK ] ActionBufferQueueTest.StopAwareDequeuePreservesActiveDelivery (0 ms)
+[ RUN      ] ActionBufferQueueTest.SmallRingWraparoundPreservesPayloadsAndCounters
+[       OK ] ActionBufferQueueTest.SmallRingWraparoundPreservesPayloadsAndCounters (7 ms)
+[ RUN      ] ActionBufferQueueTest.BoundedMultipleProducersAndConsumersExactlyOnce
+[       OK ] ActionBufferQueueTest.BoundedMultipleProducersAndConsumersExactlyOnce (91 ms)
+[ RUN      ] ActionBufferQueueTest.DelayedConsumerKeepsPayloadAcrossRingReuse
+[       OK ] ActionBufferQueueTest.DelayedConsumerKeepsPayloadAcrossRingReuse (1 ms)
+[ RUN      ] ActionBufferQueueTest.ConcurrentProducerBulksRemainContiguous
+[       OK ] ActionBufferQueueTest.ConcurrentProducerBulksRemainContiguous (77 ms)
+[ RUN      ] ActionBufferQueueTest.Concurrent
+[       OK ] ActionBufferQueueTest.Concurrent (412 ms)
+[ RUN      ] ActionBufferQueueTest.BulkWrapPreservesOrderWithNonPowerOfTwoCapacity
+[       OK ] ActionBufferQueueTest.BulkWrapPreservesOrderWithNonPowerOfTwoCapacity (0 ms)
+[ RUN      ] ActionBufferQueueTest.ConcurrentConsumersPreserveEveryWrappedAction
+[       OK ] ActionBufferQueueTest.ConcurrentConsumersPreserveEveryWrappedAction (7 ms)
+[ RUN      ] ActionBufferQueueTest.BulkWrapMatchesUnsignedCounterRollover
+[       OK ] ActionBufferQueueTest.BulkWrapMatchesUnsignedCounterRollover (0 ms)
+[ RUN      ] ActionBufferQueueTest.EmptyBulkIsSafeWithZeroCapacity
+[       OK ] ActionBufferQueueTest.EmptyBulkIsSafeWithZeroCapacity (0 ms)
+[----------] 12 tests from ActionBufferQueueTest (600 ms total)
+
+[----------] 8 tests from ArrayTest
+[ RUN      ] ArrayTest.ViewsPreserveHighDimensionalShapesAndData
+[       OK ] ArrayTest.ViewsPreserveHighDimensionalShapesAndData (0 ms)
+[ RUN      ] ArrayTest.TruncateAndSharedPtrKeepOwnedStorageAlive
+[       OK ] ArrayTest.TruncateAndSharedPtrKeepOwnedStorageAlive (0 ms)
+[ RUN      ] ArrayTest.SharedPtrPreservesNonOwningDataPointer
+[       OK ] ArrayTest.SharedPtrPreservesNonOwningDataPointer (0 ms)
+[ RUN      ] ArrayTest.ViewsDoNotExtendBackingStorageLifetime
+[       OK ] ArrayTest.ViewsDoNotExtendBackingStorageLifetime (0 ms)
+[ RUN      ] ArrayTest.TypedTruncateSharesData
+[       OK ] ArrayTest.TypedTruncateSharesData (0 ms)
+[ RUN      ] ArrayTest.TruncateInPlacePreservesHighDimensionalShapeAndData
+[       OK ] ArrayTest.TruncateInPlacePreservesHighDimensionalShapeAndData (0 ms)
+[ RUN      ] ArrayTest.TruncateInPlaceHandlesEmptyDimensions
+[       OK ] ArrayTest.TruncateInPlaceHandlesEmptyDimensions (0 ms)
+[ RUN      ] ArrayTest.TruncateInPlaceRetainsSharedOwnershipAndCustomDeleter
+[       OK ] ArrayTest.TruncateInPlaceRetainsSharedOwnershipAndCustomDeleter (0 ms)
+[----------] 8 tests from ArrayTest (0 ms total)
+
+[----------] 1 test from CircularBufferTest
+[ RUN      ] CircularBufferTest.Basic
+[       OK ] CircularBufferTest.Basic (52 ms)
+[----------] 1 test from CircularBufferTest (52 ms total)
+
+[----------] 4 tests from DictTest
+[ RUN      ] DictTest.Keys
+[       OK ] DictTest.Keys (0 ms)
+[ RUN      ] DictTest.Values
+[       OK ] DictTest.Values (0 ms)
+[ RUN      ] DictTest.Lookup
+[       OK ] DictTest.Lookup (0 ms)
+[ RUN      ] DictTest.Modification
+[       OK ] DictTest.Modification (0 ms)
+[----------] 4 tests from DictTest (0 ms total)
+
+[----------] 5 tests from EnvActionTest
+[ RUN      ] EnvActionTest.MixedDtypesUseReorderedBatchIndexAndReplacementStorage
+[       OK ] EnvActionTest.MixedDtypesUseReorderedBatchIndexAndReplacementStorage (1 ms)
+[ RUN      ] EnvActionTest.ReusesShapeStorageAfterRankGrowthShrinkAndEmptyTails
+[       OK ] EnvActionTest.ReusesShapeStorageAfterRankGrowthShrinkAndEmptyTails (1 ms)
+[ RUN      ] EnvActionTest.CopiedActionAndFieldMetadataRemainIndependent
+[       OK ] EnvActionTest.CopiedActionAndFieldMetadataRemainIndependent (1 ms)
+[ RUN      ] EnvActionTest.BorrowedCopiesDoNotExtendOwningBatchLifetime
+[       OK ] EnvActionTest.BorrowedCopiesDoNotExtendOwningBatchLifetime (1 ms)
+[ RUN      ] EnvActionTest.ResetStepResetStepAndThrowingStepCanParseAgain
+[       OK ] EnvActionTest.ResetStepResetStepAndThrowingStepCanParseAgain (1 ms)
+[----------] 5 tests from EnvActionTest (6 ms total)
+
+[----------] 2 tests from EnvActionMetadataTest
+[ RUN      ] EnvActionMetadataTest.ExplicitArrayBaseMovesRoundTripThroughTypedAction
+[       OK ] EnvActionMetadataTest.ExplicitArrayBaseMovesRoundTripThroughTypedAction (0 ms)
+[ RUN      ] EnvActionMetadataTest.ImmediateRecvSendReusesEnvsAcrossWorkerThreads
+[       OK ] EnvActionMetadataTest.ImmediateRecvSendReusesEnvsAcrossWorkerThreads (13 ms)
+[----------] 2 tests from EnvActionMetadataTest (14 ms total)
+
+[----------] 6 tests from StateBufferQueueTest
+[ RUN      ] StateBufferQueueTest.Basic
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1791059488.099582   14328 state_buffer_queue_test.cc:36] 0 start
+I0000 00:00:1791059488.099661   14328 state_buffer_queue_test.cc:39] 0 allocate
+I0000 00:00:1791059488.099670   14328 state_buffer_queue_test.cc:41] 0 done_write
+I0000 00:00:1791059488.099680   14328 state_buffer_queue_test.cc:36] 1 start
+I0000 00:00:1791059488.099689   14328 state_buffer_queue_test.cc:39] 1 allocate
+I0000 00:00:1791059488.099696   14328 state_buffer_queue_test.cc:41] 1 done_write
+I0000 00:00:1791059488.099703   14328 state_buffer_queue_test.cc:36] 2 start
+I0000 00:00:1791059488.099710   14328 state_buffer_queue_test.cc:39] 2 allocate
+I0000 00:00:1791059488.099715   14328 state_buffer_queue_test.cc:41] 2 done_write
+I0000 00:00:1791059488.099722   14328 state_buffer_queue_test.cc:36] 3 start
+I0000 00:00:1791059488.099728   14328 state_buffer_queue_test.cc:39] 3 allocate
+I0000 00:00:1791059488.099734   14328 state_buffer_queue_test.cc:41] 3 done_write
+I0000 00:00:1791059488.099740   14328 state_buffer_queue_test.cc:36] 4 start
+I0000 00:00:1791059488.099747   14328 state_buffer_queue_test.cc:39] 4 allocate
+I0000 00:00:1791059488.099752   14328 state_buffer_queue_test.cc:41] 4 done_write
+I0000 00:00:1791059488.099758   14328 state_buffer_queue_test.cc:36] 5 start
+I0000 00:00:1791059488.099765   14328 state_buffer_queue_test.cc:39] 5 allocate
+I0000 00:00:1791059488.099771   14328 state_buffer_queue_test.cc:41] 5 done_write
+I0000 00:00:1791059488.099777   14328 state_buffer_queue_test.cc:36] 6 start
+I0000 00:00:1791059488.099783   14328 state_buffer_queue_test.cc:39] 6 allocate
+I0000 00:00:1791059488.099789   14328 state_buffer_queue_test.cc:41] 6 done_write
+I0000 00:00:1791059488.099795   14328 state_buffer_queue_test.cc:36] 7 start
+I0000 00:00:1791059488.099801   14328 state_buffer_queue_test.cc:39] 7 allocate
+I0000 00:00:1791059488.099807   14328 state_buffer_queue_test.cc:41] 7 done_write
+I0000 00:00:1791059488.099813   14328 state_buffer_queue_test.cc:36] 8 start
+I0000 00:00:1791059488.099820   14328 state_buffer_queue_test.cc:39] 8 allocate
+I0000 00:00:1791059488.099825   14328 state_buffer_queue_test.cc:41] 8 done_write
+I0000 00:00:1791059488.099831   14328 state_buffer_queue_test.cc:36] 9 start
+I0000 00:00:1791059488.099843   14328 state_buffer_queue_test.cc:39] 9 allocate
+I0000 00:00:1791059488.099849   14328 state_buffer_queue_test.cc:41] 9 done_write
+I0000 00:00:1791059488.099855   14328 state_buffer_queue_test.cc:36] 10 start
+I0000 00:00:1791059488.099861   14328 state_buffer_queue_test.cc:39] 10 allocate
+I0000 00:00:1791059488.099867   14328 state_buffer_queue_test.cc:41] 10 done_write
+I0000 00:00:1791059488.099873   14328 state_buffer_queue_test.cc:36] 11 start
+I0000 00:00:1791059488.099880   14328 state_buffer_queue_test.cc:39] 11 allocate
+I0000 00:00:1791059488.099887   14328 state_buffer_queue_test.cc:41] 11 done_write
+I0000 00:00:1791059488.099893   14328 state_buffer_queue_test.cc:36] 12 start
+I0000 00:00:1791059488.099899   14328 state_buffer_queue_test.cc:39] 12 allocate
+I0000 00:00:1791059488.099905   14328 state_buffer_queue_test.cc:41] 12 done_write
+I0000 00:00:1791059488.099911   14328 state_buffer_queue_test.cc:36] 13 start
+I0000 00:00:1791059488.099917   14328 state_buffer_queue_test.cc:39] 13 allocate
+I0000 00:00:1791059488.099923   14328 state_buffer_queue_test.cc:41] 13 done_write
+I0000 00:00:1791059488.099929   14328 state_buffer_queue_test.cc:36] 14 start
+I0000 00:00:1791059488.099935   14328 state_buffer_queue_test.cc:39] 14 allocate
+I0000 00:00:1791059488.099941   14328 state_buffer_queue_test.cc:41] 14 done_write
+I0000 00:00:1791059488.099947   14328 state_buffer_queue_test.cc:36] 15 start
+I0000 00:00:1791059488.099953   14328 state_buffer_queue_test.cc:39] 15 allocate
+I0000 00:00:1791059488.099959   14328 state_buffer_queue_test.cc:41] 15 done_write
+I0000 00:00:1791059488.099964   14328 state_buffer_queue_test.cc:36] 16 start
+I0000 00:00:1791059488.099971   14328 state_buffer_queue_test.cc:39] 16 allocate
+I0000 00:00:1791059488.099976   14328 state_buffer_queue_test.cc:41] 16 done_write
+I0000 00:00:1791059488.099982   14328 state_buffer_queue_test.cc:36] 17 start
+I0000 00:00:1791059488.099989   14328 state_buffer_queue_test.cc:39] 17 allocate
+I0000 00:00:1791059488.099994   14328 state_buffer_queue_test.cc:41] 17 done_write
+I0000 00:00:1791059488.100000   14328 state_buffer_queue_test.cc:36] 18 start
+I0000 00:00:1791059488.100007   14328 state_buffer_queue_test.cc:39] 18 allocate
+I0000 00:00:1791059488.100012   14328 state_buffer_queue_test.cc:41] 18 done_write
+I0000 00:00:1791059488.100018   14328 state_buffer_queue_test.cc:36] 19 start
+I0000 00:00:1791059488.100025   14328 state_buffer_queue_test.cc:39] 19 allocate
+I0000 00:00:1791059488.100031   14328 state_buffer_queue_test.cc:41] 19 done_write
+I0000 00:00:1791059488.100036   14328 state_buffer_queue_test.cc:36] 20 start
+I0000 00:00:1791059488.100043   14328 state_buffer_queue_test.cc:39] 20 allocate
+I0000 00:00:1791059488.100049   14328 state_buffer_queue_test.cc:41] 20 done_write
+I0000 00:00:1791059488.100054   14328 state_buffer_queue_test.cc:36] 21 start
+I0000 00:00:1791059488.100061   14328 state_buffer_queue_test.cc:39] 21 allocate
+I0000 00:00:1791059488.100067   14328 state_buffer_queue_test.cc:41] 21 done_write
+I0000 00:00:1791059488.100073   14328 state_buffer_queue_test.cc:36] 22 start
+I0000 00:00:1791059488.100079   14328 state_buffer_queue_test.cc:39] 22 allocate
+I0000 00:00:1791059488.100085   14328 state_buffer_queue_test.cc:41] 22 done_write
+I0000 00:00:1791059488.100091   14328 state_buffer_queue_test.cc:36] 23 start
+I0000 00:00:1791059488.100097   14328 state_buffer_queue_test.cc:39] 23 allocate
+I0000 00:00:1791059488.100103   14328 state_buffer_queue_test.cc:41] 23 done_write
+I0000 00:00:1791059488.100109   14328 state_buffer_queue_test.cc:36] 24 start
+I0000 00:00:1791059488.100115   14328 state_buffer_queue_test.cc:39] 24 allocate
+I0000 00:00:1791059488.100121   14328 state_buffer_queue_test.cc:41] 24 done_write
+I0000 00:00:1791059488.100127   14328 state_buffer_queue_test.cc:36] 25 start
+I0000 00:00:1791059488.100133   14328 state_buffer_queue_test.cc:39] 25 allocate
+I0000 00:00:1791059488.100139   14328 state_buffer_queue_test.cc:41] 25 done_write
+I0000 00:00:1791059488.100145   14328 state_buffer_queue_test.cc:36] 26 start
+I0000 00:00:1791059488.100153   14328 state_buffer_queue_test.cc:39] 26 allocate
+I0000 00:00:1791059488.100159   14328 state_buffer_queue_test.cc:41] 26 done_write
+I0000 00:00:1791059488.100165   14328 state_buffer_queue_test.cc:36] 27 start
+I0000 00:00:1791059488.100171   14328 state_buffer_queue_test.cc:39] 27 allocate
+I0000 00:00:1791059488.100177   14328 state_buffer_queue_test.cc:41] 27 done_write
+I0000 00:00:1791059488.100183   14328 state_buffer_queue_test.cc:36] 28 start
+I0000 00:00:1791059488.100189   14328 state_buffer_queue_test.cc:39] 28 allocate
+I0000 00:00:1791059488.100195   14328 state_buffer_queue_test.cc:41] 28 done_write
+I0000 00:00:1791059488.100201   14328 state_buffer_queue_test.cc:36] 29 start
+I0000 00:00:1791059488.100207   14328 state_buffer_queue_test.cc:39] 29 allocate
+I0000 00:00:1791059488.100213   14328 state_buffer_queue_test.cc:41] 29 done_write
+I0000 00:00:1791059488.100218   14328 state_buffer_queue_test.cc:36] 30 start
+I0000 00:00:1791059488.100225   14328 state_buffer_queue_test.cc:39] 30 allocate
+I0000 00:00:1791059488.100231   14328 state_buffer_queue_test.cc:41] 30 done_write
+I0000 00:00:1791059488.100237   14328 state_buffer_queue_test.cc:36] 31 start
+I0000 00:00:1791059488.100243   14328 state_buffer_queue_test.cc:39] 31 allocate
+I0000 00:00:1791059488.100251   14328 state_buffer_queue_test.cc:41] 31 done_write
+I0000 00:00:1791059488.100272   14328 state_buffer_queue_test.cc:47] finish wait
+[       OK ] StateBufferQueueTest.Basic (1 ms)
+[ RUN      ] StateBufferQueueTest.SinglePlayerSync
+[       OK ] StateBufferQueueTest.SinglePlayerSync (102 ms)
+[ RUN      ] StateBufferQueueTest.NumPlayers
+[       OK ] StateBufferQueueTest.NumPlayers (0 ms)
+[ RUN      ] StateBufferQueueTest.MultipleTimes
+[       OK ] StateBufferQueueTest.MultipleTimes (616 ms)
+[ RUN      ] StateBufferQueueTest.ConcurrentSinglePlayer
+[       OK ] StateBufferQueueTest.ConcurrentSinglePlayer (4592 ms)
+[ RUN      ] StateBufferQueueTest.ConcurrentMultiPlayer
+[       OK ] StateBufferQueueTest.ConcurrentMultiPlayer (5617 ms)
+[----------] 6 tests from StateBufferQueueTest (10932 ms total)
+
+[----------] 9 tests from StateBufferTest
+[ RUN      ] StateBufferTest.Basic
+[       OK ] StateBufferTest.Basic (0 ms)
+[ RUN      ] StateBufferTest.SinglePlayerSync
+[       OK ] StateBufferTest.SinglePlayerSync (0 ms)
+[ RUN      ] StateBufferTest.Truncate
+[       OK ] StateBufferTest.Truncate (0 ms)
+[ RUN      ] StateBufferTest.MultiPlayers
+[       OK ] StateBufferTest.MultiPlayers (0 ms)
+[ RUN      ] StateBufferTest.PartialSyncShuffledOutputsSurviveBufferDestruction
+[       OK ] StateBufferTest.PartialSyncShuffledOutputsSurviveBufferDestruction (0 ms)
+[ RUN      ] StateBufferTest.PartialMultiPlayerOutputsIncludeZeroPlayerEnvironments
+[       OK ] StateBufferTest.PartialMultiPlayerOutputsIncludeZeroPlayerEnvironments (0 ms)
+[ RUN      ] StateBufferTest.NoPlayersReturnsEmptyPlayerShapesAndSharedData
+[       OK ] StateBufferTest.NoPlayersReturnsEmptyPlayerShapesAndSharedData (0 ms)
+[ RUN      ] StateBufferTest.PartialWaitRequiresEveryAllocatedWriterToComplete
+[       OK ] StateBufferTest.PartialWaitRequiresEveryAllocatedWriterToComplete (20 ms)
+[ RUN      ] StateBufferTest.CompletionAllowsImmediateDestruction
+[       OK ] StateBufferTest.CompletionAllowsImmediateDestruction (114 ms)
+[----------] 9 tests from StateBufferTest (136 ms total)
+
+[----------] 8 tests from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.TimingAccumulatorsStartAtZero
+[       OK ] DummyEnvPoolTest.TimingAccumulatorsStartAtZero (1 ms)
+[ RUN      ] DummyEnvPoolTest.ShutdownIdleWorkers
+[       OK ] DummyEnvPoolTest.ShutdownIdleWorkers (128 ms)
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (127 ms)
+[ RUN      ] DummyEnvPoolTest.ShutdownJoinsInFlightResetBeforeDestroyingEnvironment
+[       OK ] DummyEnvPoolTest.ShutdownJoinsInFlightResetBeforeDestroyingEnvironment (51 ms)
+[ RUN      ] DummyEnvPoolTest.SplitZeroAction
+[       OK ] DummyEnvPoolTest.SplitZeroAction (3 ms)
+[ RUN      ] DummyEnvPoolTest.SmokeSynchronousSinglePlayer
+I0000 00:00:1791059499.479263   14328 dummy_envpool_test.cc:291] 1 1 3 32 1 1
+I0000 00:00:1791059499.481524   14328 dummy_envpool_test.cc:394] time(s): 0.0015643, FPS: 20456.4
+[       OK ] DummyEnvPoolTest.SmokeSynchronousSinglePlayer (2 ms)
+[ RUN      ] DummyEnvPoolTest.SmokeAsynchronousSinglePlayer
+I0000 00:00:1791059499.481853   14328 dummy_envpool_test.cc:291] 8 4 3 64 2 1
+I0000 00:00:1791059499.487943   14328 dummy_envpool_test.cc:394] time(s): 0.00334668, FPS: 76493.7
+[       OK ] DummyEnvPoolTest.SmokeAsynchronousSinglePlayer (6 ms)
+[ RUN      ] DummyEnvPoolTest.SmokeAsynchronousMultiPlayer
+I0000 00:00:1791059499.488517   14328 dummy_envpool_test.cc:291] 8 4 3 64 2 4
+I0000 00:00:1791059499.494725   14328 dummy_envpool_test.cc:394] time(s): 0.00381354, FPS: 67129.2
+[       OK ] DummyEnvPoolTest.SmokeAsynchronousMultiPlayer (6 ms)
+[----------] 8 tests from DummyEnvPoolTest (327 ms total)
+
+[==========] 57 tests from 10 test suites ran. (12099 ms total)
+[  PASSED  ] 57 tests.
+
+Repeating all tests (iteration 2) . . .
+
+Note: Google Test filter = *-DummyEnvPoolTest.SinglePlayer:DummyEnvPoolTest.MultiPlayers
+[==========] Running 57 tests from 10 test suites.
+[----------] 2 tests from EnvActionDeathTest
+[ RUN      ] EnvActionDeathTest.SinglePlayerRejectsZeroLeadingPlayerDimension
+
+[WARNING] WORKSPACE/envpool-core-work/deps/googletest-1.18.0/googletest/src/gtest-death-test.cc:1104:: Death tests use fork(), which is unsafe particularly in a threaded context. For this test, Google Test detected 2 threads. See https://github.com/google/googletest/blob/main/docs/advanced.md#death-tests-and-threads for more explanation and suggested solutions, especially if this is the last message you see before your test times out.
+[       OK ] EnvActionDeathTest.SinglePlayerRejectsZeroLeadingPlayerDimension (27 ms)
+[ RUN      ] EnvActionDeathTest.SinglePlayerRetainsPlayerSliceUpperBoundCheck
+
+[WARNING] WORKSPACE/envpool-core-work/deps/googletest-1.18.0/googletest/src/gtest-death-test.cc:1104:: Death tests use fork(), which is unsafe particularly in a threaded context. For this test, Google Test detected 2 threads. See https://github.com/google/googletest/blob/main/docs/advanced.md#death-tests-and-threads for more explanation and suggested solutions, especially if this is the last message you see before your test times out.
+[       OK ] EnvActionDeathTest.SinglePlayerRetainsPlayerSliceUpperBoundCheck (40 ms)
+[----------] 2 tests from EnvActionDeathTest (68 ms total)
+
+[----------] 12 tests from ActionBufferQueueTest
+[ RUN      ] ActionBufferQueueTest.ShutdownWakesEmptyQueueWithoutAdvancingCursors
+[       OK ] ActionBufferQueueTest.ShutdownWakesEmptyQueueWithoutAdvancingCursors (1 ms)
+[ RUN      ] ActionBufferQueueTest.ShutdownWakePreservesPendingAction
+[       OK ] ActionBufferQueueTest.ShutdownWakePreservesPendingAction (1 ms)
+[ RUN      ] ActionBufferQueueTest.StopAwareDequeuePreservesActiveDelivery
+[       OK ] ActionBufferQueueTest.StopAwareDequeuePreservesActiveDelivery (0 ms)
+[ RUN      ] ActionBufferQueueTest.SmallRingWraparoundPreservesPayloadsAndCounters
+[       OK ] ActionBufferQueueTest.SmallRingWraparoundPreservesPayloadsAndCounters (6 ms)
+[ RUN      ] ActionBufferQueueTest.BoundedMultipleProducersAndConsumersExactlyOnce
+[       OK ] ActionBufferQueueTest.BoundedMultipleProducersAndConsumersExactlyOnce (84 ms)
+[ RUN      ] ActionBufferQueueTest.DelayedConsumerKeepsPayloadAcrossRingReuse
+[       OK ] ActionBufferQueueTest.DelayedConsumerKeepsPayloadAcrossRingReuse (1 ms)
+[ RUN      ] ActionBufferQueueTest.ConcurrentProducerBulksRemainContiguous
+[       OK ] ActionBufferQueueTest.ConcurrentProducerBulksRemainContiguous (72 ms)
+[ RUN      ] ActionBufferQueueTest.Concurrent
+[       OK ] ActionBufferQueueTest.Concurrent (346 ms)
+[ RUN      ] ActionBufferQueueTest.BulkWrapPreservesOrderWithNonPowerOfTwoCapacity
+[       OK ] ActionBufferQueueTest.BulkWrapPreservesOrderWithNonPowerOfTwoCapacity (0 ms)
+[ RUN      ] ActionBufferQueueTest.ConcurrentConsumersPreserveEveryWrappedAction
+[       OK ] ActionBufferQueueTest.ConcurrentConsumersPreserveEveryWrappedAction (6 ms)
+[ RUN      ] ActionBufferQueueTest.BulkWrapMatchesUnsignedCounterRollover
+[       OK ] ActionBufferQueueTest.BulkWrapMatchesUnsignedCounterRollover (0 ms)
+[ RUN      ] ActionBufferQueueTest.EmptyBulkIsSafeWithZeroCapacity
+[       OK ] ActionBufferQueueTest.EmptyBulkIsSafeWithZeroCapacity (0 ms)
+[----------] 12 tests from ActionBufferQueueTest (521 ms total)
+
+[----------] 8 tests from ArrayTest
+[ RUN      ] ArrayTest.ViewsPreserveHighDimensionalShapesAndData
+[       OK ] ArrayTest.ViewsPreserveHighDimensionalShapesAndData (0 ms)
+[ RUN      ] ArrayTest.TruncateAndSharedPtrKeepOwnedStorageAlive
+[       OK ] ArrayTest.TruncateAndSharedPtrKeepOwnedStorageAlive (0 ms)
+[ RUN      ] ArrayTest.SharedPtrPreservesNonOwningDataPointer
+[       OK ] ArrayTest.SharedPtrPreservesNonOwningDataPointer (0 ms)
+[ RUN      ] ArrayTest.ViewsDoNotExtendBackingStorageLifetime
+[       OK ] ArrayTest.ViewsDoNotExtendBackingStorageLifetime (0 ms)
+[ RUN      ] ArrayTest.TypedTruncateSharesData
+[       OK ] ArrayTest.TypedTruncateSharesData (0 ms)
+[ RUN      ] ArrayTest.TruncateInPlacePreservesHighDimensionalShapeAndData
+[       OK ] ArrayTest.TruncateInPlacePreservesHighDimensionalShapeAndData (0 ms)
+[ RUN      ] ArrayTest.TruncateInPlaceHandlesEmptyDimensions
+[       OK ] ArrayTest.TruncateInPlaceHandlesEmptyDimensions (0 ms)
+[ RUN      ] ArrayTest.TruncateInPlaceRetainsSharedOwnershipAndCustomDeleter
+[       OK ] ArrayTest.TruncateInPlaceRetainsSharedOwnershipAndCustomDeleter (0 ms)
+[----------] 8 tests from ArrayTest (0 ms total)
+
+[----------] 1 test from CircularBufferTest
+[ RUN      ] CircularBufferTest.Basic
+[       OK ] CircularBufferTest.Basic (53 ms)
+[----------] 1 test from CircularBufferTest (53 ms total)
+
+[----------] 4 tests from DictTest
+[ RUN      ] DictTest.Keys
+[       OK ] DictTest.Keys (0 ms)
+[ RUN      ] DictTest.Values
+[       OK ] DictTest.Values (0 ms)
+[ RUN      ] DictTest.Lookup
+[       OK ] DictTest.Lookup (0 ms)
+[ RUN      ] DictTest.Modification
+[       OK ] DictTest.Modification (0 ms)
+[----------] 4 tests from DictTest (0 ms total)
+
+[----------] 5 tests from EnvActionTest
+[ RUN      ] EnvActionTest.MixedDtypesUseReorderedBatchIndexAndReplacementStorage
+[       OK ] EnvActionTest.MixedDtypesUseReorderedBatchIndexAndReplacementStorage (1 ms)
+[ RUN      ] EnvActionTest.ReusesShapeStorageAfterRankGrowthShrinkAndEmptyTails
+[       OK ] EnvActionTest.ReusesShapeStorageAfterRankGrowthShrinkAndEmptyTails (1 ms)
+[ RUN      ] EnvActionTest.CopiedActionAndFieldMetadataRemainIndependent
+[       OK ] EnvActionTest.CopiedActionAndFieldMetadataRemainIndependent (0 ms)
+[ RUN      ] EnvActionTest.BorrowedCopiesDoNotExtendOwningBatchLifetime
+[       OK ] EnvActionTest.BorrowedCopiesDoNotExtendOwningBatchLifetime (0 ms)
+[ RUN      ] EnvActionTest.ResetStepResetStepAndThrowingStepCanParseAgain
+[       OK ] EnvActionTest.ResetStepResetStepAndThrowingStepCanParseAgain (0 ms)
+[----------] 5 tests from EnvActionTest (4 ms total)
+
+[----------] 2 tests from EnvActionMetadataTest
+[ RUN      ] EnvActionMetadataTest.ExplicitArrayBaseMovesRoundTripThroughTypedAction
+[       OK ] EnvActionMetadataTest.ExplicitArrayBaseMovesRoundTripThroughTypedAction (0 ms)
+[ RUN      ] EnvActionMetadataTest.ImmediateRecvSendReusesEnvsAcrossWorkerThreads
+[       OK ] EnvActionMetadataTest.ImmediateRecvSendReusesEnvsAcrossWorkerThreads (14 ms)
+[----------] 2 tests from EnvActionMetadataTest (15 ms total)
+
+[----------] 6 tests from StateBufferQueueTest
+[ RUN      ] StateBufferQueueTest.Basic
+I0000 00:00:1791059500.163353   14328 state_buffer_queue_test.cc:36] 0 start
+I0000 00:00:1791059500.163430   14328 state_buffer_queue_test.cc:39] 0 allocate
+I0000 00:00:1791059500.163455   14328 state_buffer_queue_test.cc:41] 0 done_write
+I0000 00:00:1791059500.163464   14328 state_buffer_queue_test.cc:36] 1 start
+I0000 00:00:1791059500.163473   14328 state_buffer_queue_test.cc:39] 1 allocate
+I0000 00:00:1791059500.163479   14328 state_buffer_queue_test.cc:41] 1 done_write
+I0000 00:00:1791059500.163492   14328 state_buffer_queue_test.cc:36] 2 start
+I0000 00:00:1791059500.163499   14328 state_buffer_queue_test.cc:39] 2 allocate
+I0000 00:00:1791059500.163505   14328 state_buffer_queue_test.cc:41] 2 done_write
+I0000 00:00:1791059500.163511   14328 state_buffer_queue_test.cc:36] 3 start
+I0000 00:00:1791059500.163518   14328 state_buffer_queue_test.cc:39] 3 allocate
+I0000 00:00:1791059500.163523   14328 state_buffer_queue_test.cc:41] 3 done_write
+I0000 00:00:1791059500.163529   14328 state_buffer_queue_test.cc:36] 4 start
+I0000 00:00:1791059500.163536   14328 state_buffer_queue_test.cc:39] 4 allocate
+I0000 00:00:1791059500.163541   14328 state_buffer_queue_test.cc:41] 4 done_write
+I0000 00:00:1791059500.163547   14328 state_buffer_queue_test.cc:36] 5 start
+I0000 00:00:1791059500.163554   14328 state_buffer_queue_test.cc:39] 5 allocate
+I0000 00:00:1791059500.163559   14328 state_buffer_queue_test.cc:41] 5 done_write
+I0000 00:00:1791059500.163565   14328 state_buffer_queue_test.cc:36] 6 start
+I0000 00:00:1791059500.163572   14328 state_buffer_queue_test.cc:39] 6 allocate
+I0000 00:00:1791059500.163577   14328 state_buffer_queue_test.cc:41] 6 done_write
+I0000 00:00:1791059500.163583   14328 state_buffer_queue_test.cc:36] 7 start
+I0000 00:00:1791059500.163590   14328 state_buffer_queue_test.cc:39] 7 allocate
+I0000 00:00:1791059500.163596   14328 state_buffer_queue_test.cc:41] 7 done_write
+I0000 00:00:1791059500.163602   14328 state_buffer_queue_test.cc:36] 8 start
+I0000 00:00:1791059500.163608   14328 state_buffer_queue_test.cc:39] 8 allocate
+I0000 00:00:1791059500.163614   14328 state_buffer_queue_test.cc:41] 8 done_write
+I0000 00:00:1791059500.163620   14328 state_buffer_queue_test.cc:36] 9 start
+I0000 00:00:1791059500.163626   14328 state_buffer_queue_test.cc:39] 9 allocate
+I0000 00:00:1791059500.163632   14328 state_buffer_queue_test.cc:41] 9 done_write
+I0000 00:00:1791059500.163637   14328 state_buffer_queue_test.cc:36] 10 start
+I0000 00:00:1791059500.163644   14328 state_buffer_queue_test.cc:39] 10 allocate
+I0000 00:00:1791059500.163650   14328 state_buffer_queue_test.cc:41] 10 done_write
+I0000 00:00:1791059500.163656   14328 state_buffer_queue_test.cc:36] 11 start
+I0000 00:00:1791059500.163662   14328 state_buffer_queue_test.cc:39] 11 allocate
+I0000 00:00:1791059500.163668   14328 state_buffer_queue_test.cc:41] 11 done_write
+I0000 00:00:1791059500.163675   14328 state_buffer_queue_test.cc:36] 12 start
+I0000 00:00:1791059500.163682   14328 state_buffer_queue_test.cc:39] 12 allocate
+I0000 00:00:1791059500.163687   14328 state_buffer_queue_test.cc:41] 12 done_write
+I0000 00:00:1791059500.163693   14328 state_buffer_queue_test.cc:36] 13 start
+I0000 00:00:1791059500.163700   14328 state_buffer_queue_test.cc:39] 13 allocate
+I0000 00:00:1791059500.163705   14328 state_buffer_queue_test.cc:41] 13 done_write
+I0000 00:00:1791059500.163711   14328 state_buffer_queue_test.cc:36] 14 start
+I0000 00:00:1791059500.163717   14328 state_buffer_queue_test.cc:39] 14 allocate
+I0000 00:00:1791059500.163723   14328 state_buffer_queue_test.cc:41] 14 done_write
+I0000 00:00:1791059500.163729   14328 state_buffer_queue_test.cc:36] 15 start
+I0000 00:00:1791059500.163735   14328 state_buffer_queue_test.cc:39] 15 allocate
+I0000 00:00:1791059500.163740   14328 state_buffer_queue_test.cc:41] 15 done_write
+I0000 00:00:1791059500.163746   14328 state_buffer_queue_test.cc:36] 16 start
+I0000 00:00:1791059500.163753   14328 state_buffer_queue_test.cc:39] 16 allocate
+I0000 00:00:1791059500.163758   14328 state_buffer_queue_test.cc:41] 16 done_write
+I0000 00:00:1791059500.163764   14328 state_buffer_queue_test.cc:36] 17 start
+I0000 00:00:1791059500.163771   14328 state_buffer_queue_test.cc:39] 17 allocate
+I0000 00:00:1791059500.163776   14328 state_buffer_queue_test.cc:41] 17 done_write
+I0000 00:00:1791059500.163782   14328 state_buffer_queue_test.cc:36] 18 start
+I0000 00:00:1791059500.163788   14328 state_buffer_queue_test.cc:39] 18 allocate
+I0000 00:00:1791059500.163794   14328 state_buffer_queue_test.cc:41] 18 done_write
+I0000 00:00:1791059500.163801   14328 state_buffer_queue_test.cc:36] 19 start
+I0000 00:00:1791059500.163808   14328 state_buffer_queue_test.cc:39] 19 allocate
+I0000 00:00:1791059500.163813   14328 state_buffer_queue_test.cc:41] 19 done_write
+I0000 00:00:1791059500.163819   14328 state_buffer_queue_test.cc:36] 20 start
+I0000 00:00:1791059500.163826   14328 state_buffer_queue_test.cc:39] 20 allocate
+I0000 00:00:1791059500.163831   14328 state_buffer_queue_test.cc:41] 20 done_write
+I0000 00:00:1791059500.163837   14328 state_buffer_queue_test.cc:36] 21 start
+I0000 00:00:1791059500.163844   14328 state_buffer_queue_test.cc:39] 21 allocate
+I0000 00:00:1791059500.163849   14328 state_buffer_queue_test.cc:41] 21 done_write
+I0000 00:00:1791059500.163855   14328 state_buffer_queue_test.cc:36] 22 start
+I0000 00:00:1791059500.163861   14328 state_buffer_queue_test.cc:39] 22 allocate
+I0000 00:00:1791059500.163867   14328 state_buffer_queue_test.cc:41] 22 done_write
+I0000 00:00:1791059500.163873   14328 state_buffer_queue_test.cc:36] 23 start
+I0000 00:00:1791059500.163879   14328 state_buffer_queue_test.cc:39] 23 allocate
+I0000 00:00:1791059500.163885   14328 state_buffer_queue_test.cc:41] 23 done_write
+I0000 00:00:1791059500.163890   14328 state_buffer_queue_test.cc:36] 24 start
+I0000 00:00:1791059500.163897   14328 state_buffer_queue_test.cc:39] 24 allocate
+I0000 00:00:1791059500.163902   14328 state_buffer_queue_test.cc:41] 24 done_write
+I0000 00:00:1791059500.163908   14328 state_buffer_queue_test.cc:36] 25 start
+I0000 00:00:1791059500.163915   14328 state_buffer_queue_test.cc:39] 25 allocate
+I0000 00:00:1791059500.163920   14328 state_buffer_queue_test.cc:41] 25 done_write
+I0000 00:00:1791059500.163926   14328 state_buffer_queue_test.cc:36] 26 start
+I0000 00:00:1791059500.163932   14328 state_buffer_queue_test.cc:39] 26 allocate
+I0000 00:00:1791059500.163938   14328 state_buffer_queue_test.cc:41] 26 done_write
+I0000 00:00:1791059500.163944   14328 state_buffer_queue_test.cc:36] 27 start
+I0000 00:00:1791059500.163950   14328 state_buffer_queue_test.cc:39] 27 allocate
+I0000 00:00:1791059500.163956   14328 state_buffer_queue_test.cc:41] 27 done_write
+I0000 00:00:1791059500.163961   14328 state_buffer_queue_test.cc:36] 28 start
+I0000 00:00:1791059500.163968   14328 state_buffer_queue_test.cc:39] 28 allocate
+I0000 00:00:1791059500.163973   14328 state_buffer_queue_test.cc:41] 28 done_write
+I0000 00:00:1791059500.163979   14328 state_buffer_queue_test.cc:36] 29 start
+I0000 00:00:1791059500.163986   14328 state_buffer_queue_test.cc:39] 29 allocate
+I0000 00:00:1791059500.163991   14328 state_buffer_queue_test.cc:41] 29 done_write
+I0000 00:00:1791059500.163997   14328 state_buffer_queue_test.cc:36] 30 start
+I0000 00:00:1791059500.164004   14328 state_buffer_queue_test.cc:39] 30 allocate
+I0000 00:00:1791059500.164009   14328 state_buffer_queue_test.cc:41] 30 done_write
+I0000 00:00:1791059500.164015   14328 state_buffer_queue_test.cc:36] 31 start
+I0000 00:00:1791059500.164021   14328 state_buffer_queue_test.cc:39] 31 allocate
+I0000 00:00:1791059500.164027   14328 state_buffer_queue_test.cc:41] 31 done_write
+I0000 00:00:1791059500.164045   14328 state_buffer_queue_test.cc:47] finish wait
+[       OK ] StateBufferQueueTest.Basic (1 ms)
+[ RUN      ] StateBufferQueueTest.SinglePlayerSync
+[       OK ] StateBufferQueueTest.SinglePlayerSync (105 ms)
+[ RUN      ] StateBufferQueueTest.NumPlayers
+[       OK ] StateBufferQueueTest.NumPlayers (0 ms)
+[ RUN      ] StateBufferQueueTest.MultipleTimes
+[       OK ] StateBufferQueueTest.MultipleTimes (577 ms)
+[ RUN      ] StateBufferQueueTest.ConcurrentSinglePlayer
+[       OK ] StateBufferQueueTest.ConcurrentSinglePlayer (4601 ms)
+[ RUN      ] StateBufferQueueTest.ConcurrentMultiPlayer
+[       OK ] StateBufferQueueTest.ConcurrentMultiPlayer (5428 ms)
+[----------] 6 tests from StateBufferQueueTest (10715 ms total)
+
+[----------] 9 tests from StateBufferTest
+[ RUN      ] StateBufferTest.Basic
+[       OK ] StateBufferTest.Basic (0 ms)
+[ RUN      ] StateBufferTest.SinglePlayerSync
+[       OK ] StateBufferTest.SinglePlayerSync (0 ms)
+[ RUN      ] StateBufferTest.Truncate
+[       OK ] StateBufferTest.Truncate (0 ms)
+[ RUN      ] StateBufferTest.MultiPlayers
+[       OK ] StateBufferTest.MultiPlayers (0 ms)
+[ RUN      ] StateBufferTest.PartialSyncShuffledOutputsSurviveBufferDestruction
+[       OK ] StateBufferTest.PartialSyncShuffledOutputsSurviveBufferDestruction (0 ms)
+[ RUN      ] StateBufferTest.PartialMultiPlayerOutputsIncludeZeroPlayerEnvironments
+[       OK ] StateBufferTest.PartialMultiPlayerOutputsIncludeZeroPlayerEnvironments (0 ms)
+[ RUN      ] StateBufferTest.NoPlayersReturnsEmptyPlayerShapesAndSharedData
+[       OK ] StateBufferTest.NoPlayersReturnsEmptyPlayerShapesAndSharedData (0 ms)
+[ RUN      ] StateBufferTest.PartialWaitRequiresEveryAllocatedWriterToComplete
+[       OK ] StateBufferTest.PartialWaitRequiresEveryAllocatedWriterToComplete (20 ms)
+[ RUN      ] StateBufferTest.CompletionAllowsImmediateDestruction
+[       OK ] StateBufferTest.CompletionAllowsImmediateDestruction (110 ms)
+[----------] 9 tests from StateBufferTest (132 ms total)
+
+[----------] 8 tests from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.TimingAccumulatorsStartAtZero
+[       OK ] DummyEnvPoolTest.TimingAccumulatorsStartAtZero (1 ms)
+[ RUN      ] DummyEnvPoolTest.ShutdownIdleWorkers
+[       OK ] DummyEnvPoolTest.ShutdownIdleWorkers (124 ms)
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (126 ms)
+[ RUN      ] DummyEnvPoolTest.ShutdownJoinsInFlightResetBeforeDestroyingEnvironment
+[       OK ] DummyEnvPoolTest.ShutdownJoinsInFlightResetBeforeDestroyingEnvironment (51 ms)
+[ RUN      ] DummyEnvPoolTest.SplitZeroAction
+[       OK ] DummyEnvPoolTest.SplitZeroAction (2 ms)
+[ RUN      ] DummyEnvPoolTest.SmokeSynchronousSinglePlayer
+I0000 00:00:1791059511.317565   14328 dummy_envpool_test.cc:291] 1 1 3 32 1 1
+I0000 00:00:1791059511.319824   14328 dummy_envpool_test.cc:394] time(s): 0.00154084, FPS: 20767.9
+[       OK ] DummyEnvPoolTest.SmokeSynchronousSinglePlayer (2 ms)
+[ RUN      ] DummyEnvPoolTest.SmokeAsynchronousSinglePlayer
+I0000 00:00:1791059511.320214   14328 dummy_envpool_test.cc:291] 8 4 3 64 2 1
+I0000 00:00:1791059511.326014   14328 dummy_envpool_test.cc:394] time(s): 0.00340648, FPS: 75150.9
+[       OK ] DummyEnvPoolTest.SmokeAsynchronousSinglePlayer (6 ms)
+[ RUN      ] DummyEnvPoolTest.SmokeAsynchronousMultiPlayer
+I0000 00:00:1791059511.326663   14328 dummy_envpool_test.cc:291] 8 4 3 64 2 4
+I0000 00:00:1791059511.332819   14328 dummy_envpool_test.cc:394] time(s): 0.00397295, FPS: 64435.7
+[       OK ] DummyEnvPoolTest.SmokeAsynchronousMultiPlayer (6 ms)
+[----------] 8 tests from DummyEnvPoolTest (323 ms total)
+
+[==========] 57 tests from 10 test suites ran. (11833 ms total)
+[  PASSED  ] 57 tests.
+
+Repeating all tests (iteration 3) . . .
+
+Note: Google Test filter = *-DummyEnvPoolTest.SinglePlayer:DummyEnvPoolTest.MultiPlayers
+[==========] Running 57 tests from 10 test suites.
+[----------] 2 tests from EnvActionDeathTest
+[ RUN      ] EnvActionDeathTest.SinglePlayerRejectsZeroLeadingPlayerDimension
+
+[WARNING] WORKSPACE/envpool-core-work/deps/googletest-1.18.0/googletest/src/gtest-death-test.cc:1104:: Death tests use fork(), which is unsafe particularly in a threaded context. For this test, Google Test detected 2 threads. See https://github.com/google/googletest/blob/main/docs/advanced.md#death-tests-and-threads for more explanation and suggested solutions, especially if this is the last message you see before your test times out.
+[       OK ] EnvActionDeathTest.SinglePlayerRejectsZeroLeadingPlayerDimension (26 ms)
+[ RUN      ] EnvActionDeathTest.SinglePlayerRetainsPlayerSliceUpperBoundCheck
+
+[WARNING] WORKSPACE/envpool-core-work/deps/googletest-1.18.0/googletest/src/gtest-death-test.cc:1104:: Death tests use fork(), which is unsafe particularly in a threaded context. For this test, Google Test detected 2 threads. See https://github.com/google/googletest/blob/main/docs/advanced.md#death-tests-and-threads for more explanation and suggested solutions, especially if this is the last message you see before your test times out.
+[       OK ] EnvActionDeathTest.SinglePlayerRetainsPlayerSliceUpperBoundCheck (30 ms)
+[----------] 2 tests from EnvActionDeathTest (56 ms total)
+
+[----------] 12 tests from ActionBufferQueueTest
+[ RUN      ] ActionBufferQueueTest.ShutdownWakesEmptyQueueWithoutAdvancingCursors
+[       OK ] ActionBufferQueueTest.ShutdownWakesEmptyQueueWithoutAdvancingCursors (1 ms)
+[ RUN      ] ActionBufferQueueTest.ShutdownWakePreservesPendingAction
+[       OK ] ActionBufferQueueTest.ShutdownWakePreservesPendingAction (1 ms)
+[ RUN      ] ActionBufferQueueTest.StopAwareDequeuePreservesActiveDelivery
+[       OK ] ActionBufferQueueTest.StopAwareDequeuePreservesActiveDelivery (0 ms)
+[ RUN      ] ActionBufferQueueTest.SmallRingWraparoundPreservesPayloadsAndCounters
+[       OK ] ActionBufferQueueTest.SmallRingWraparoundPreservesPayloadsAndCounters (6 ms)
+[ RUN      ] ActionBufferQueueTest.BoundedMultipleProducersAndConsumersExactlyOnce
+[       OK ] ActionBufferQueueTest.BoundedMultipleProducersAndConsumersExactlyOnce (78 ms)
+[ RUN      ] ActionBufferQueueTest.DelayedConsumerKeepsPayloadAcrossRingReuse
+[       OK ] ActionBufferQueueTest.DelayedConsumerKeepsPayloadAcrossRingReuse (1 ms)
+[ RUN      ] ActionBufferQueueTest.ConcurrentProducerBulksRemainContiguous
+[       OK ] ActionBufferQueueTest.ConcurrentProducerBulksRemainContiguous (75 ms)
+[ RUN      ] ActionBufferQueueTest.Concurrent
+[       OK ] ActionBufferQueueTest.Concurrent (355 ms)
+[ RUN      ] ActionBufferQueueTest.BulkWrapPreservesOrderWithNonPowerOfTwoCapacity
+[       OK ] ActionBufferQueueTest.BulkWrapPreservesOrderWithNonPowerOfTwoCapacity (0 ms)
+[ RUN      ] ActionBufferQueueTest.ConcurrentConsumersPreserveEveryWrappedAction
+[       OK ] ActionBufferQueueTest.ConcurrentConsumersPreserveEveryWrappedAction (7 ms)
+[ RUN      ] ActionBufferQueueTest.BulkWrapMatchesUnsignedCounterRollover
+[       OK ] ActionBufferQueueTest.BulkWrapMatchesUnsignedCounterRollover (0 ms)
+[ RUN      ] ActionBufferQueueTest.EmptyBulkIsSafeWithZeroCapacity
+[       OK ] ActionBufferQueueTest.EmptyBulkIsSafeWithZeroCapacity (0 ms)
+[----------] 12 tests from ActionBufferQueueTest (527 ms total)
+
+[----------] 8 tests from ArrayTest
+[ RUN      ] ArrayTest.ViewsPreserveHighDimensionalShapesAndData
+[       OK ] ArrayTest.ViewsPreserveHighDimensionalShapesAndData (0 ms)
+[ RUN      ] ArrayTest.TruncateAndSharedPtrKeepOwnedStorageAlive
+[       OK ] ArrayTest.TruncateAndSharedPtrKeepOwnedStorageAlive (0 ms)
+[ RUN      ] ArrayTest.SharedPtrPreservesNonOwningDataPointer
+[       OK ] ArrayTest.SharedPtrPreservesNonOwningDataPointer (0 ms)
+[ RUN      ] ArrayTest.ViewsDoNotExtendBackingStorageLifetime
+[       OK ] ArrayTest.ViewsDoNotExtendBackingStorageLifetime (0 ms)
+[ RUN      ] ArrayTest.TypedTruncateSharesData
+[       OK ] ArrayTest.TypedTruncateSharesData (0 ms)
+[ RUN      ] ArrayTest.TruncateInPlacePreservesHighDimensionalShapeAndData
+[       OK ] ArrayTest.TruncateInPlacePreservesHighDimensionalShapeAndData (0 ms)
+[ RUN      ] ArrayTest.TruncateInPlaceHandlesEmptyDimensions
+[       OK ] ArrayTest.TruncateInPlaceHandlesEmptyDimensions (0 ms)
+[ RUN      ] ArrayTest.TruncateInPlaceRetainsSharedOwnershipAndCustomDeleter
+[       OK ] ArrayTest.TruncateInPlaceRetainsSharedOwnershipAndCustomDeleter (0 ms)
+[----------] 8 tests from ArrayTest (0 ms total)
+
+[----------] 1 test from CircularBufferTest
+[ RUN      ] CircularBufferTest.Basic
+[       OK ] CircularBufferTest.Basic (52 ms)
+[----------] 1 test from CircularBufferTest (52 ms total)
+
+[----------] 4 tests from DictTest
+[ RUN      ] DictTest.Keys
+[       OK ] DictTest.Keys (0 ms)
+[ RUN      ] DictTest.Values
+[       OK ] DictTest.Values (0 ms)
+[ RUN      ] DictTest.Lookup
+[       OK ] DictTest.Lookup (0 ms)
+[ RUN      ] DictTest.Modification
+[       OK ] DictTest.Modification (0 ms)
+[----------] 4 tests from DictTest (0 ms total)
+
+[----------] 5 tests from EnvActionTest
+[ RUN      ] EnvActionTest.MixedDtypesUseReorderedBatchIndexAndReplacementStorage
+[       OK ] EnvActionTest.MixedDtypesUseReorderedBatchIndexAndReplacementStorage (1 ms)
+[ RUN      ] EnvActionTest.ReusesShapeStorageAfterRankGrowthShrinkAndEmptyTails
+[       OK ] EnvActionTest.ReusesShapeStorageAfterRankGrowthShrinkAndEmptyTails (1 ms)
+[ RUN      ] EnvActionTest.CopiedActionAndFieldMetadataRemainIndependent
+[       OK ] EnvActionTest.CopiedActionAndFieldMetadataRemainIndependent (0 ms)
+[ RUN      ] EnvActionTest.BorrowedCopiesDoNotExtendOwningBatchLifetime
+[       OK ] EnvActionTest.BorrowedCopiesDoNotExtendOwningBatchLifetime (0 ms)
+[ RUN      ] EnvActionTest.ResetStepResetStepAndThrowingStepCanParseAgain
+[       OK ] EnvActionTest.ResetStepResetStepAndThrowingStepCanParseAgain (0 ms)
+[----------] 5 tests from EnvActionTest (4 ms total)
+
+[----------] 2 tests from EnvActionMetadataTest
+[ RUN      ] EnvActionMetadataTest.ExplicitArrayBaseMovesRoundTripThroughTypedAction
+[       OK ] EnvActionMetadataTest.ExplicitArrayBaseMovesRoundTripThroughTypedAction (0 ms)
+[ RUN      ] EnvActionMetadataTest.ImmediateRecvSendReusesEnvsAcrossWorkerThreads
+[       OK ] EnvActionMetadataTest.ImmediateRecvSendReusesEnvsAcrossWorkerThreads (12 ms)
+[----------] 2 tests from EnvActionMetadataTest (13 ms total)
+
+[----------] 6 tests from StateBufferQueueTest
+[ RUN      ] StateBufferQueueTest.Basic
+I0000 00:00:1791059511.993543   14328 state_buffer_queue_test.cc:36] 0 start
+I0000 00:00:1791059511.993603   14328 state_buffer_queue_test.cc:39] 0 allocate
+I0000 00:00:1791059511.993631   14328 state_buffer_queue_test.cc:41] 0 done_write
+I0000 00:00:1791059511.993639   14328 state_buffer_queue_test.cc:36] 1 start
+I0000 00:00:1791059511.993649   14328 state_buffer_queue_test.cc:39] 1 allocate
+I0000 00:00:1791059511.993655   14328 state_buffer_queue_test.cc:41] 1 done_write
+I0000 00:00:1791059511.993662   14328 state_buffer_queue_test.cc:36] 2 start
+I0000 00:00:1791059511.993670   14328 state_buffer_queue_test.cc:39] 2 allocate
+I0000 00:00:1791059511.993675   14328 state_buffer_queue_test.cc:41] 2 done_write
+I0000 00:00:1791059511.993681   14328 state_buffer_queue_test.cc:36] 3 start
+I0000 00:00:1791059511.993688   14328 state_buffer_queue_test.cc:39] 3 allocate
+I0000 00:00:1791059511.993693   14328 state_buffer_queue_test.cc:41] 3 done_write
+I0000 00:00:1791059511.993699   14328 state_buffer_queue_test.cc:36] 4 start
+I0000 00:00:1791059511.993706   14328 state_buffer_queue_test.cc:39] 4 allocate
+I0000 00:00:1791059511.993711   14328 state_buffer_queue_test.cc:41] 4 done_write
+I0000 00:00:1791059511.993717   14328 state_buffer_queue_test.cc:36] 5 start
+I0000 00:00:1791059511.993724   14328 state_buffer_queue_test.cc:39] 5 allocate
+I0000 00:00:1791059511.993729   14328 state_buffer_queue_test.cc:41] 5 done_write
+I0000 00:00:1791059511.993735   14328 state_buffer_queue_test.cc:36] 6 start
+I0000 00:00:1791059511.993742   14328 state_buffer_queue_test.cc:39] 6 allocate
+I0000 00:00:1791059511.993747   14328 state_buffer_queue_test.cc:41] 6 done_write
+I0000 00:00:1791059511.993753   14328 state_buffer_queue_test.cc:36] 7 start
+I0000 00:00:1791059511.993760   14328 state_buffer_queue_test.cc:39] 7 allocate
+I0000 00:00:1791059511.993765   14328 state_buffer_queue_test.cc:41] 7 done_write
+I0000 00:00:1791059511.993771   14328 state_buffer_queue_test.cc:36] 8 start
+I0000 00:00:1791059511.993777   14328 state_buffer_queue_test.cc:39] 8 allocate
+I0000 00:00:1791059511.993783   14328 state_buffer_queue_test.cc:41] 8 done_write
+I0000 00:00:1791059511.993789   14328 state_buffer_queue_test.cc:36] 9 start
+I0000 00:00:1791059511.993795   14328 state_buffer_queue_test.cc:39] 9 allocate
+I0000 00:00:1791059511.993800   14328 state_buffer_queue_test.cc:41] 9 done_write
+I0000 00:00:1791059511.993806   14328 state_buffer_queue_test.cc:36] 10 start
+I0000 00:00:1791059511.993813   14328 state_buffer_queue_test.cc:39] 10 allocate
+I0000 00:00:1791059511.993818   14328 state_buffer_queue_test.cc:41] 10 done_write
+I0000 00:00:1791059511.993824   14328 state_buffer_queue_test.cc:36] 11 start
+I0000 00:00:1791059511.993830   14328 state_buffer_queue_test.cc:39] 11 allocate
+I0000 00:00:1791059511.993840   14328 state_buffer_queue_test.cc:41] 11 done_write
+I0000 00:00:1791059511.993846   14328 state_buffer_queue_test.cc:36] 12 start
+I0000 00:00:1791059511.993853   14328 state_buffer_queue_test.cc:39] 12 allocate
+I0000 00:00:1791059511.993858   14328 state_buffer_queue_test.cc:41] 12 done_write
+I0000 00:00:1791059511.993864   14328 state_buffer_queue_test.cc:36] 13 start
+I0000 00:00:1791059511.993871   14328 state_buffer_queue_test.cc:39] 13 allocate
+I0000 00:00:1791059511.993877   14328 state_buffer_queue_test.cc:41] 13 done_write
+I0000 00:00:1791059511.993883   14328 state_buffer_queue_test.cc:36] 14 start
+I0000 00:00:1791059511.993889   14328 state_buffer_queue_test.cc:39] 14 allocate
+I0000 00:00:1791059511.993895   14328 state_buffer_queue_test.cc:41] 14 done_write
+I0000 00:00:1791059511.993901   14328 state_buffer_queue_test.cc:36] 15 start
+I0000 00:00:1791059511.993907   14328 state_buffer_queue_test.cc:39] 15 allocate
+I0000 00:00:1791059511.993912   14328 state_buffer_queue_test.cc:41] 15 done_write
+I0000 00:00:1791059511.993918   14328 state_buffer_queue_test.cc:36] 16 start
+I0000 00:00:1791059511.993925   14328 state_buffer_queue_test.cc:39] 16 allocate
+I0000 00:00:1791059511.993930   14328 state_buffer_queue_test.cc:41] 16 done_write
+I0000 00:00:1791059511.993936   14328 state_buffer_queue_test.cc:36] 17 start
+I0000 00:00:1791059511.993942   14328 state_buffer_queue_test.cc:39] 17 allocate
+I0000 00:00:1791059511.993948   14328 state_buffer_queue_test.cc:41] 17 done_write
+I0000 00:00:1791059511.993953   14328 state_buffer_queue_test.cc:36] 18 start
+I0000 00:00:1791059511.993960   14328 state_buffer_queue_test.cc:39] 18 allocate
+I0000 00:00:1791059511.993965   14328 state_buffer_queue_test.cc:41] 18 done_write
+I0000 00:00:1791059511.993971   14328 state_buffer_queue_test.cc:36] 19 start
+I0000 00:00:1791059511.993977   14328 state_buffer_queue_test.cc:39] 19 allocate
+I0000 00:00:1791059511.993983   14328 state_buffer_queue_test.cc:41] 19 done_write
+I0000 00:00:1791059511.993988   14328 state_buffer_queue_test.cc:36] 20 start
+I0000 00:00:1791059511.993995   14328 state_buffer_queue_test.cc:39] 20 allocate
+I0000 00:00:1791059511.994000   14328 state_buffer_queue_test.cc:41] 20 done_write
+I0000 00:00:1791059511.994006   14328 state_buffer_queue_test.cc:36] 21 start
+I0000 00:00:1791059511.994012   14328 state_buffer_queue_test.cc:39] 21 allocate
+I0000 00:00:1791059511.994018   14328 state_buffer_queue_test.cc:41] 21 done_write
+I0000 00:00:1791059511.994024   14328 state_buffer_queue_test.cc:36] 22 start
+I0000 00:00:1791059511.994030   14328 state_buffer_queue_test.cc:39] 22 allocate
+I0000 00:00:1791059511.994035   14328 state_buffer_queue_test.cc:41] 22 done_write
+I0000 00:00:1791059511.994041   14328 state_buffer_queue_test.cc:36] 23 start
+I0000 00:00:1791059511.994048   14328 state_buffer_queue_test.cc:39] 23 allocate
+I0000 00:00:1791059511.994053   14328 state_buffer_queue_test.cc:41] 23 done_write
+I0000 00:00:1791059511.994059   14328 state_buffer_queue_test.cc:36] 24 start
+I0000 00:00:1791059511.994065   14328 state_buffer_queue_test.cc:39] 24 allocate
+I0000 00:00:1791059511.994071   14328 state_buffer_queue_test.cc:41] 24 done_write
+I0000 00:00:1791059511.994076   14328 state_buffer_queue_test.cc:36] 25 start
+I0000 00:00:1791059511.994083   14328 state_buffer_queue_test.cc:39] 25 allocate
+I0000 00:00:1791059511.994088   14328 state_buffer_queue_test.cc:41] 25 done_write
+I0000 00:00:1791059511.994094   14328 state_buffer_queue_test.cc:36] 26 start
+I0000 00:00:1791059511.994100   14328 state_buffer_queue_test.cc:39] 26 allocate
+I0000 00:00:1791059511.994106   14328 state_buffer_queue_test.cc:41] 26 done_write
+I0000 00:00:1791059511.994112   14328 state_buffer_queue_test.cc:36] 27 start
+I0000 00:00:1791059511.994118   14328 state_buffer_queue_test.cc:39] 27 allocate
+I0000 00:00:1791059511.994124   14328 state_buffer_queue_test.cc:41] 27 done_write
+I0000 00:00:1791059511.994129   14328 state_buffer_queue_test.cc:36] 28 start
+I0000 00:00:1791059511.994136   14328 state_buffer_queue_test.cc:39] 28 allocate
+I0000 00:00:1791059511.994143   14328 state_buffer_queue_test.cc:41] 28 done_write
+I0000 00:00:1791059511.994148   14328 state_buffer_queue_test.cc:36] 29 start
+I0000 00:00:1791059511.994155   14328 state_buffer_queue_test.cc:39] 29 allocate
+I0000 00:00:1791059511.994160   14328 state_buffer_queue_test.cc:41] 29 done_write
+I0000 00:00:1791059511.994166   14328 state_buffer_queue_test.cc:36] 30 start
+I0000 00:00:1791059511.994173   14328 state_buffer_queue_test.cc:39] 30 allocate
+I0000 00:00:1791059511.994178   14328 state_buffer_queue_test.cc:41] 30 done_write
+I0000 00:00:1791059511.994184   14328 state_buffer_queue_test.cc:36] 31 start
+I0000 00:00:1791059511.994190   14328 state_buffer_queue_test.cc:39] 31 allocate
+I0000 00:00:1791059511.994196   14328 state_buffer_queue_test.cc:41] 31 done_write
+I0000 00:00:1791059511.994214   14328 state_buffer_queue_test.cc:47] finish wait
+[       OK ] StateBufferQueueTest.Basic (1 ms)
+[ RUN      ] StateBufferQueueTest.SinglePlayerSync
+[       OK ] StateBufferQueueTest.SinglePlayerSync (103 ms)
+[ RUN      ] StateBufferQueueTest.NumPlayers
+[       OK ] StateBufferQueueTest.NumPlayers (0 ms)
+[ RUN      ] StateBufferQueueTest.MultipleTimes
+[       OK ] StateBufferQueueTest.MultipleTimes (607 ms)
+[ RUN      ] StateBufferQueueTest.ConcurrentSinglePlayer
+[       OK ] StateBufferQueueTest.ConcurrentSinglePlayer (4844 ms)
+[ RUN      ] StateBufferQueueTest.ConcurrentMultiPlayer
+[       OK ] StateBufferQueueTest.ConcurrentMultiPlayer (5463 ms)
+[----------] 6 tests from StateBufferQueueTest (11021 ms total)
+
+[----------] 9 tests from StateBufferTest
+[ RUN      ] StateBufferTest.Basic
+[       OK ] StateBufferTest.Basic (0 ms)
+[ RUN      ] StateBufferTest.SinglePlayerSync
+[       OK ] StateBufferTest.SinglePlayerSync (0 ms)
+[ RUN      ] StateBufferTest.Truncate
+[       OK ] StateBufferTest.Truncate (0 ms)
+[ RUN      ] StateBufferTest.MultiPlayers
+[       OK ] StateBufferTest.MultiPlayers (0 ms)
+[ RUN      ] StateBufferTest.PartialSyncShuffledOutputsSurviveBufferDestruction
+[       OK ] StateBufferTest.PartialSyncShuffledOutputsSurviveBufferDestruction (0 ms)
+[ RUN      ] StateBufferTest.PartialMultiPlayerOutputsIncludeZeroPlayerEnvironments
+[       OK ] StateBufferTest.PartialMultiPlayerOutputsIncludeZeroPlayerEnvironments (0 ms)
+[ RUN      ] StateBufferTest.NoPlayersReturnsEmptyPlayerShapesAndSharedData
+[       OK ] StateBufferTest.NoPlayersReturnsEmptyPlayerShapesAndSharedData (0 ms)
+[ RUN      ] StateBufferTest.PartialWaitRequiresEveryAllocatedWriterToComplete
+[       OK ] StateBufferTest.PartialWaitRequiresEveryAllocatedWriterToComplete (20 ms)
+[ RUN      ] StateBufferTest.CompletionAllowsImmediateDestruction
+[       OK ] StateBufferTest.CompletionAllowsImmediateDestruction (107 ms)
+[----------] 9 tests from StateBufferTest (128 ms total)
+
+[----------] 8 tests from DummyEnvPoolTest
+[ RUN      ] DummyEnvPoolTest.TimingAccumulatorsStartAtZero
+[       OK ] DummyEnvPoolTest.TimingAccumulatorsStartAtZero (1 ms)
+[ RUN      ] DummyEnvPoolTest.ShutdownIdleWorkers
+[       OK ] DummyEnvPoolTest.ShutdownIdleWorkers (134 ms)
+[ RUN      ] DummyEnvPoolTest.ShutdownWithPendingReset
+[       OK ] DummyEnvPoolTest.ShutdownWithPendingReset (128 ms)
+[ RUN      ] DummyEnvPoolTest.ShutdownJoinsInFlightResetBeforeDestroyingEnvironment
+[       OK ] DummyEnvPoolTest.ShutdownJoinsInFlightResetBeforeDestroyingEnvironment (51 ms)
+[ RUN      ] DummyEnvPoolTest.SplitZeroAction
+[       OK ] DummyEnvPoolTest.SplitZeroAction (2 ms)
+[ RUN      ] DummyEnvPoolTest.SmokeSynchronousSinglePlayer
+I0000 00:00:1791059523.462064   14328 dummy_envpool_test.cc:291] 1 1 3 32 1 1
+I0000 00:00:1791059523.464511   14328 dummy_envpool_test.cc:394] time(s): 0.00163411, FPS: 19582.5
+[       OK ] DummyEnvPoolTest.SmokeSynchronousSinglePlayer (2 ms)
+[ RUN      ] DummyEnvPoolTest.SmokeAsynchronousSinglePlayer
+I0000 00:00:1791059523.464918   14328 dummy_envpool_test.cc:291] 8 4 3 64 2 1
+I0000 00:00:1791059523.471212   14328 dummy_envpool_test.cc:394] time(s): 0.00355053, FPS: 72102
+[       OK ] DummyEnvPoolTest.SmokeAsynchronousSinglePlayer (6 ms)
+[ RUN      ] DummyEnvPoolTest.SmokeAsynchronousMultiPlayer
+I0000 00:00:1791059523.471832   14328 dummy_envpool_test.cc:291] 8 4 3 64 2 4
+I0000 00:00:1791059523.477814   14328 dummy_envpool_test.cc:394] time(s): 0.0034434, FPS: 74345.2
+[       OK ] DummyEnvPoolTest.SmokeAsynchronousMultiPlayer (6 ms)
+[----------] 8 tests from DummyEnvPoolTest (335 ms total)
+
+[----------] Global test environment tear-down
+[==========] 57 tests from 10 test suites ran. (12140 ms total)
+[  PASSED  ] 57 tests.

@@ -1,0 +1,44 @@
+{
+  "selected": "Actual-count scalar-preserving player-discount repair",
+  "baseline_negative_control": {
+    "tests": 5,
+    "expected_failed_tests": 3,
+    "passed_controls": 2
+  },
+  "each_correct_repair": {
+    "native_tests": 55,
+    "asan_ubsan_tests_per_repeat": 53,
+    "asan_ubsan_repeats": 3,
+    "tsan_tests_per_repeat": 53,
+    "tsan_repeats": 3,
+    "python_tests": 16,
+    "rollout_arrays_exact": 5499,
+    "cpu_xla_cases_exact": 8,
+    "ppo_checkpoints_exact": 101,
+    "ppo_arrays_exact": 223,
+    "ppo_tensors_exact": 4925,
+    "ppo_scalars_exact": 106238,
+    "ppo_max_abs_difference": 0
+  },
+  "timing": {
+    "initial_direct_samples": 128,
+    "final_comparison_samples": 128,
+    "initial_ppo_samples": 8,
+    "final_ppo_samples": 8,
+    "all_ppo_semantic_fingerprints_equal": true
+  },
+  "selected_helper_tests": {
+    "inherited_experiment_harness": 23,
+    "new_pooled_comparison": 2
+  },
+  "format_and_lint_passed": true,
+  "intended_difference": "Multi-player default discount values are corrected; empty slices stop altering neighboring rows. No all-output parity claim for those formerly wrong cases.",
+  "scope_limits": [
+    "Only Classic Control, MuJoCo Gym and Dummy rebuilt",
+    "CPU XLA only",
+    "One synchronous CPU CartPole PPO seed/configuration",
+    "No leak-clean claim; LSan disabled; dependencies not fully sanitized",
+    "No full-release or cross-platform CI pass",
+    "No proved throughput speedup or universal performance neutrality"
+  ]
+}

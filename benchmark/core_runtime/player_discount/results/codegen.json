@@ -1,0 +1,37 @@
+{
+  "symbol": "classic_control::CartPoleEnv::WriteState(float)",
+  "method": "Static nm/objdump inspection; no executing profiler or benchmark. Absolute target addresses and RIP-relative displacements normalized in independent instruction comparison, with registers, stack offsets, immediates, call symbols and local branch offsets retained.",
+  "variants": {
+    "baseline": {
+      "native_sha256": "ae800a75920f1f13010bd9d2733c471c4223e5c23bd5487ce34ef626e911104c",
+      "address": "0x840c0",
+      "size_bytes": 2711
+    },
+    "direct": {
+      "native_sha256": "51a2bb4bf492c1a4aa43353039fedb9b0022a43da7813c32975dde708f012582",
+      "address": "0x84800",
+      "size_bytes": 2887
+    },
+    "fast": {
+      "native_sha256": "37b82dd99bf67154478d355c4031cc44980fc6a5fb50687ca9b936ced2ebf9d3",
+      "address": "0x840c0",
+      "size_bytes": 2711
+    }
+  },
+  "fast_vs_baseline_normalized_instructions_equal": true,
+  "fast_and_baseline_decoded_instructions": 451,
+  "direct_fill_findings": [
+    "Runtime size load and zero-size check at 0x85046..0x85058",
+    "Vector-fill selection at 0x8505e..0x85071",
+    "SSE stores and loop at 0x8508e..0x850b2",
+    "Scalar remainder stores at 0x850c4..0x850e1",
+    "WriteState stack reservation grows from 0x628 to 0x638",
+    "No added fill-library call; register allocation and move scheduling also change"
+  ],
+  "baseline_and_fast_discount_store": "0x848eb: movss %xmm0,(%rsi)",
+  "limitations": [
+    "Only this CartPole function inspected for fast-vs-baseline equivalence",
+    "Normalized assembly equality is not whole-binary byte identity",
+    "Extra instructions/function size do not quantify or prove the cause of a throughput delta"
+  ]
+}

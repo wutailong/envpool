@@ -1,0 +1,19 @@
+{
+  "semantic_parity": true,
+  "blocks": 2,
+  "samples": 8,
+  "variants": {
+    "defined": {
+      "n": 4,
+      "median_seconds": 19.892396143997757,
+      "min_seconds": 19.822898755002825,
+      "max_seconds": 19.926126926002325
+    },
+    "candidate": {
+      "n": 4,
+      "median_seconds": 19.9493871425002,
+      "min_seconds": 19.88323705500079,
+      "max_seconds": 20.21103754700016
+    }
+  }
+}

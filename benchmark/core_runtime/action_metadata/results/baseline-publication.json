@@ -1,0 +1,11 @@
+{
+  "branch": "fix/core-timing-initialization",
+  "remote_commit": "6685e510c1fad428b02152c1a378d6289880c4df",
+  "remote_tree": "b2ee911677b39d4344b33500bc0d2293f948a37f",
+  "local_commit": "dffcc5fd36d88e7e0bd1a50e53653c36e0e46507",
+  "local_tree": "b2ee911677b39d4344b33500bc0d2293f948a37f",
+  "workflow_runs": 0,
+  "statuses": [],
+  "verified_at_utc": "2026-10-03T20:14:47Z",
+  "prior_branches_preserved": true
+}
