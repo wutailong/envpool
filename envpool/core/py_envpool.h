@@ -246,7 +246,7 @@ class PyEnvPool : public EnvPool {
     arr.reserve(action.size());
     ToArray(action, py_spec.action_spec, &arr);
     py::gil_scoped_release release;
-    EnvPool::Send(arr);  // delegate to the c++ api
+    EnvPool::Send(std::move(arr));  // delegate to the c++ api
   }
 
   /**

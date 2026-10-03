@@ -202,6 +202,17 @@ class Array {
     return ret;
   }
 
+  /**
+   * Truncate an exclusively consumed Array without copying its shape or owner.
+   * Requires end <= Shape(0) and a non-scalar Array.
+   * Existing views and shared owners keep their original metadata and storage.
+   */
+  void TruncateInPlace(std::size_t end) {
+    DCHECK_GT(ndim, (std::size_t)0);
+    shape_[0] = end;
+    size = Prod(shape_.data(), shape_.size());
+  }
+
   void Zero() const { std::memset(ptr_.get(), 0, size * element_size); }
   [[nodiscard]] std::shared_ptr<char> SharedPtr() const { return ptr_; }
 };

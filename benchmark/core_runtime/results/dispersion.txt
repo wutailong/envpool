@@ -1,0 +1,90 @@
+
+CartPole-v1 N=1, batch=1, threads=1, affinity=pinned
+  original  median=29,218; range=28,240..33,265; CV=6.8%; n=5; vector-call latency=34.23 us
+  rebuilt   median=28,546; range=26,864..29,153; CV=3.8%; n=5; vector-call latency=35.03 us
+  candidate median=30,239; range=25,778..33,524; CV=9.9%; n=5; vector-call latency=33.07 us
+
+CartPole-v1 N=20, batch=20, threads=1, affinity=pinned
+  original  median=368,804; range=343,727..402,865; CV=6.1%; n=5; vector-call latency=54.23 us
+  rebuilt   median=367,884; range=346,344..378,640; CV=3.5%; n=5; vector-call latency=54.36 us
+  candidate median=352,356; range=316,886..439,964; CV=12.6%; n=5; vector-call latency=56.76 us
+
+CartPole-v1 N=64, batch=64, threads=1, affinity=pinned
+  original  median=797,476; range=683,492..856,882; CV=10.1%; n=5; vector-call latency=80.25 us
+  rebuilt   median=730,546; range=709,763..778,955; CV=4.3%; n=5; vector-call latency=87.61 us
+  candidate median=728,684; range=703,501..863,529; CV=8.9%; n=5; vector-call latency=87.83 us
+
+CartPole-v1 N=256, batch=256, threads=1, affinity=pinned
+  original  median=1,223,963; range=1,189,360..1,388,646; CV=7.2%; n=5; vector-call latency=209.16 us
+  rebuilt   median=1,311,224; range=1,152,453..1,437,048; CV=7.8%; n=5; vector-call latency=195.24 us
+  candidate median=1,487,769; range=1,192,057..1,583,313; CV=11.4%; n=5; vector-call latency=172.07 us
+
+CartPole-v1 N=256, batch=256, threads=4, affinity=pinned
+  original  median=1,402,295; range=1,258,241..1,731,201; CV=13.0%; n=5; vector-call latency=182.56 us
+  rebuilt   median=1,319,814; range=1,102,682..1,352,599; CV=9.4%; n=5; vector-call latency=193.97 us
+  candidate median=1,533,120; range=1,373,814..1,766,539; CV=11.8%; n=5; vector-call latency=166.98 us
+
+CartPole-v1 N=1024, batch=1024, threads=8, affinity=pinned
+  original  median=2,506,349; range=2,331,430..2,553,892; CV=4.1%; n=5; vector-call latency=408.56 us
+  rebuilt   median=2,515,914; range=1,973,521..2,837,589; CV=12.7%; n=5; vector-call latency=407.01 us
+  candidate median=2,433,869; range=1,794,570..3,108,420; CV=19.2%; n=5; vector-call latency=420.73 us
+
+CartPole-v1 N=256, batch=64, threads=4, affinity=pinned
+  original  median=1,533,659; range=1,434,728..1,691,207; CV=6.7%; n=5; vector-call latency=41.73 us
+  rebuilt   median=1,434,184; range=1,263,418..1,591,500; CV=9.3%; n=5; vector-call latency=44.62 us
+  candidate median=1,592,564; range=1,494,982..1,885,514; CV=9.1%; n=5; vector-call latency=40.19 us
+
+CartPole-v1 N=1024, batch=256, threads=8, affinity=pinned
+  original  median=2,741,997; range=2,620,141..3,058,311; CV=5.9%; n=5; vector-call latency=93.36 us
+  rebuilt   median=3,001,614; range=2,318,863..3,980,782; CV=19.6%; n=5; vector-call latency=85.29 us
+  candidate median=3,233,427; range=2,315,752..3,472,838; CV=14.9%; n=5; vector-call latency=79.17 us
+
+HalfCheetah-v4 N=20, batch=20, threads=1, affinity=pinned
+  original  median=23,230; range=22,999..23,886; CV=1.6%; n=5; vector-call latency=860.94 us
+  rebuilt   median=22,782; range=22,638..24,246; CV=2.9%; n=5; vector-call latency=877.87 us
+  candidate median=22,951; range=22,282..24,092; CV=2.8%; n=5; vector-call latency=871.44 us
+
+HalfCheetah-v4 N=64, batch=64, threads=4, affinity=pinned
+  original  median=75,791; range=71,830..79,181; CV=3.4%; n=5; vector-call latency=844.43 us
+  rebuilt   median=76,672; range=72,741..78,310; CV=3.0%; n=5; vector-call latency=834.72 us
+  candidate median=79,028; range=72,552..83,415; CV=5.8%; n=5; vector-call latency=809.84 us
+
+HalfCheetah-v4 N=256, batch=64, threads=4, affinity=pinned
+  original  median=88,801; range=87,569..93,407; CV=2.7%; n=5; vector-call latency=720.72 us
+  rebuilt   median=90,856; range=85,697..92,048; CV=2.8%; n=5; vector-call latency=704.41 us
+  candidate median=90,105; range=87,576..92,463; CV=2.4%; n=5; vector-call latency=710.28 us
+
+HalfCheetah-v4 N=256, batch=256, threads=8, affinity=pinned
+  original  median=124,641; range=114,072..134,920; CV=6.3%; n=5; vector-call latency=2053.89 us
+  rebuilt   median=122,795; range=113,659..129,390; CV=4.8%; n=5; vector-call latency=2084.77 us
+  candidate median=127,423; range=106,782..133,251; CV=8.5%; n=5; vector-call latency=2009.06 us
+
+CartPole-v1 N=20, batch=20, threads=1, affinity=default
+  original  median=373,045; range=347,665..429,670; CV=10.9%; n=3; vector-call latency=53.61 us
+  rebuilt   median=349,696; range=320,259..353,990; CV=5.4%; n=3; vector-call latency=57.19 us
+  candidate median=366,839; range=318,185..400,565; CV=11.4%; n=3; vector-call latency=54.52 us
+
+CartPole-v1 N=256, batch=256, threads=1, affinity=default
+  original  median=1,238,657; range=1,161,958..1,411,235; CV=10.0%; n=3; vector-call latency=206.68 us
+  rebuilt   median=1,245,645; range=1,166,787..1,339,386; CV=6.9%; n=3; vector-call latency=205.52 us
+  candidate median=1,455,615; range=1,394,361..1,574,935; CV=6.2%; n=3; vector-call latency=175.87 us
+
+CartPole-v1 N=256, batch=256, threads=4, affinity=default
+  original  median=1,494,701; range=1,076,121..1,760,806; CV=23.9%; n=3; vector-call latency=171.27 us
+  rebuilt   median=1,585,291; range=1,161,813..1,666,268; CV=18.4%; n=3; vector-call latency=161.48 us
+  candidate median=1,358,156; range=1,203,714..1,796,375; CV=21.2%; n=3; vector-call latency=188.49 us
+
+CartPole-v1 N=1024, batch=256, threads=8, affinity=default
+  original  median=3,044,633; range=2,887,696..4,451,114; CV=24.9%; n=3; vector-call latency=84.08 us
+  rebuilt   median=2,651,479; range=2,483,510..2,682,431; CV=4.1%; n=3; vector-call latency=96.55 us
+  candidate median=2,649,575; range=2,107,985..2,857,276; CV=15.2%; n=3; vector-call latency=96.62 us
+
+HalfCheetah-v4 N=64, batch=64, threads=4, affinity=default
+  original  median=76,483; range=73,649..78,385; CV=3.1%; n=3; vector-call latency=836.79 us
+  rebuilt   median=75,149; range=70,634..78,799; CV=5.5%; n=3; vector-call latency=851.65 us
+  candidate median=71,826; range=64,485..82,813; CV=12.6%; n=3; vector-call latency=891.04 us
+
+HalfCheetah-v4 N=256, batch=64, threads=4, affinity=default
+  original  median=88,975; range=82,229..95,414; CV=7.4%; n=3; vector-call latency=719.30 us
+  rebuilt   median=93,655; range=92,550..94,064; CV=0.8%; n=3; vector-call latency=683.36 us
+  candidate median=94,474; range=92,977..95,813; CV=1.5%; n=3; vector-call latency=677.44 us

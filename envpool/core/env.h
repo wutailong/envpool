@@ -227,7 +227,15 @@ class Env {
 
   State Allocate(int player_num = 1) {
     slice_ = sbq_->Allocate(player_num, order_);
-    State state(slice_.arr);
+    // Inplace initialize all container fields
+    int i = 0;
+    std::apply(
+        [&](auto&&... spec) {
+          (InplaceInitialize(spec, &slice_.arr[i++]), ...);
+        },
+        spec_.state_spec.AllValues());
+    // The typed state owns the views; only the completion callback stays here.
+    State state(std::move(slice_.arr));
     bool done = IsDone();
     int max_episode_steps = CurrentMaxEpisodeSteps();
     state["done"_] = done;
@@ -249,13 +257,6 @@ class Env {
     for (int i = 0; i < player_num; ++i) {
       player_env_id[i] = env_id_;
     }
-    // Inplace initialize all container fields
-    int i = 0;
-    std::apply(
-        [&](auto&&... spec) {
-          (InplaceInitialize(spec, &slice_.arr[i++]), ...);
-        },
-        spec_.state_spec.AllValues());
     return state;
   }
 };

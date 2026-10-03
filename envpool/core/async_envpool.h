@@ -61,6 +61,7 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
     int* env_id = static_cast<int*>(action[0].Data());
     int shared_offset = action[0].Shape(0);
     std::vector<ActionSlice> actions;
+    actions.reserve(shared_offset);
     std::shared_ptr<std::vector<Array>> action_batch =
         std::make_shared<std::vector<Array>>(std::forward<V>(action));
     for (int i = 0; i < shared_offset; ++i) {
@@ -165,7 +166,9 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
     SendImpl(action.template AllValues<Array>());
   }
   void Send(const std::vector<Array>& action) override { SendImpl(action); }
-  void Send(std::vector<Array>&& action) override { SendImpl(action); }
+  void Send(std::vector<Array>&& action) override {
+    SendImpl(std::move(action));
+  }
 
   std::vector<Array> Recv() override {
     int additional_wait = 0;

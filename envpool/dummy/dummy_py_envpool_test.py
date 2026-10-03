@@ -13,6 +13,7 @@
 # limitations under the License.
 """Unit test for dummy envpool and speed benchmark."""
 
+import gc
 import os
 import time
 from typing import Any
@@ -195,6 +196,188 @@ class _DummyEnvPoolTest(absltest.TestCase):
             state["done"],
             np.array([True, True, False]),
         )
+
+
+class _DummyEnvPoolLifetimeTest(absltest.TestCase):
+    @staticmethod
+    def _make_env(max_num_players: int) -> EnvPool:
+        conf = dict(
+            zip(
+                _DummyEnvSpec._config_keys,
+                _DummyEnvSpec._default_config_values,
+                strict=False,
+            )
+        )
+        conf.update(
+            num_envs=8,
+            batch_size=8,
+            num_threads=1,
+            max_num_players=max_num_players,
+            seed=5,
+            # Dummy initializes only these two columns of obs:raw.
+            state_num=2,
+        )
+        return _DummyEnvPool(_DummyEnvSpec(tuple(conf.values())))
+
+    @staticmethod
+    def _recv(env: EnvPool) -> dict[str, np.ndarray]:
+        return dict(zip(env._state_keys, env._recv(), strict=True))
+
+    @staticmethod
+    def _action(state: dict[str, np.ndarray], step: int) -> list[np.ndarray]:
+        env_id = state["info:env_id"].copy()
+        action = {
+            "env_id": env_id,
+            "players.env_id": state["info:players.env_id"].copy(),
+            "list_action": np.repeat(
+                (env_id.astype(np.float64) + step)[:, None], 6, axis=1
+            ),
+            "players.action": state["info:players.id"].copy() + step,
+            "players.id": state["info:players.id"].copy(),
+        }
+        return [action[key] for key in _DummyEnvPool._action_keys]
+
+    @staticmethod
+    def _copy_state(state: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
+        copied = {key: value.copy() for key, value in state.items()}
+        # An object-array copy alone would still share its Container arrays.
+        for index, value in enumerate(state["obs:dyn"]):
+            copied["obs:dyn"][index] = value.copy()
+        return copied
+
+    def _assert_state_equal(
+        self,
+        actual: dict[str, np.ndarray],
+        expected: dict[str, np.ndarray],
+    ) -> None:
+        self.assertEqual(actual.keys(), expected.keys())
+        for key, value in actual.items():
+            self.assertEqual(value.shape, expected[key].shape, key)
+            self.assertEqual(value.dtype, expected[key].dtype, key)
+            if key == "obs:dyn":
+                for inner, expected_inner in zip(
+                    value, expected[key], strict=True
+                ):
+                    np.testing.assert_array_equal(inner, expected_inner)
+            else:
+                np.testing.assert_array_equal(value, expected[key], err_msg=key)
+
+    @staticmethod
+    def _ordered_state(state: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
+        env_order = np.argsort(state["info:env_id"])
+        player_order = np.lexsort((
+            state["info:players.id"],
+            state["info:players.env_id"],
+        ))
+        player_keys = {
+            "reward",
+            "discount",
+            "obs:raw",
+            "obs:dyn",
+            "info:players.env_id",
+            "info:players.id",
+            "info:players.done",
+        }
+        return {
+            key: value[player_order if key in player_keys else env_order]
+            for key, value in state.items()
+        }
+
+    def test_observations_survive_steps_and_pool_destruction(self) -> None:
+        for max_num_players in (1, 4):
+            with self.subTest(max_num_players=max_num_players):
+                env = self._make_env(max_num_players)
+                env._reset(np.arange(8, dtype=np.int32))
+                state = self._recv(env)
+                raw_view = state["obs:raw"][:, :1]
+                dynamic_view = state["obs:dyn"][-1][:, :1]
+                expected_raw = raw_view.copy()
+                expected_dynamic = dynamic_view.copy()
+                retained = []
+                for step in range(64):
+                    env._send(self._action(state, step))
+                    state = self._recv(env)
+                    if step < 4:
+                        retained.append((state, self._copy_state(state)))
+                    for inner, env_id in zip(
+                        state["obs:dyn"],
+                        state["info:players.env_id"],
+                        strict=True,
+                    ):
+                        self.assertEqual(inner.shape, (int(env_id) + 1, 2))
+                        np.testing.assert_array_equal(
+                            inner, np.full(inner.shape, env_id, dtype=np.int32)
+                        )
+
+                for actual, expected in retained:
+                    self._assert_state_equal(actual, expected)
+                del state, env
+                gc.collect()
+                # The reset batch's outer object array is already gone; its
+                # retained inner view must own the dynamic allocation itself.
+                np.testing.assert_array_equal(raw_view, expected_raw)
+                np.testing.assert_array_equal(dynamic_view, expected_dynamic)
+                for actual, expected in retained:
+                    self._assert_state_equal(actual, expected)
+
+    def test_temporary_actions_match_contiguous_trajectory(self) -> None:
+        for max_num_players in (1, 4):
+            for variant in ("contiguous", "strided", "cast", "strided_cast"):
+                with self.subTest(
+                    max_num_players=max_num_players, variant=variant
+                ):
+                    env = self._make_env(max_num_players)
+                    reference = self._make_env(max_num_players)
+                    env._reset(np.arange(8, dtype=np.int32))
+                    reference._reset(np.arange(8, dtype=np.int32))
+                    state = self._recv(env)
+                    expected = self._recv(reference)
+                    self._assert_state_equal(
+                        self._ordered_state(state),
+                        self._ordered_state(expected),
+                    )
+                    for step in range(32):
+                        expected_action = self._action(expected, step)
+                        action = self._action(state, step)
+                        if "cast" in variant:
+                            action = [
+                                value.astype(
+                                    np.float32
+                                    if value.dtype == np.float64
+                                    else np.int64
+                                )
+                                for value in action
+                            ]
+                        if "strided" in variant:
+                            action = [
+                                np.repeat(value, 2, axis=-1)[..., ::2]
+                                for value in action
+                            ]
+                            self.assertTrue(
+                                all(
+                                    not value.flags.c_contiguous
+                                    for value in action
+                                )
+                            )
+                        env._send(action)
+                        # Drop every caller-owned array (including strided
+                        # bases) before receiving any asynchronous work.
+                        del action
+                        gc.collect()
+                        # Reuse similarly sized allocations while the queued
+                        # work still has to own its original/coerced arrays.
+                        replacement = tuple(
+                            np.zeros_like(value) for value in expected_action
+                        )
+                        reference._send(expected_action)
+                        state = self._recv(env)
+                        expected = self._recv(reference)
+                        del replacement
+                        self._assert_state_equal(
+                            self._ordered_state(state),
+                            self._ordered_state(expected),
+                        )
+                    del env, reference
 
 
 class _EnvPoolMixinRegressionTest(absltest.TestCase):

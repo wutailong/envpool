@@ -145,17 +145,13 @@ class StateBuffer {
     uint32_t player_offset = (offsets >> 32);
     uint32_t shared_offset = offsets;
     DCHECK_EQ((std::size_t)shared_offset, batch_ - additional_done_count);
-    std::vector<Array> ret;
-    ret.reserve(arrays_.size());
+    // Wait consumes this one-shot buffer. Transfer the owning arrays rather
+    // than allocating a second vector and copying each array's shape.
     for (std::size_t i = 0; i < arrays_.size(); ++i) {
-      const Array& a = arrays_[i];
-      if (is_player_state_[i]) {
-        ret.emplace_back(a.Truncate(player_offset));
-      } else {
-        ret.emplace_back(a.Truncate(shared_offset));
-      }
+      arrays_[i].TruncateInPlace(is_player_state_[i] ? player_offset
+                                                     : shared_offset);
     }
-    return ret;
+    return std::move(arrays_);
   }
 };
 
