@@ -1,0 +1,47 @@
+{
+  "hypothesis": "Repair Container payload destruction and check its cost without a speedup assumption.",
+  "comparison": "published player-discount baseline vs typed Container output ownership",
+  "blocks": 8,
+  "seconds": 3,
+  "warmup": 400,
+  "affinities": [
+    "default"
+  ],
+  "order": "acdb,cabd,bdca,dbac; a/b identical control, c/d identical candidate",
+  "case_count": 5,
+  "expected_samples": 160,
+  "cases": [
+    {
+      "env": "CartPole-v1",
+      "n": 20,
+      "batch": 20,
+      "threads": 1
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 256,
+      "batch": 256,
+      "threads": 4
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 1024,
+      "batch": 256,
+      "threads": 8
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "n": 256,
+      "batch": 64,
+      "threads": 4
+    },
+    {
+      "env": "BipedalWalker-v3",
+      "n": 64,
+      "batch": 16,
+      "threads": 4
+    }
+  ],
+  "retention": "Correctness repair first; disclose cost, A/A variability, regressions and limitations. No throughput win required; no selective sample rejection.",
+  "box2d_mode": "Both Box2D clients built with ENVPOOL_TEST to expose real Container<float> info; not the ordinary release state spec."
+}

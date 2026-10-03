@@ -1,0 +1,9 @@
+test_last_inner_view_owns_payload (__main__.ContainerConversionTest.test_last_inner_view_owns_payload)
+Inner arrays outlive the pool, output buffer, and outer array. ... ok
+test_second_element_failure_reclaims_all_payloads (__main__.ContainerConversionTest.test_second_element_failure_reclaims_all_payloads)
+Failure frees converted, rejected, and untouched source payloads. ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.029s
+
+OK

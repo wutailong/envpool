@@ -1,0 +1,24 @@
+#!/bin/bash
+set -euo pipefail
+cd $WORKSPACE
+source deps/env.sh
+unset PYTHONPATH ENVPOOL_ASSETS_PATH
+export PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMBA_NUM_THREADS=1 PYTHONHASHSEED=0
+W=$PWD/envpool-core-container-work
+S=$PWD/envpool-core-container
+R=$W/runtime-candidate
+.venv/bin/python "$W/tools/build_runtime.py"
+PYTHONPATH=$R .venv/bin/python -m unittest discover -s "$S/envpool/dummy" -p dummy_py_envpool_test.py > "$W/logs/dummy-python.log" 2>&1
+PYTHONPATH=$R .venv/bin/python "$S/envpool/classic_control/classic_control_test.py" > "$W/logs/classic-python.log" 2>&1
+.venv/bin/python "$S/benchmark/core_runtime/check_rollouts.py" record --variant candidate --envpool-root "$R" --out "$W/results/rollouts.npz" > "$W/logs/rollouts.log" 2>&1
+.venv/bin/python "$S/benchmark/core_runtime/check_rollouts.py" compare envpool-core-discount-fastpath-work/results/rollouts.npz "$W/results/rollouts.npz" > "$W/results/rollout-comparison.json" 2>&1
+PYTHONPATH=$PWD/envpool-core-work/jax-deps .venv/bin/python "$S/benchmark/core_runtime/xla/check_xla.py" --envpool-root "$R" --env CartPole-v1 --env HalfCheetah-v4 --output "$W/results/xla.json" > "$W/logs/xla.log" 2>&1
+.venv/bin/python - <<'PY'
+from pathlib import Path
+import json
+w=Path('envpool-core-container-work/results');a=json.loads(Path('envpool-core-discount-fastpath-work/results/xla.json').read_text())['cases'];b=json.loads((w/'xla.json').read_text())['cases'];assert a==b;(w/'xla-comparison.json').write_text(json.dumps({'passed':True,'cases':len(a),'comparison':'Exact canonical case records against published discount baseline'},indent=2)+'\n')
+PY
+printf 'Container ownership: Python, rollout and CPU XLA gates passed against discount baseline.\n' >> envpool-core-overnight-work/logs/progress.log
+.rl-venv/bin/python "$S/benchmark/core_runtime/ppo/verify_ppo_parity.py" train --package "$R/envpool" --config "$S/benchmark/core_runtime/ppo/config.json" --output "$W/results/ppo-candidate" > "$W/logs/ppo-candidate.log" 2>&1
+.rl-venv/bin/python "$S/benchmark/core_runtime/ppo/verify_ppo_parity.py" compare --original "$PWD/envpool-core-discount-fastpath-work/results/ppo-candidate" --candidate "$W/results/ppo-candidate" --output "$W/results/ppo-parity.json" > "$W/logs/ppo-comparison.log" 2>&1
+printf 'Container ownership: full deterministic synchronous PPO exact parity passed.\n' >> envpool-core-overnight-work/logs/progress.log

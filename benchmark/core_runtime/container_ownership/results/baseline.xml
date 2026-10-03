@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="3" failures="2" disabled="0" errors="0" time="0.003" timestamp="2026-10-04T07:20:56.156" name="AllTests">
+  <testsuite name="ContainerOutputTest" tests="3" failures="2" disabled="0" skipped="0" errors="0" time="0.003" timestamp="2026-10-04T07:20:56.156">
+    <testcase name="QueuedOutputReclaimedOnPoolDestruction" file="$CANDIDATE_SOURCE/envpool/core/container_output_test.cc" line="135" status="run" result="completed" time="0.002" timestamp="2026-10-04T07:20:56.156" classname="ContainerOutputTest">
+      <failure message="$CANDIDATE_SOURCE/envpool/core/container_output_test.cc:157&#x0A;Expected equality of these values:&#x0A;  counts-&gt;destroyed.load()&#x0A;    Which is: 0&#x0A;  1&#x0A;Google Test trace:&#x0A;$CANDIDATE_SOURCE/envpool/core/container_output_test.cc:139: 1&#x0A;" type=""><![CDATA[$CANDIDATE_SOURCE/envpool/core/container_output_test.cc:157
+Expected equality of these values:
+  counts->destroyed.load()
+    Which is: 0
+  1
+Google Test trace:
+$CANDIDATE_SOURCE/envpool/core/container_output_test.cc:139: 1
+]]></failure>
+      <failure message="$CANDIDATE_SOURCE/envpool/core/container_output_test.cc:157&#x0A;Expected equality of these values:&#x0A;  counts-&gt;destroyed.load()&#x0A;    Which is: 0&#x0A;  1&#x0A;Google Test trace:&#x0A;$CANDIDATE_SOURCE/envpool/core/container_output_test.cc:139: 2&#x0A;" type=""><![CDATA[$CANDIDATE_SOURCE/envpool/core/container_output_test.cc:157
+Expected equality of these values:
+  counts->destroyed.load()
+    Which is: 0
+  1
+Google Test trace:
+$CANDIDATE_SOURCE/envpool/core/container_output_test.cc:139: 2
+]]></failure>
+    </testcase>
+    <testcase name="ReceivedOutputLivesUntilLastArrayOwner" file="$CANDIDATE_SOURCE/envpool/core/container_output_test.cc" line="161" status="run" result="completed" time="0." timestamp="2026-10-04T07:20:56.159" classname="ContainerOutputTest">
+      <failure message="$CANDIDATE_SOURCE/envpool/core/container_output_test.cc:183&#x0A;Expected equality of these values:&#x0A;  counts-&gt;destroyed.load()&#x0A;    Which is: 0&#x0A;  1&#x0A;" type=""><![CDATA[$CANDIDATE_SOURCE/envpool/core/container_output_test.cc:183
+Expected equality of these values:
+  counts->destroyed.load()
+    Which is: 0
+  1
+]]></failure>
+    </testcase>
+    <testcase name="ExtractedPayloadOwnsItsStorage" file="$CANDIDATE_SOURCE/envpool/core/container_output_test.cc" line="186" status="run" result="completed" time="0." timestamp="2026-10-04T07:20:56.160" classname="ContainerOutputTest" />
+  </testsuite>
+</testsuites>

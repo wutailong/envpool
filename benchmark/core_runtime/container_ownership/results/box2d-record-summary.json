@@ -1,0 +1,550 @@
+[
+  {
+    "label": "control",
+    "semantic_sha256": "5d6cfbcd746623cef19d22c8696aae98fc20532f4bd48ea32a2a2179d07c1ee0",
+    "provenance": {
+      "envpool_module": "$CONTROL_RUNTIME/envpool/__init__.py",
+      "envpool_root": "$CONTROL_RUNTIME",
+      "native_module": "$CONTROL_RUNTIME/envpool/box2d/box2d_envpool.so",
+      "native_sha256": "6af2be327fc8a6ab4a72fb437c22a24f0e542de99a73f9078db0f428d268c285",
+      "numpy_version": "2.5.3",
+      "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "variant": "control"
+    },
+    "config": {
+      "batch_size": 2,
+      "max_episode_steps": 13,
+      "num_envs": 2,
+      "num_threads": 2
+    },
+    "steps": 64,
+    "cases": [
+      {
+        "task": "CarRacing-v3",
+        "seed": 0,
+        "counts": {
+          "autoresets_by_env": [
+            4,
+            4
+          ],
+          "container_inner_arrays": 390,
+          "environment_responses": 130,
+          "numeric_arrays": 1557,
+          "numeric_bytes": 6213336,
+          "object_arrays": 195,
+          "object_elements": 390,
+          "records": 65,
+          "reset_calls": 1,
+          "retained_checks_after_close_gc": 3,
+          "retained_inner_arrays": 3,
+          "step_calls": 64,
+          "terminated_by_env": [
+            0,
+            0
+          ],
+          "truncated_by_env": [
+            4,
+            4
+          ]
+        },
+        "retained": [
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 4608,
+              "sha256": "38e8f5d1043aa723c38de06cb1792000f2d878d85efc54bbc435880cabada8d8",
+              "shape": [
+                288,
+                4
+              ]
+            },
+            "outer_released": true,
+            "path": "info.track[0]",
+            "unchanged": true
+          },
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 11040,
+              "sha256": "61c8296893cefc6c310f46cd0a0c7ce16710af698de68d9bd0358cdb931e2d5f",
+              "shape": [
+                345,
+                4,
+                2
+              ]
+            },
+            "outer_released": true,
+            "path": "info.road_poly[0]",
+            "unchanged": true
+          },
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 4140,
+              "sha256": "5e4c0683faded009b5364fed124703ed6c0e454e1b6bb0a9ad45d529aa2e32af",
+              "shape": [
+                345,
+                3
+              ]
+            },
+            "outer_released": true,
+            "path": "info.road_color[0]",
+            "unchanged": true
+          }
+        ],
+        "case_sha256": "a45198be3262adc1069451ecf134858c9c8d1d9fb76ded617ec3bfb23b903be2"
+      },
+      {
+        "task": "CarRacing-v3",
+        "seed": 42,
+        "counts": {
+          "autoresets_by_env": [
+            4,
+            4
+          ],
+          "container_inner_arrays": 390,
+          "environment_responses": 130,
+          "numeric_arrays": 1557,
+          "numeric_bytes": 6328060,
+          "object_arrays": 195,
+          "object_elements": 390,
+          "records": 65,
+          "reset_calls": 1,
+          "retained_checks_after_close_gc": 3,
+          "retained_inner_arrays": 3,
+          "step_calls": 64,
+          "terminated_by_env": [
+            0,
+            0
+          ],
+          "truncated_by_env": [
+            4,
+            4
+          ]
+        },
+        "retained": [
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 4816,
+              "sha256": "b83ae4f2932c216f82e3dc401538a27911535aac7b2827a90d3d93d76abb9f9e",
+              "shape": [
+                301,
+                4
+              ]
+            },
+            "outer_released": true,
+            "path": "info.track[0]",
+            "unchanged": true
+          },
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 11776,
+              "sha256": "58aaf370eaff71b46c09a8d831a81e757fbb399d0ecb1d2e74941c72f33f0b08",
+              "shape": [
+                368,
+                4,
+                2
+              ]
+            },
+            "outer_released": true,
+            "path": "info.road_poly[0]",
+            "unchanged": true
+          },
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 4416,
+              "sha256": "7afe87bbe8770a386de0b1c5d4abcff94722677f7d748b1ff2701aa8a0909a66",
+              "shape": [
+                368,
+                3
+              ]
+            },
+            "outer_released": true,
+            "path": "info.road_color[0]",
+            "unchanged": true
+          }
+        ],
+        "case_sha256": "4fa36810b64eedb09ada37eeaf60380ae3a430340b2552764251faca192f59c7"
+      },
+      {
+        "task": "BipedalWalker-v3",
+        "seed": 0,
+        "counts": {
+          "autoresets_by_env": [
+            4,
+            4
+          ],
+          "container_inner_arrays": 130,
+          "environment_responses": 130,
+          "numeric_arrays": 1297,
+          "numeric_bytes": 533248,
+          "object_arrays": 65,
+          "object_elements": 130,
+          "records": 65,
+          "reset_calls": 1,
+          "retained_checks_after_close_gc": 1,
+          "retained_inner_arrays": 1,
+          "step_calls": 64,
+          "terminated_by_env": [
+            0,
+            0
+          ],
+          "truncated_by_env": [
+            4,
+            4
+          ]
+        },
+        "retained": [
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 128,
+              "sha256": "d97153778b2bba34e7cf4354331624bc05e2285f33fd9ff0b3174d59bcf93fb4",
+              "shape": [
+                4,
+                4,
+                2
+              ]
+            },
+            "outer_released": true,
+            "path": "info.path4[0]",
+            "unchanged": true
+          }
+        ],
+        "case_sha256": "67e5f3752e573a7738f251675a2bb50f0d6155254578f5911fce79d8e6898014"
+      },
+      {
+        "task": "BipedalWalker-v3",
+        "seed": 42,
+        "counts": {
+          "autoresets_by_env": [
+            4,
+            4
+          ],
+          "container_inner_arrays": 130,
+          "environment_responses": 130,
+          "numeric_arrays": 1297,
+          "numeric_bytes": 533248,
+          "object_arrays": 65,
+          "object_elements": 130,
+          "records": 65,
+          "reset_calls": 1,
+          "retained_checks_after_close_gc": 1,
+          "retained_inner_arrays": 1,
+          "step_calls": 64,
+          "terminated_by_env": [
+            0,
+            0
+          ],
+          "truncated_by_env": [
+            4,
+            4
+          ]
+        },
+        "retained": [
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 128,
+              "sha256": "1ad009f2467545a56a5d4363107721e6b7911e963294d358e48f5ee4b10de103",
+              "shape": [
+                4,
+                4,
+                2
+              ]
+            },
+            "outer_released": true,
+            "path": "info.path4[0]",
+            "unchanged": true
+          }
+        ],
+        "case_sha256": "7b6bba13f38df3783abe7c816843ed696e5a8bdd4e489770528662e21f5375c2"
+      }
+    ]
+  },
+  {
+    "label": "candidate",
+    "semantic_sha256": "5d6cfbcd746623cef19d22c8696aae98fc20532f4bd48ea32a2a2179d07c1ee0",
+    "provenance": {
+      "envpool_module": "$CANDIDATE_RUNTIME/envpool/__init__.py",
+      "envpool_root": "$CANDIDATE_RUNTIME",
+      "native_module": "$CANDIDATE_RUNTIME/envpool/box2d/box2d_envpool.so",
+      "native_sha256": "6795cf547ce206ca39e4066f7e31e2211f9d6e102f31450b12eff1974a1d671a",
+      "numpy_version": "2.5.3",
+      "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "variant": "candidate"
+    },
+    "config": {
+      "batch_size": 2,
+      "max_episode_steps": 13,
+      "num_envs": 2,
+      "num_threads": 2
+    },
+    "steps": 64,
+    "cases": [
+      {
+        "task": "CarRacing-v3",
+        "seed": 0,
+        "counts": {
+          "autoresets_by_env": [
+            4,
+            4
+          ],
+          "container_inner_arrays": 390,
+          "environment_responses": 130,
+          "numeric_arrays": 1557,
+          "numeric_bytes": 6213336,
+          "object_arrays": 195,
+          "object_elements": 390,
+          "records": 65,
+          "reset_calls": 1,
+          "retained_checks_after_close_gc": 3,
+          "retained_inner_arrays": 3,
+          "step_calls": 64,
+          "terminated_by_env": [
+            0,
+            0
+          ],
+          "truncated_by_env": [
+            4,
+            4
+          ]
+        },
+        "retained": [
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 4608,
+              "sha256": "38e8f5d1043aa723c38de06cb1792000f2d878d85efc54bbc435880cabada8d8",
+              "shape": [
+                288,
+                4
+              ]
+            },
+            "outer_released": true,
+            "path": "info.track[0]",
+            "unchanged": true
+          },
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 11040,
+              "sha256": "61c8296893cefc6c310f46cd0a0c7ce16710af698de68d9bd0358cdb931e2d5f",
+              "shape": [
+                345,
+                4,
+                2
+              ]
+            },
+            "outer_released": true,
+            "path": "info.road_poly[0]",
+            "unchanged": true
+          },
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 4140,
+              "sha256": "5e4c0683faded009b5364fed124703ed6c0e454e1b6bb0a9ad45d529aa2e32af",
+              "shape": [
+                345,
+                3
+              ]
+            },
+            "outer_released": true,
+            "path": "info.road_color[0]",
+            "unchanged": true
+          }
+        ],
+        "case_sha256": "a45198be3262adc1069451ecf134858c9c8d1d9fb76ded617ec3bfb23b903be2"
+      },
+      {
+        "task": "CarRacing-v3",
+        "seed": 42,
+        "counts": {
+          "autoresets_by_env": [
+            4,
+            4
+          ],
+          "container_inner_arrays": 390,
+          "environment_responses": 130,
+          "numeric_arrays": 1557,
+          "numeric_bytes": 6328060,
+          "object_arrays": 195,
+          "object_elements": 390,
+          "records": 65,
+          "reset_calls": 1,
+          "retained_checks_after_close_gc": 3,
+          "retained_inner_arrays": 3,
+          "step_calls": 64,
+          "terminated_by_env": [
+            0,
+            0
+          ],
+          "truncated_by_env": [
+            4,
+            4
+          ]
+        },
+        "retained": [
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 4816,
+              "sha256": "b83ae4f2932c216f82e3dc401538a27911535aac7b2827a90d3d93d76abb9f9e",
+              "shape": [
+                301,
+                4
+              ]
+            },
+            "outer_released": true,
+            "path": "info.track[0]",
+            "unchanged": true
+          },
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 11776,
+              "sha256": "58aaf370eaff71b46c09a8d831a81e757fbb399d0ecb1d2e74941c72f33f0b08",
+              "shape": [
+                368,
+                4,
+                2
+              ]
+            },
+            "outer_released": true,
+            "path": "info.road_poly[0]",
+            "unchanged": true
+          },
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 4416,
+              "sha256": "7afe87bbe8770a386de0b1c5d4abcff94722677f7d748b1ff2701aa8a0909a66",
+              "shape": [
+                368,
+                3
+              ]
+            },
+            "outer_released": true,
+            "path": "info.road_color[0]",
+            "unchanged": true
+          }
+        ],
+        "case_sha256": "4fa36810b64eedb09ada37eeaf60380ae3a430340b2552764251faca192f59c7"
+      },
+      {
+        "task": "BipedalWalker-v3",
+        "seed": 0,
+        "counts": {
+          "autoresets_by_env": [
+            4,
+            4
+          ],
+          "container_inner_arrays": 130,
+          "environment_responses": 130,
+          "numeric_arrays": 1297,
+          "numeric_bytes": 533248,
+          "object_arrays": 65,
+          "object_elements": 130,
+          "records": 65,
+          "reset_calls": 1,
+          "retained_checks_after_close_gc": 1,
+          "retained_inner_arrays": 1,
+          "step_calls": 64,
+          "terminated_by_env": [
+            0,
+            0
+          ],
+          "truncated_by_env": [
+            4,
+            4
+          ]
+        },
+        "retained": [
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 128,
+              "sha256": "d97153778b2bba34e7cf4354331624bc05e2285f33fd9ff0b3174d59bcf93fb4",
+              "shape": [
+                4,
+                4,
+                2
+              ]
+            },
+            "outer_released": true,
+            "path": "info.path4[0]",
+            "unchanged": true
+          }
+        ],
+        "case_sha256": "67e5f3752e573a7738f251675a2bb50f0d6155254578f5911fce79d8e6898014"
+      },
+      {
+        "task": "BipedalWalker-v3",
+        "seed": 42,
+        "counts": {
+          "autoresets_by_env": [
+            4,
+            4
+          ],
+          "container_inner_arrays": 130,
+          "environment_responses": 130,
+          "numeric_arrays": 1297,
+          "numeric_bytes": 533248,
+          "object_arrays": 65,
+          "object_elements": 130,
+          "records": 65,
+          "reset_calls": 1,
+          "retained_checks_after_close_gc": 1,
+          "retained_inner_arrays": 1,
+          "step_calls": 64,
+          "terminated_by_env": [
+            0,
+            0
+          ],
+          "truncated_by_env": [
+            4,
+            4
+          ]
+        },
+        "retained": [
+          {
+            "array": {
+              "dtype": "<f4",
+              "kind": "array",
+              "nbytes": 128,
+              "sha256": "1ad009f2467545a56a5d4363107721e6b7911e963294d358e48f5ee4b10de103",
+              "shape": [
+                4,
+                4,
+                2
+              ]
+            },
+            "outer_released": true,
+            "path": "info.path4[0]",
+            "unchanged": true
+          }
+        ],
+        "case_sha256": "7b6bba13f38df3783abe7c816843ed696e5a8bdd4e489770528662e21f5375c2"
+      }
+    ]
+  }
+]

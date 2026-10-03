@@ -1,0 +1,60 @@
+{
+  "baseline_published_commit": "3b00a18695cbd7b7c28a1c081c5d7c6769818d4b",
+  "candidate_code_commit": "db08d1318e93ea6dea0a65fa6d0ae6ca94138b3a",
+  "native_tests": 64,
+  "sanitizers": {
+    "ASan_UBSan": {
+      "tests_per_repeat": 62,
+      "repeats": 3,
+      "passed": true
+    },
+    "TSan": {
+      "tests_per_repeat": 62,
+      "repeats": 3,
+      "passed": true
+    },
+    "LSan": false
+  },
+  "baseline_negative_tests": {
+    "total": 3,
+    "failed_expected": 2,
+    "passed": 1,
+    "counted_payload_failure_assertions": 3
+  },
+  "ownership_regressions": 9,
+  "python_tests": {
+    "dummy": 11,
+    "classic": 5,
+    "conversion": 2,
+    "conversion_sanitized_repeats": 25,
+    "benchmark_helper": 2,
+    "inherited_helpers": 23
+  },
+  "rollout_arrays": 5499,
+  "rollout_mismatches": 0,
+  "cpu_xla_cases": 8,
+  "cpu_xla_equal": true,
+  "ppo_exact_parity": true,
+  "box2d_test_mode": {
+    "cases": 4,
+    "output_records": 260,
+    "container_inner_arrays": 1040,
+    "retained_inner_arrays": 8,
+    "mismatches": 0
+  },
+  "rebuilt_clients": [
+    "Classic Control",
+    "MuJoCo Gym",
+    "Dummy",
+    "Box2D test mode"
+  ],
+  "not_covered": [
+    "All families/full release",
+    "GPU XLA",
+    "Container-valued XLA",
+    "Other platforms",
+    "General asynchronous PPO",
+    "Whole-program leak cleanliness",
+    "Injected capsule-allocation failure"
+  ]
+}

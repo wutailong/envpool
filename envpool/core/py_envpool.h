@@ -40,10 +40,11 @@ namespace py = pybind11;
 template <typename dtype>
 struct ArrayToNumpyHelper {
   static py::array Convert(const Array& a) {
-    auto* ptr = new std::shared_ptr<char>(a.SharedPtr());
-    auto capsule = py::capsule(ptr, [](void* ptr) {
+    auto holder = std::make_unique<std::shared_ptr<char>>(a.SharedPtr());
+    auto capsule = py::capsule(holder.get(), [](void* ptr) {
       delete reinterpret_cast<std::shared_ptr<char>*>(ptr);
     });
+    holder.release();
     return py::array(a.Shape(), reinterpret_cast<dtype*>(a.Data()), capsule);
   }
 };
@@ -53,17 +54,19 @@ struct ArrayToNumpyHelper<Container<dtype>> {
   using UniquePtr = Container<dtype>;
   static py::array Convert(const Array& a) {
     auto* ptr_arr = reinterpret_cast<UniquePtr*>(a.Data());
-    auto* ptr =
-        new std::unique_ptr<py::object[]>(new py::object[a.size]);  // NOLINT
-    auto capsule = py::capsule(ptr, [](void* ptr) {
+    auto holder = std::make_unique<std::unique_ptr<py::object[]>>(
+        std::make_unique<py::object[]>(a.size));
+    auto capsule = py::capsule(holder.get(), [](void* ptr) {
       delete reinterpret_cast<std::unique_ptr<py::object[]>*>(ptr);  // NOLINT
     });
+    auto* ptr = holder.release();
     for (std::size_t i = 0; i < a.size; ++i) {
-      auto* inner_ptr = new UniquePtr(std::move(ptr_arr[i]));
-      (ptr_arr + i)->~UniquePtr();
-      auto capsule = py::capsule(inner_ptr, [](void* inner_ptr) {
+      // Moving leaves each source slot live and null for its typed owner.
+      auto inner_holder = std::make_unique<UniquePtr>(std::move(ptr_arr[i]));
+      auto capsule = py::capsule(inner_holder.get(), [](void* inner_ptr) {
         delete reinterpret_cast<UniquePtr*>(inner_ptr);
       });
+      auto* inner_ptr = inner_holder.release();
       if (*inner_ptr == nullptr) {
         (*ptr)[i] = py::none();
       } else {

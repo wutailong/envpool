@@ -217,6 +217,22 @@ cc_library(
     ],
 )
 
+cc_test(
+    name = "container_output_test",
+    size = "small",
+    srcs = ["container_output_test.cc"],
+    deps = [
+        ":array",
+        ":async_envpool",
+        ":env",
+        ":env_spec",
+        ":spec",
+        ":state_buffer",
+        ":state_buffer_queue",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "cuda_driver",
     hdrs = ["cuda_driver.h"],

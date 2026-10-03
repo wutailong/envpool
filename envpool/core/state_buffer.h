@@ -25,6 +25,8 @@
 #include <cassert>
 #include <condition_variable>
 #include <functional>
+#include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -32,6 +34,62 @@
 #include "envpool/core/dict.h"
 #include "envpool/core/spec.h"
 #include "lightweightsemaphore.h"
+
+// Preserve element lifetimes before state specs are erased to ShapeSpec.
+// The legacy ShapeSpec-only path remains raw storage with manual lifetimes.
+using StateArrayFactory = Array (*)(const ShapeSpec&);
+
+template <typename Dtype>
+struct StateArrayFactoryHelper {
+  static constexpr bool kIsContainer = false;
+  static Array Make(const ShapeSpec& spec) { return Array(spec); }
+};
+
+template <typename Dtype>
+struct StateArrayFactoryHelper<Container<Dtype>> {
+  static constexpr bool kIsContainer = true;
+  static Array Make(const ShapeSpec& spec) {
+    auto shape = spec.Shape();
+    // Every slot is a live, null Container, including unused batch capacity.
+    // Acquire typed ownership before Array's shape/control-block allocations.
+    std::shared_ptr<Container<Dtype>[]> owner(
+        new Container<Dtype>[Prod(shape.data(), shape.size())]);
+    auto* data = reinterpret_cast<char*>(owner.get());
+    return Array(spec, data, [owner = std::move(owner)](char* unused) mutable {
+      static_cast<void>(unused);
+      // A weak Array owner may retain this deleter's control
+      // block. Release payloads at the last strong owner, not when
+      // that control block dies.
+      owner.reset();
+    });
+  }
+};
+
+template <typename... Spec>
+std::vector<StateArrayFactory> MakeStateArrayFactories(
+    const std::tuple<Spec...>& /*specs*/) {
+  if constexpr ((StateArrayFactoryHelper<typename Spec::dtype>::kIsContainer ||
+                 ...)) {
+    return {&StateArrayFactoryHelper<typename Spec::dtype>::Make...};
+  }
+  // Primitive-only pools keep the existing MakeArray allocation path.
+  return {};
+}
+
+inline std::vector<Array> MakeStateArrays(
+    const std::vector<ShapeSpec>& specs,
+    const std::vector<StateArrayFactory>& factories) {
+  if (factories.empty()) {
+    return MakeArray(specs);
+  }
+  CHECK_EQ(factories.size(), specs.size());
+  std::vector<Array> arrays;
+  arrays.reserve(specs.size());
+  for (std::size_t i = 0; i < specs.size(); ++i) {
+    arrays.emplace_back(factories[i](specs[i]));
+  }
+  return arrays;
+}
 
 /**
  * Buffer of a batch of states, which is used as an intermediate storage device
@@ -71,6 +129,16 @@ class StateBuffer {
       : batch_(batch),
         max_num_players_(max_num_players),
         arrays_(MakeArray(specs)),
+        is_player_state_(std::move(is_player_state)) {}
+
+  // Opt into typed ownership with factories matching the original spec tuple.
+  StateBuffer(std::size_t batch, std::size_t max_num_players,
+              const std::vector<ShapeSpec>& specs,
+              std::vector<bool> is_player_state,
+              const std::vector<StateArrayFactory>& factories)
+      : batch_(batch),
+        max_num_players_(max_num_players),
+        arrays_(MakeStateArrays(specs, factories)),
         is_player_state_(std::move(is_player_state)) {}
 
   /**

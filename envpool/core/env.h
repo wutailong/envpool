@@ -46,6 +46,10 @@ template <typename Dtype>
 struct InitializeHelper<Container<Dtype>> {
   static void Init(Array* arr) {
     auto* carr = reinterpret_cast<Container<Dtype>*>(arr->Data());
+    // Typed buffers already contain fresh null slots. Same-type replacement
+    // is safe for these default-deleter unique_ptrs: each disjoint slot is
+    // reserved only once, before a payload is assigned. Keep placement-new
+    // for callers using legacy raw ShapeSpec storage as well.
     for (std::size_t i = 0; i < arr->size; ++i) {
       new (carr + i) Container<Dtype>(nullptr);
     }

@@ -1,0 +1,1 @@
+{"reference": "$OUTPUT_DIR/results/box2d-control.json", "candidate": "$OUTPUT_DIR/results/box2d-candidate.json", "cases": 4, "records": 260, "mismatches": 0, "semantic_sha256": "5d6cfbcd746623cef19d22c8696aae98fc20532f4bd48ea32a2a2179d07c1ee0"}

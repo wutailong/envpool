@@ -38,6 +38,7 @@ class StateBufferQueue {
   std::size_t max_num_players_;
   std::vector<bool> is_player_state_;
   std::vector<ShapeSpec> specs_;
+  const std::vector<StateArrayFactory> factories_;
   std::size_t queue_size_;
   std::vector<std::unique_ptr<StateBuffer>> queue_;
   std::atomic<uint64_t> alloc_count_, done_ptr_, alloc_tail_;
@@ -52,6 +53,13 @@ class StateBufferQueue {
   StateBufferQueue(std::size_t batch_env, std::size_t num_envs,
                    std::size_t max_num_players,
                    const std::vector<ShapeSpec>& specs)
+      : StateBufferQueue(batch_env, num_envs, max_num_players, specs, {}) {}
+
+  // Keep dtype-aware recipes for initial, stock and fallback buffers alike.
+  StateBufferQueue(std::size_t batch_env, std::size_t num_envs,
+                   std::size_t max_num_players,
+                   const std::vector<ShapeSpec>& specs,
+                   std::vector<StateArrayFactory> factories)
       : batch_(batch_env),
         max_num_players_(max_num_players),
         is_player_state_(Transform(specs,
@@ -68,6 +76,7 @@ class StateBufferQueue {
                            }
                            return s.Batch(batch_);
                          })),
+        factories_(std::move(factories)),
         // two times enough buffer for all the envs
         queue_size_((num_envs / batch_env + 2) * 2),
         queue_(queue_size_),  // circular buffer
@@ -81,7 +90,7 @@ class StateBufferQueue {
     // alloc_tail_ = num_envs / batch_env + 2;
     for (auto& q : queue_) {
       q = std::make_unique<StateBuffer>(batch_, max_num_players_, specs_,
-                                        is_player_state_);
+                                        is_player_state_, factories_);
     }
     std::size_t processor_count = std::thread::hardware_concurrency();
     // hardcode here :(
@@ -90,8 +99,8 @@ class StateBufferQueue {
     for (std::size_t i = 0; i < create_buffer_thread_num; ++i) {
       create_buffer_thread_.emplace_back([&]() {
         while (true) {
-          auto buffer = std::make_unique<StateBuffer>(batch_, max_num_players_,
-                                                      specs_, is_player_state_);
+          auto buffer = std::make_unique<StateBuffer>(
+              batch_, max_num_players_, specs_, is_player_state_, factories_);
           {
             std::scoped_lock lock(stock_buffer_put_mu_);
             stock_buffer_.Put(std::move(buffer));
@@ -156,7 +165,7 @@ class StateBufferQueue {
     std::unique_ptr<StateBuffer> newbuf;
     if (!stock_buffer_.TryGet(&newbuf) || newbuf == nullptr) {
       newbuf = std::make_unique<StateBuffer>(batch_, max_num_players_, specs_,
-                                             is_player_state_);
+                                             is_player_state_, factories_);
     }
     std::swap(queue_[offset], newbuf);
     return arr;

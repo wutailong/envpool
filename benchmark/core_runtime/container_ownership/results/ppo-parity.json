@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "comparison": "Exact values and contiguous array bytes; zero tolerance",
+  "scope": "One matched-seed, fixed-budget, synchronous CartPole-v1 PPO experiment on this CPU/runtime",
+  "counts": {
+    "arrays": 223,
+    "array_elements": 8838537,
+    "tensors": 4925,
+    "tensor_elements": 3295766,
+    "scalars": 106238,
+    "checkpoint_files": 101
+  },
+  "per_file": {
+    "baseline-trace.npz": {
+      "equal": true,
+      "arrays": 32,
+      "array_elements": 13942,
+      "tensors": 0,
+      "tensor_elements": 0,
+      "scalars": 0,
+      "checkpoint_files": 0
+    },
+    "train-trace.npz": {
+      "equal": true,
+      "arrays": 32,
+      "array_elements": 3495337,
+      "tensors": 0,
+      "tensor_elements": 0,
+      "scalars": 0,
+      "checkpoint_files": 0
+    },
+    "processed-batches.npz": {
+      "equal": true,
+      "arrays": 26,
+      "array_elements": 4609412,
+      "tensors": 0,
+      "tensor_elements": 0,
+      "scalars": 0,
+      "checkpoint_files": 0
+    },
+    "final-trace.npz": {
+      "equal": true,
+      "arrays": 32,
+      "array_elements": 656822,
+      "tensors": 0,
+      "tensor_elements": 0,
+      "scalars": 0,
+      "checkpoint_files": 0
+    }
+  },
+  "failures": [],
+  "max_abs_difference": 0,
+  "original_native_binary": "$CONTROL_THREE_CLIENT_RUNTIME/envpool/classic_control/classic_control_envpool.so",
+  "original_native_sha256": "37b82dd99bf67154478d355c4031cc44980fc6a5fb50687ca9b936ced2ebf9d3",
+  "candidate_native_binary": "$CANDIDATE_THREE_CLIENT_RUNTIME/envpool/classic_control/classic_control_envpool.so",
+  "candidate_native_sha256": "5c3640090aff48467d201fb9116dbf23d14f4d70eb2676842428bc9821725977",
+  "excluded": [
+    "wall-clock timings",
+    "archive serialization bytes",
+    "runtime import paths"
+  ],
+  "limitations": [
+    "Not proof of general PPO equivalence",
+    "No asynchronous-ordering claim",
+    "Not a training-throughput benchmark",
+    "No cross-platform or full-family claim"
+  ]
+}

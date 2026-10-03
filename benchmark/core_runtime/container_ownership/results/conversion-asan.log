@@ -1,0 +1,57 @@
+test_last_inner_view_owns_payload (test_conversion.ContainerConversionTest.test_last_inner_view_owns_payload)
+Inner arrays outlive the pool, output buffer, and outer array. ... ok
+test_second_element_failure_reclaims_all_payloads (test_conversion.ContainerConversionTest.test_second_element_failure_reclaims_all_payloads)
+Failure frees converted, rejected, and untouched source payloads. ... AddressSanitizer: CHECK failed: asan_interceptors.cpp:458 "((__interception::real___cxa_throw)) != (0)" (0x0, 0x0) (tid=14)
+    #0 0x7f7b519be28a in CheckUnwind ../../../../src/libsanitizer/asan/asan_rtl.cpp:69
+    #1 0x7f7b519e2fed in __sanitizer::CheckFailed(char const*, int, char const*, unsigned long long, unsigned long long) ../../../../src/libsanitizer/sanitizer_common/sanitizer_termination.cpp:86
+    #2 0x7f7b519ac684 in __cxa_throw ../../../../src/libsanitizer/asan/asan_interceptors.cpp:458
+    #3 0x7f7b519ac684 in __cxa_throw ../../../../src/libsanitizer/asan/asan_interceptors.cpp:457
+    #4 0x7f7b4ddc080d in pybind11::array::array(pybind11::dtype const&, pybind11::detail::any_container<long>, pybind11::detail::any_container<long>, void const*, pybind11::handle) $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/numpy.h:1081
+    #5 0x7f7b4ddc3201 in pybind11::array::array<int>(pybind11::detail::any_container<long>, pybind11::detail::any_container<long>, int const*, pybind11::handle) $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/numpy.h:1112
+    #6 0x7f7b4ddc3201 in pybind11::array::array<int>(pybind11::detail::any_container<long>, int const*, pybind11::handle) $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/numpy.h:1116
+    #7 0x7f7b4ddc3201 in ArrayToNumpyHelper<std::unique_ptr<TArray<int>, std::default_delete<TArray<int> > > >::Convert(Array const&) $CANDIDATE_SOURCE/envpool/core/py_envpool.h:74
+    #8 0x7f7b4de2965e in Convert $CANDIDATE_SOURCE/benchmark/core_runtime/container_ownership/conversion_probe.cc:171
+    #9 0x7f7b4dc1ef79 in callback_fn<pybind11::array (*)(const std::shared_ptr<(anonymous namespace)::Counts>&, bool)> $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/detail/function_ref.h:67
+    #10 0x7f7b4de12f0f in operator() $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/detail/function_ref.h:91
+    #11 0x7f7b4de12f0f in call_impl<pybind11::array, pybind11::detail::function_ref<pybind11::array(const std::shared_ptr<(anonymous namespace)::Counts>&, bool)>&, 0, 1, pybind11::detail::void_type> $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/cast.h:2206
+    #12 0x7f7b4de12f0f in call<pybind11::array, pybind11::detail::void_type, pybind11::detail::function_ref<pybind11::array(const std::shared_ptr<(anonymous namespace)::Counts>&, bool)>&> $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/cast.h:2169
+    #13 0x7f7b4de12f0f in call_impl<pybind11::array, pybind11::detail::void_type, pybind11::detail::argument_loader<const std::shared_ptr<(anonymous namespace)::Counts>&, bool>, const std::shared_ptr<(anonymous namespace)::Counts>&, bool> $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/pybind11.h:519
+    #14 0x7f7b4de12f0f in operator() $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/pybind11.h:600
+    #15 0x7f7b4de131c2 in _FUN $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/pybind11.h:587
+    #16 0x7f7b4de01190 in pybind11::cpp_function::dispatcher(_object*, _object* const*, unsigned long, _object*) $BAZEL_EXECROOT/external/+repositories+pybind11/include/pybind11/pybind11.h:1236
+    #17 0x1824abe in cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.2305966719422422379 ($PYTHON_HOME/bin/python3.12+0x1824abe) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #18 0x1817409 in _PyEval_EvalFrameDefault ($PYTHON_HOME/bin/python3.12+0x1817409) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #19 0x1810823 in method_vectorcall.llvm.12408582019548959275 ($PYTHON_HOME/bin/python3.12+0x1810823) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #20 0x181e954 in _PyEval_EvalFrameDefault ($PYTHON_HOME/bin/python3.12+0x181e954) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #21 0x18b752d in _PyObject_Call_Prepend ($PYTHON_HOME/bin/python3.12+0x18b752d) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #22 0x18b746b in slot_tp_call ($PYTHON_HOME/bin/python3.12+0x18b746b) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #23 0x181727e in _PyEval_EvalFrameDefault ($PYTHON_HOME/bin/python3.12+0x181727e) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #24 0x1810823 in method_vectorcall.llvm.12408582019548959275 ($PYTHON_HOME/bin/python3.12+0x1810823) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #25 0x181e954 in _PyEval_EvalFrameDefault ($PYTHON_HOME/bin/python3.12+0x181e954) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #26 0x18b752d in _PyObject_Call_Prepend ($PYTHON_HOME/bin/python3.12+0x18b752d) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #27 0x18b746b in slot_tp_call ($PYTHON_HOME/bin/python3.12+0x18b746b) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #28 0x181727e in _PyEval_EvalFrameDefault ($PYTHON_HOME/bin/python3.12+0x181727e) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #29 0x1810823 in method_vectorcall.llvm.12408582019548959275 ($PYTHON_HOME/bin/python3.12+0x1810823) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #30 0x181e954 in _PyEval_EvalFrameDefault ($PYTHON_HOME/bin/python3.12+0x181e954) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #31 0x18b752d in _PyObject_Call_Prepend ($PYTHON_HOME/bin/python3.12+0x18b752d) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #32 0x18b746b in slot_tp_call ($PYTHON_HOME/bin/python3.12+0x18b746b) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #33 0x181727e in _PyEval_EvalFrameDefault ($PYTHON_HOME/bin/python3.12+0x181727e) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #34 0x1810823 in method_vectorcall.llvm.12408582019548959275 ($PYTHON_HOME/bin/python3.12+0x1810823) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #35 0x181e954 in _PyEval_EvalFrameDefault ($PYTHON_HOME/bin/python3.12+0x181e954) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #36 0x18b752d in _PyObject_Call_Prepend ($PYTHON_HOME/bin/python3.12+0x18b752d) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #37 0x18b746b in slot_tp_call ($PYTHON_HOME/bin/python3.12+0x18b746b) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #38 0x181727e in _PyEval_EvalFrameDefault ($PYTHON_HOME/bin/python3.12+0x181727e) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #39 0x18a84f1 in PyEval_EvalCode ($PYTHON_HOME/bin/python3.12+0x18a84f1) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #40 0x18a8048 in run_mod.llvm.10142647837896989511 ($PYTHON_HOME/bin/python3.12+0x18a8048) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #41 0x19dce84 in pyrun_file ($PYTHON_HOME/bin/python3.12+0x19dce84) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #42 0x19dcc45 in _PyRun_SimpleFileObject ($PYTHON_HOME/bin/python3.12+0x19dcc45) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #43 0x19dc9c9 in _PyRun_AnyFileObject ($PYTHON_HOME/bin/python3.12+0x19dc9c9) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #44 0x19dc94f in pymain_run_file_obj ($PYTHON_HOME/bin/python3.12+0x19dc94f) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #45 0x19dc85c in pymain_run_file ($PYTHON_HOME/bin/python3.12+0x19dc85c) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #46 0x1ad7762 in Py_RunMain.warm ($PYTHON_HOME/bin/python3.12+0x1ad7762) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #47 0x197d35e in pymain_main.llvm.3121965821471187960 ($PYTHON_HOME/bin/python3.12+0x197d35e) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #48 0x197d16b in main ($PYTHON_HOME/bin/python3.12+0x197d16b) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+    #49 0x7f7b515cbca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildId: 5e5b51f4c39af9ac589408c1dc432ba390a273cc)
+    #50 0x7f7b515cbd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29d64) (BuildId: 5e5b51f4c39af9ac589408c1dc432ba390a273cc)
+    #51 0x19b1228 in _start ($PYTHON_HOME/bin/python3.12+0x19b1228) (BuildId: 315f4da692c3ca93b40412ce784bb95fb60a261e)
+

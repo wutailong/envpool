@@ -1,0 +1,15 @@
+{
+  "initial_exit": 1,
+  "initial": "ASan CHECK failed: real___cxa_throw was null when libstdc++ was loaded after Python startup",
+  "same_probe_reused": true,
+  "successful_environment": {
+    "LD_PRELOAD": "$(g++ -print-file-name=libasan.so):$(g++ -print-file-name=libstdc++.so)",
+    "ASAN_OPTIONS": "detect_leaks=0",
+    "UBSAN_OPTIONS": "halt_on_error=1",
+    "PYTHONMALLOC": "malloc"
+  },
+  "successful_command": "$PPO_VENV/bin/python $OUTPUT_DIR/tools/check_conversion_repeats.py",
+  "tests": 50,
+  "passed": true,
+  "leak_sanitizer": false
+}

@@ -1,0 +1,18 @@
+{
+  "labels": {
+    "a": "control",
+    "b": "same control",
+    "c": "candidate",
+    "d": "same candidate"
+  },
+  "control_root": "$CONTROL_RUNTIME",
+  "candidate_root": "$CANDIDATE_RUNTIME",
+  "native_entries_checked_before_and_after": 84,
+  "source_unchanged": true,
+  "in_place_binary_replacement": false,
+  "general_rows_measured_hashes": false,
+  "dummy_rows_measured_hashes": true,
+  "general_identity_evidence": "Matching immutable runtime roots plus complete manifests before and after all measurements",
+  "other_17_families_shared_readonly": true,
+  "box2d_mode": "ENVPOOL_TEST in both Box2D clients; all six translation units rebuilt"
+}
