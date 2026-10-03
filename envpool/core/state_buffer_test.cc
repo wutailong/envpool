@@ -21,6 +21,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <future>
+#include <memory>
+#include <thread>
+#include <utility>
 #include <vector>
 
 #include "absl/log/check.h"
@@ -302,5 +305,54 @@ TEST(StateBufferTest, PartialWaitRequiresEveryAllocatedWriterToComplete) {
   }
   for (int i = 0; i < 4; ++i) {
     EXPECT_EQ(shared[i], i < 2 ? 12 : 22);
+  }
+}
+
+TEST(StateBufferTest, CompletionAllowsImmediateDestruction) {
+  constexpr int kRounds = 256;
+  constexpr int kBatch = 4;
+  const std::vector<ShapeSpec> specs{ShapeSpec(sizeof(int), {kBatch, 2}),
+                                     ShapeSpec(sizeof(int), {kBatch})};
+  std::vector<std::vector<Array>> outputs;
+  outputs.reserve(kRounds);
+  for (int round = 0; round < kRounds; ++round) {
+    auto buffer = std::make_unique<StateBuffer>(kBatch, 1, specs,
+                                                std::vector<bool>{true, false});
+    std::promise<void> start;
+    auto ready = start.get_future().share();
+    std::array<std::thread, kBatch> writers;
+    for (int writer = 0; writer < kBatch; ++writer) {
+      auto slice = buffer->Allocate(1);
+      writers[writer] = std::thread(
+          [ready, round, writer, slice = std::move(slice)]() mutable {
+            ready.wait();
+            slice.arr[0].Fill(round * 100 + writer);
+            slice.arr[1] = round * 100 + writer + 50;
+            slice.done_write();
+          });
+    }
+    start.set_value();
+    outputs.emplace_back(buffer->Wait());
+    // Completion permits destroying the buffer immediately. A non-final
+    // writer must not read buffer members after publishing its done count.
+    buffer.reset();
+    for (auto& writer : writers) {
+      writer.join();
+    }
+  }
+
+  // Keep all owning outputs across later allocations and buffer destruction.
+  for (int round = 0; round < kRounds; ++round) {
+    const auto& output = outputs[round];
+    ASSERT_EQ(output.size(), 2U);
+    EXPECT_EQ(output[0].Shape(), std::vector<std::size_t>({kBatch, 2}));
+    EXPECT_EQ(output[1].Shape(), std::vector<std::size_t>({kBatch}));
+    const auto* players = reinterpret_cast<const int*>(output[0].Data());
+    const auto* shared = reinterpret_cast<const int*>(output[1].Data());
+    for (int writer = 0; writer < kBatch; ++writer) {
+      EXPECT_EQ(players[writer * 2], round * 100 + writer);
+      EXPECT_EQ(players[writer * 2 + 1], round * 100 + writer);
+      EXPECT_EQ(shared[writer], round * 100 + writer + 50);
+    }
   }
 }

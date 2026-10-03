@@ -124,8 +124,11 @@ class StateBuffer {
    * call this callback to notify StateBuffer that its part has been written.
    */
   void Done(std::size_t num = 1) {
+    // Another writer may publish the final count and retire this buffer as
+    // soon as we contribute. Read shared metadata before that publication.
+    const std::size_t batch = batch_;
     std::size_t done_count = done_count_.fetch_add(num);
-    if (done_count + num == batch_) {
+    if (done_count + num == batch) {
       sem_.signal();
     }
   }
