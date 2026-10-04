@@ -1,0 +1,17 @@
+In file included from $BAZEL_EXECROOT/bazel-out/k8-opt/bin/external/+repositories+openxla_ffi_headers/_virtual_includes/headers/xla/ffi/api/ffi.h:48,
+                 from $SOURCE/envpool/core/xla_template.h:24,
+                 from $SOURCE/envpool/core/xla.h:32,
+                 from $SOURCE/envpool/core/py_envpool.h:33,
+                 from $SOURCE/envpool/classic_control/classic_control.cc:20:
+$BAZEL_EXECROOT/bazel-out/k8-opt/bin/external/+repositories+openxla_ffi_headers/_virtual_includes/headers/xla/ffi/api/api.h: In function ‘std::ostream& operator<<(std::ostream&, XLA_FFI_AttrType)’:
+$BAZEL_EXECROOT/bazel-out/k8-opt/bin/external/+repositories+openxla_ffi_headers/_virtual_includes/headers/xla/ffi/api/api.h:180:1: warning: control reaches end of non-void function [-Wreturn-type]
+  180 | }
+      | ^
+$BAZEL_EXECROOT/bazel-out/k8-opt/bin/external/+repositories+openxla_ffi_headers/_virtual_includes/headers/xla/ffi/api/api.h: In function ‘std::ostream& operator<<(std::ostream&, XLA_FFI_DataType)’:
+$BAZEL_EXECROOT/bazel-out/k8-opt/bin/external/+repositories+openxla_ffi_headers/_virtual_includes/headers/xla/ffi/api/api.h:167:1: warning: control reaches end of non-void function [-Wreturn-type]
+  167 | }
+      | ^
+$BAZEL_EXECROOT/bazel-out/k8-opt/bin/external/+repositories+openxla_ffi_headers/_virtual_includes/headers/xla/ffi/api/api.h: In function ‘std::ostream& operator<<(std::ostream&, XLA_FFI_ExecutionStage)’:
+$BAZEL_EXECROOT/bazel-out/k8-opt/bin/external/+repositories+openxla_ffi_headers/_virtual_includes/headers/xla/ffi/api/api.h:196:1: warning: control reaches end of non-void function [-Wreturn-type]
+  196 | }
+      | ^

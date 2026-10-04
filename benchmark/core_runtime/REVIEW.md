@@ -1,6 +1,6 @@
 # Core runtime review / 分支导航
 
-核验日期：2026-10-04 UTC。本次复查修正文档中的复现命令和历史版本归属；没有新增运行时修改、测试覆盖或性能采样。历史提交链接固定到已经发布、核验过的版本。
+核验日期：2026-10-04 UTC。文档复查后，新增了从公开 ce1c47f2 源码重新构建两个客户端的正向验证；生产 core 与历史性能采样不变。历史提交链接固定到已经发布、核验过的版本。
 这是累计修改链，不是一组互相独立、需要全部合并的补丁。
 
 ## 先看哪个版本
@@ -10,6 +10,7 @@
 - **保留的直接 tuple 版本**：[perf/core-state-tuple / ce1c47f2](https://github.com/wutailong/envpool/tree/ce1c47f238a069454f732a70089d1b9857dcc6de)，[详细报告](state_tuple/README.md)。每个 CartPole state 少一次 576 字节的临时分配。固定本轮计时中，多线程 CartPole、Dummy 和 Box2D 诊断客户端有正向信号；小批量 CartPole、HalfCheetah 和完整 PPO 尚不能确认加速。
 - **已归档的 parser 研究**：[未采用的 player-index 优化](player_action_index/README.md)。减少了连续玩家索引分配，但目标负载没有可靠提速，普通配置有不利结果。生产 core 保持 ce1c47f2，候选补丁只作未应用记录保存。
 - **当前 PPO 耗时诊断**：[32 次原版/保留版 × 普通/计时运行](ppo_phase/README.md)。保留版中 PPO update 约 67.43%、其余采样 24.73%、EnvPool Python step/reset 边界 7.79%。后者并非纯 C++ 时间；算法与超参数未改。
+- **公开源码复现检查**：[全新 clone 的双客户端构建与正向 smoke](published_rebuild/README.md)。Classic Control、renderer 和 Dummy 均从固定公开源码编译，6 个既有正向方法通过，两次短 PPO 指纹相同。外部依赖和其他环境的原版支持模块仍复用，不是全环境干净构建或新的速度结论。
 - **原版对照**：[main / 9c31c547](https://github.com/wutailong/envpool/tree/9c31c5478eb61d8f67f8c9a1ec2b37568f2c7ca3)。保持不变，作为历史对照；没有后续修复。
 
 这些累计版本都基于第一轮 core 性能改动，**不是直接基于未优化 main 的纯修复版**。
@@ -31,7 +32,7 @@
 | fix/core-container-ownership | [15f80b09](https://github.com/wutailong/envpool/commit/15f80b0934689f635c49ec8764e6b5211e5fd218) | 回收被丢弃和 C++ 接收后释放的 Container payload，保护 Python 所有权转移异常路径 |
 | perf/core-container-storage | [bf2f16c0](https://github.com/wutailong/envpool/commit/bf2f16c0d724d01c480668703012342ab1f0fd4e) | 复用 typed owner 和 shape，取消额外控制块和 shape 分配 |
 
-之后依次为文档提交 [b8224909](https://github.com/wutailong/envpool/commit/b8224909df38650c0f1e7aadc5004ea8d3e2eecd)，以及直接 tuple 版本 [ce1c47f2](https://github.com/wutailong/envpool/commit/ce1c47f238a069454f732a70089d1b9857dcc6de)。player-index 研究 [cd7d0b8e](https://github.com/wutailong/envpool/commit/cd7d0b8e31420cb92ccdf438d61df1eb1a4cb95b) 以 ce1c47f2 为父提交，PPO 诊断 [ad9650a6](https://github.com/wutailong/envpool/commit/ad9650a6dbdcfd8310f91cd584d67174c1593586) 以 cd7d0b8e 为父提交。本次文档复查再以 ad9650a6 为父提交，生产 core 仍是 ce1c47f2。
+之后依次为文档提交 [b8224909](https://github.com/wutailong/envpool/commit/b8224909df38650c0f1e7aadc5004ea8d3e2eecd)，以及直接 tuple 版本 [ce1c47f2](https://github.com/wutailong/envpool/commit/ce1c47f238a069454f732a70089d1b9857dcc6de)。player-index 研究 [cd7d0b8e](https://github.com/wutailong/envpool/commit/cd7d0b8e31420cb92ccdf438d61df1eb1a4cb95b) 以 ce1c47f2 为父提交，PPO 诊断 [ad9650a6](https://github.com/wutailong/envpool/commit/ad9650a6dbdcfd8310f91cd584d67174c1593586) 以 cd7d0b8e 为父提交。文档复查 [44dd3d41](https://github.com/wutailong/envpool/commit/44dd3d4122a7f080fdd67675bc4ff5ff73c6d336) 再以 ad9650a6 为父提交；本次源码复现工具和记录以 44dd3d41 为父提交，生产 core 仍是 ce1c47f2。
 
 选择后面的提交就已经包含前面的提交。不要再重复 cherry-pick 整条链。
 没有修改 main，没有创建 PR、合并或发布 release。
@@ -104,6 +105,7 @@ git -C envpool-retained rev-parse HEAD
 - [直接 typed tuple、逐 state 分配审计与全部速度结果](state_tuple/README.md)
 - [未采用的 player-index 改动、散列玩家压力负载和全部结果](player_action_index/README.md)
 - [真实 PPO 耗时分解、计时开销与 32 次固定试验](ppo_phase/README.md)
+- [固定公开源码的两客户端重新构建与正向检查](published_rebuild/README.md)
 - [同步 PPO 方法](ppo/README.md) / [CPU XLA 范围](xla/README.md)
 
 每份报告旁边保留原始测量、构建参数、源码/二进制指纹和限制。没有上传二进制、模型权重、

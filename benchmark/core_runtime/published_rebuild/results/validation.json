@@ -1,0 +1,28 @@
+{
+  "public_source_commit": "ce1c47f238a069454f732a70089d1b9857dcc6de",
+  "public_source_tree": "7521d1b10ca2f53d6098d0c8d24667a6c5f59358",
+  "fresh_units": 3,
+  "fresh_native_clients": 2,
+  "reused_external_archives": 50,
+  "reused_original_support_modules": 19,
+  "published_python_files": 181,
+  "unique_dependency_files": 693,
+  "unique_project_files": 27,
+  "synthetic_helper_tests": 14,
+  "positive_existing_test_methods": 6,
+  "ppo_smoke_fresh_processes": 2,
+  "ppo_semantic_fingerprints_equal": true,
+  "build_source_and_runtime_inputs_frozen": true,
+  "source_checkout_still_clean": true,
+  "new_performance_measurements": false,
+  "full_clean_dependency_or_all_family_build": false,
+  "sanitizer_rerun": false,
+  "gpu_or_xla_rerun": false,
+  "limitations": [
+    "Existing external native and Python dependencies were reused",
+    "Mixed support runtime: only Classic Control and Dummy are fresh native clients",
+    "Two-update PPO fingerprint smoke is not complete-journal or full-budget parity",
+    "Compiler warnings from inherited OpenXLA enum-stream functions remain visible",
+    "No CI-pass or speed claim"
+  ]
+}

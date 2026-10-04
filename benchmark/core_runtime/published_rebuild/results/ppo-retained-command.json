@@ -1,0 +1,17 @@
+[
+  "$PPO_VENV/bin/python",
+  "-B",
+  "$SOURCE/benchmark/core_runtime/experiments/bench_ppo.py",
+  "--package",
+  "$RETAINED_PACKAGE",
+  "--label",
+  "retained",
+  "--iterations",
+  "2",
+  "--warmup",
+  "2",
+  "--native-sha256",
+  "accfaebe22982718d595f45a2c7c4ba67515e22f4d8084bf656cd9768c1b164c",
+  "--output",
+  "$WORK/results/ppo-retained.json"
+]
