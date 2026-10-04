@@ -1,0 +1,359 @@
+diff --git a/envpool/classic_control/classic_control.cc b/envpool/classic_control/classic_control.cc
+--- a/envpool/classic_control/classic_control.cc
++++ b/envpool/classic_control/classic_control.cc
+@@ -42,4 +42,71 @@
+   REGISTER(m, MountainCarEnvSpec, MountainCarEnvPool)
+   REGISTER(m, MountainCarContinuousEnvSpec, MountainCarContinuousEnvPool)
+   REGISTER(m, AcrobotEnvSpec, AcrobotEnvPool)
++
++  // Diagnostic-only module functions. Existing class bindings and PySend stay
++  // byte-for-byte unchanged. Configure/snapshot must not overlap any Send.
++  m.def("_diagnostic_send_profile_configure",
++        [](CartPoleEnvPool& pool, bool enabled, bool reset, bool fine) {
++          pool.DiagnosticConfigureSendProfile(enabled, reset, fine);
++        },
++        py::arg("pool"), py::arg("enabled"), py::arg("reset") = true,
++        py::arg("fine") = false);
++  m.def("_diagnostic_send_profile_snapshot", [](const CartPoleEnvPool& pool) {
++    const auto profile = pool.DiagnosticSendProfileSnapshot();
++    py::dict result;
++    result["schema_version"] = 2;
++    result["fine_enabled"] = profile.fine_enabled;
++    result["enabled"] = profile.enabled;
++    result["started_calls"] = profile.started_calls;
++    result["completed_calls"] = profile.completed_calls;
++    result["incomplete_calls"] = profile.started_calls - profile.completed_calls;
++    result["timed_calls"] = profile.timed_calls;
++    result["untimed_completed_calls"] = profile.completed_calls - profile.timed_calls;
++    result["timed_envs"] = profile.timed_envs;
++    result["clock_errors"] = profile.clock_errors;
++    result["invalid_interval_calls"] = profile.invalid_interval_calls;
++    result["valid"] = profile.started_calls == profile.timed_calls &&
++                      profile.clock_errors == 0 &&
++                      profile.invalid_interval_calls == 0;
++    const char* names[] = {
++        "setup", "set_action_slices_prior_owner_release_and_sync_accounting", "enqueue"};
++    py::dict phases;
++    for (std::size_t i = 0; i < 3; ++i) {
++      py::dict phase;
++      phase["wall_ns"] = profile.wall_ns[i];
++      phase["caller_cpu_ns"] = profile.caller_cpu_ns[i];
++      phases[names[i]] = phase;
++    }
++    result["phases"] = phases;
++    result["legacy_enqueue_wall_seconds_since_reset"] =
++        profile.legacy_enqueue_seconds_since_reset;
++
++    const auto& fine = profile.fine_enqueue;
++    py::dict fine_result;
++    fine_result["started_calls"] = fine.started_calls;
++    fine_result["completed_calls"] = fine.completed_calls;
++    fine_result["incomplete_calls"] = fine.started_calls - fine.completed_calls;
++    fine_result["timed_calls"] = fine.timed_calls;
++    fine_result["untimed_completed_calls"] = fine.completed_calls - fine.timed_calls;
++    fine_result["timed_actions"] = fine.timed_actions;
++    fine_result["clock_errors"] = fine.clock_errors;
++    fine_result["invalid_interval_calls"] = fine.invalid_interval_calls;
++    fine_result["valid"] = fine.started_calls == fine.timed_calls &&
++                           fine.clock_errors == 0 &&
++                           fine.invalid_interval_calls == 0;
++    fine_result["work_permit_posix_post_requests"] =
++        fine.work_permit_posix_post_requests;
++    const char* fine_names[] = {"producer_guard_and_reservation", "slot_fill",
++                                "work_permit_signal", "producer_guard_release"};
++    py::dict fine_phases;
++    for (std::size_t i = 0; i < 4; ++i) {
++      py::dict phase;
++      phase["wall_ns"] = fine.wall_ns[i];
++      phase["caller_cpu_ns"] = fine.caller_cpu_ns[i];
++      fine_phases[fine_names[i]] = phase;
++    }
++    fine_result["phases"] = fine_phases;
++    result["fine_enqueue"] = fine_result;
++    return result;
++  });
+ }
+diff --git a/envpool/core/action_buffer_queue.h b/envpool/core/action_buffer_queue.h
+--- a/envpool/core/action_buffer_queue.h
++++ b/envpool/core/action_buffer_queue.h
+@@ -21,7 +21,10 @@
+ #define MOODYCAMEL_DELETE_FUNCTION = delete
+ #endif
+ 
++#include <array>
+ #include <atomic>
++#include <cstdint>
++#include <ctime>
+ #include <cassert>
+ #include <utility>
+ #include <vector>
+@@ -40,6 +43,21 @@
+     bool force_reset;
+   };
+ 
++
++  // Diagnostic-only type; no ActionBufferQueue instance fields are added.
++  // One caller owns these counters. Workers never access them.
++  struct DiagnosticEnqueueProfile {
++    std::uint64_t started_calls = 0;
++    std::uint64_t completed_calls = 0;
++    std::uint64_t timed_calls = 0;
++    std::uint64_t timed_actions = 0;
++    std::uint64_t clock_errors = 0;
++    std::uint64_t invalid_interval_calls = 0;
++    std::uint64_t work_permit_posix_post_requests = 0;
++    std::array<std::uint64_t, 4> wall_ns{};
++    std::array<std::uint64_t, 4> caller_cpu_ns{};
++  };
++
+  protected:
+   std::atomic<uint64_t> alloc_ptr_, done_ptr_;
+   std::size_t queue_size_;
+@@ -68,6 +86,28 @@
+     sem_enqueue_.signal(1);
+   }
+ 
++  void DiagnosticEnqueueBulk(const std::vector<ActionSlice>& action,
++                             DiagnosticEnqueueProfile* profile) {
++    ++profile->started_calls;
++    const auto guard_start = DiagnosticReadEnqueueClocks(profile);
++    // ensure only one enqueue_bulk happens at any time
++    while (!sem_enqueue_.wait()) {
++    }
++    uint64_t pos = alloc_ptr_.fetch_add(action.size());
++    const auto fill_start = DiagnosticReadEnqueueClocks(profile);
++    for (std::size_t i = 0; i < action.size(); ++i) {
++      queue_[(pos + i) % queue_size_] = action[i];
++    }
++    const auto signal_start = DiagnosticReadEnqueueClocks(profile);
++    const auto post_requests = sem_.DiagnosticSignalReleaseRequests(action.size());
++    const auto release_start = DiagnosticReadEnqueueClocks(profile);
++    sem_enqueue_.signal(1);
++    const auto queue_end = DiagnosticReadEnqueueClocks(profile);
++    DiagnosticRecordEnqueueClocks(
++        {guard_start, fill_start, signal_start, release_start, queue_end},
++        action.size(), post_requests, profile);
++  }
++
+   ActionSlice Dequeue() {
+     while (!sem_.wait()) {
+     }
+@@ -98,6 +138,60 @@
+   }
+ 
+  private:
++
++  struct DiagnosticEnqueueClockStamp {
++    std::uint64_t wall_ns = 0;
++    std::uint64_t caller_cpu_ns = 0;
++    bool valid = false;
++  };
++
++  static DiagnosticEnqueueClockStamp DiagnosticReadEnqueueClocks(
++      DiagnosticEnqueueProfile* profile) {
++    timespec wall{};
++    timespec cpu{};
++    const int wall_error = clock_gettime(CLOCK_MONOTONIC, &wall);
++    const int cpu_error = clock_gettime(CLOCK_THREAD_CPUTIME_ID, &cpu);
++    profile->clock_errors += (wall_error != 0) + (cpu_error != 0);
++    if (wall_error != 0 || cpu_error != 0) {
++      return {};
++    }
++    constexpr std::uint64_t kNsPerSecond = 1000000000ULL;
++    return {static_cast<std::uint64_t>(wall.tv_sec) * kNsPerSecond +
++                static_cast<std::uint64_t>(wall.tv_nsec),
++            static_cast<std::uint64_t>(cpu.tv_sec) * kNsPerSecond +
++                static_cast<std::uint64_t>(cpu.tv_nsec),
++            true};
++  }
++
++  static void DiagnosticRecordEnqueueClocks(
++      const std::array<DiagnosticEnqueueClockStamp, 5>& stamps,
++      std::size_t action_count, std::size_t post_requests,
++      DiagnosticEnqueueProfile* profile) {
++    ++profile->completed_calls;
++    // Positive toRelease requests from the existing signal calculation. The
++    // POSIX backend can retry sem_post; actual calls/wake syscalls are unobserved.
++    profile->work_permit_posix_post_requests += post_requests;
++    for (const auto& stamp : stamps) {
++      if (!stamp.valid) {
++        return;
++      }
++    }
++    for (std::size_t i = 0; i < 4; ++i) {
++      if (stamps[i + 1].wall_ns < stamps[i].wall_ns ||
++          stamps[i + 1].caller_cpu_ns < stamps[i].caller_cpu_ns) {
++        ++profile->invalid_interval_calls;
++        return;
++      }
++    }
++    ++profile->timed_calls;
++    profile->timed_actions += action_count;
++    for (std::size_t i = 0; i < 4; ++i) {
++      profile->wall_ns[i] += stamps[i + 1].wall_ns - stamps[i].wall_ns;
++      profile->caller_cpu_ns[i] +=
++          stamps[i + 1].caller_cpu_ns - stamps[i].caller_cpu_ns;
++    }
++  }
++
+   ActionSlice DequeueReady() {
+     while (!sem_dequeue_.wait()) {
+     }
+diff --git a/envpool/core/async_envpool.h b/envpool/core/async_envpool.h
+--- a/envpool/core/async_envpool.h
++++ b/envpool/core/async_envpool.h
+@@ -19,6 +19,9 @@
+ 
+ #include <algorithm>
+ #include <atomic>
++#include <array>
++#include <cstdint>
++#include <ctime>
+ #include <memory>
+ #include <thread>
+ #include <utility>
+@@ -56,8 +59,118 @@
+   std::vector<std::atomic<int>> stepping_env_;
+   std::chrono::duration<double> dur_send_{0}, dur_recv_{0}, dur_send_all_{0};
+ 
++
++  // Isolated diagnostic only. Configure/snapshot and Send require one caller;
++  // workers never access these fields. All operations must use positive batches.
++  struct DiagnosticSendProfile {
++    bool enabled = false;
++    bool fine_enabled = false;
++    ActionBufferQueue::DiagnosticEnqueueProfile fine_enqueue;
++    std::uint64_t started_calls = 0;
++    std::uint64_t completed_calls = 0;
++    std::uint64_t timed_calls = 0;
++    std::uint64_t timed_envs = 0;
++    std::uint64_t clock_errors = 0;
++    std::uint64_t invalid_interval_calls = 0;
++    std::array<std::uint64_t, 3> wall_ns{};
++    std::array<std::uint64_t, 3> caller_cpu_ns{};
++    double legacy_enqueue_seconds_at_reset = 0;
++    double legacy_enqueue_seconds_since_reset = 0;
++  } diagnostic_send_profile_;
++
++  struct DiagnosticClockStamp {
++    std::uint64_t wall_ns = 0;
++    std::uint64_t caller_cpu_ns = 0;
++    bool valid = false;
++  };
++
++  DiagnosticClockStamp DiagnosticReadSendClocks() {
++    timespec wall{};
++    timespec cpu{};
++    const int wall_error = clock_gettime(CLOCK_MONOTONIC, &wall);
++    const int cpu_error = clock_gettime(CLOCK_THREAD_CPUTIME_ID, &cpu);
++    diagnostic_send_profile_.clock_errors += (wall_error != 0) + (cpu_error != 0);
++    if (wall_error != 0 || cpu_error != 0) {
++      return {};
++    }
++    constexpr std::uint64_t kNsPerSecond = 1000000000ULL;
++    return {static_cast<std::uint64_t>(wall.tv_sec) * kNsPerSecond +
++                static_cast<std::uint64_t>(wall.tv_nsec),
++            static_cast<std::uint64_t>(cpu.tv_sec) * kNsPerSecond +
++                static_cast<std::uint64_t>(cpu.tv_nsec),
++            true};
++  }
++
++  void DiagnosticRecordSendClocks(
++      const std::array<DiagnosticClockStamp, 4>& stamps, int env_count) {
++    auto& profile = diagnostic_send_profile_;
++    ++profile.completed_calls;
++    for (const auto& stamp : stamps) {
++      if (!stamp.valid) {
++        return;
++      }
++    }
++    for (std::size_t i = 0; i < 3; ++i) {
++      if (stamps[i + 1].wall_ns < stamps[i].wall_ns ||
++          stamps[i + 1].caller_cpu_ns < stamps[i].caller_cpu_ns) {
++        ++profile.invalid_interval_calls;
++        return;
++      }
++    }
++    ++profile.timed_calls;
++    profile.timed_envs += static_cast<std::uint64_t>(env_count);
++    for (std::size_t i = 0; i < 3; ++i) {
++      profile.wall_ns[i] += stamps[i + 1].wall_ns - stamps[i].wall_ns;
++      profile.caller_cpu_ns[i] +=
++          stamps[i + 1].caller_cpu_ns - stamps[i].caller_cpu_ns;
++    }
++  }
++
++  template <typename V>
++  void DiagnosticProfiledSendImpl(V&& action) {
++    ++diagnostic_send_profile_.started_calls;
++    const auto setup_start = DiagnosticReadSendClocks();
++    int* env_id = static_cast<int*>(action[0].Data());
++    int shared_offset = action[0].Shape(0);
++    std::vector<ActionSlice> actions;
++    actions.reserve(shared_offset);
++    std::shared_ptr<std::vector<Array>> action_batch =
++        std::make_shared<std::vector<Array>>(std::forward<V>(action));
++    const auto loop_start = DiagnosticReadSendClocks();
++    for (int i = 0; i < shared_offset; ++i) {
++      int eid = env_id[i];
++      envs_[eid]->SetAction(action_batch, i);
++      actions.emplace_back(ActionSlice{
++          .env_id = eid,
++          .order = is_sync_ ? i : -1,
++          .force_reset = false,
++      });
++    }
++    if (is_sync_) {
++      stepping_env_num_ += shared_offset;
++    }
++    const auto enqueue_start = DiagnosticReadSendClocks();
++    // add to abq
++    auto start = std::chrono::system_clock::now();
++    if (diagnostic_send_profile_.fine_enabled) {
++      action_buffer_queue_->DiagnosticEnqueueBulk(
++          actions, &diagnostic_send_profile_.fine_enqueue);
++    } else {
++      action_buffer_queue_->EnqueueBulk(actions);
++    }
++    dur_send_ += std::chrono::system_clock::now() - start;
++    const auto body_end = DiagnosticReadSendClocks();
++    // Final local destruction is intentionally outside all measured phases.
++    DiagnosticRecordSendClocks(
++        {setup_start, loop_start, enqueue_start, body_end}, shared_offset);
++  }
++
+   template <typename V>
+   void SendImpl(V&& action) {
++    if (diagnostic_send_profile_.enabled) {
++      DiagnosticProfiledSendImpl(std::forward<V>(action));
++      return;
++    }
+     int* env_id = static_cast<int*>(action[0].Data());
+     int shared_offset = action[0].Shape(0);
+     std::vector<ActionSlice> actions;
+@@ -87,6 +200,25 @@
+   using Action = typename Env::Action;
+   using State = typename Env::State;
+   using ActionSlice = typename ActionBufferQueue::ActionSlice;
++
++
++  // Only call these outside Send. Reset does not modify the legacy timer.
++  void DiagnosticConfigureSendProfile(bool enabled, bool reset,
++                                      bool fine = false) {
++    if (reset) {
++      diagnostic_send_profile_ = {};
++      diagnostic_send_profile_.legacy_enqueue_seconds_at_reset = dur_send_.count();
++    }
++    diagnostic_send_profile_.enabled = enabled;
++    diagnostic_send_profile_.fine_enabled = fine;
++  }
++
++  DiagnosticSendProfile DiagnosticSendProfileSnapshot() const {
++    auto snapshot = diagnostic_send_profile_;
++    snapshot.legacy_enqueue_seconds_since_reset =
++        dur_send_.count() - snapshot.legacy_enqueue_seconds_at_reset;
++    return snapshot;
++  }
+ 
+   explicit AsyncEnvPool(const Spec& spec)
+       : EnvPool<Spec>(spec),

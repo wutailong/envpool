@@ -1,6 +1,9 @@
 # Binding costs and measurement limits
 
-**Outcome: prioritize public-wrapper metadata work; no production change.**
+**Historical outcome: prioritize public-wrapper metadata work; no production change.**
+The subsequent [metadata-cache trial](../wrapper_metadata/README.md) was deferred.
+The [follow-on native send study](send_profile/README.md) now localizes a larger
+work-permit signaling cost, with explicit observer limits; production is unchanged.
 The complete positive-only diagnostic study separates native input conversion,
 real Python/native boundaries, and observer overhead. It does not rehabilitate
 the [rejected direct-owner prototype](../input_owner_storage/README.md).
