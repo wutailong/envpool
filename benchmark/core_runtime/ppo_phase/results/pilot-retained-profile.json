@@ -1,0 +1,207 @@
+{
+  "budget": {
+    "env_steps": 5120,
+    "optimizer_steps": 160,
+    "train_episodes": 203,
+    "updates": 2
+  },
+  "config": {
+    "advantage_normalization": true,
+    "baseline_seed": 30000,
+    "batch_size": 64,
+    "device": "cpu",
+    "ent_coef": 0.0,
+    "eps_clip": 0.2,
+    "eval_num": 100,
+    "eval_seed": 20000,
+    "gae_lambda": 0.95,
+    "gamma": 0.99,
+    "hidden_sizes": [
+      64,
+      64
+    ],
+    "lr": 0.001,
+    "max_episode_steps": 500,
+    "max_grad_norm": 0.5,
+    "num_threads": 2,
+    "recompute_advantage": false,
+    "repeat_per_collect": 2,
+    "reward_normalization": true,
+    "seed": 0,
+    "steps_per_collect": 2560,
+    "task": "CartPole-v1",
+    "torch_interop_threads": 1,
+    "torch_threads": 1,
+    "train_seed": 0,
+    "training_num": 20,
+    "updates": 2,
+    "value_clip": true,
+    "vf_coef": 0.5
+  },
+  "instrumentation": {
+    "active_region": "same measured updates as reference; no setup/initial reset or disposable warmup",
+    "clock": "time.perf_counter_ns",
+    "clock_resolution_seconds": 1e-09,
+    "env_call_boundary": "Python EnvPool step/reset including adapter, conversion, and native wait; not pure C++",
+    "kind": "observation-only Python phase/call wall-clock profiling",
+    "overhead": "present in all measured totals, including some stack/call overhead within env timings; compare to separate untouched bench_ppo.py plain runs",
+    "residual_interpretation": "collect excluding env calls is remaining collection wall time, not pure Python or non-core time; background workers may affect other phases",
+    "saves_weights_or_rollout_arrays": false,
+    "schema_version": 1,
+    "semantic_hashes_include_phase_data": false
+  },
+  "label": "pilot",
+  "last_update": {
+    "mean_losses": {
+      "loss": 2.566599230468273,
+      "loss/clip": -0.009609350218670442,
+      "loss/ent": 0.6785521909594536,
+      "loss/vf": 5.152417150139809
+    },
+    "mean_train_return": 25.763440860215052
+  },
+  "measurement": {
+    "evaluation": "not performed; fixed work budget, no score-triggered stop",
+    "excluded": "imports, JIT priming, new policy/pool, initial reset, semantic checks, fingerprints, JSON output",
+    "fresh_seeded_run_after_warmup": true,
+    "timed_region": "serial policy.train, collect, PPO update, buffer reset; one result reference per update",
+    "warmup_updates": 2
+  },
+  "phase_profile": {
+    "disjoint_partition_ns": {
+      "buffer_reset_ns": 151238,
+      "collect_excluding_env_calls_ns": 98915085,
+      "env_reset_in_collect_ns": 7951767,
+      "env_step_in_collect_ns": 25861481,
+      "loop_other_ns": 85698,
+      "policy_train_ns": 231708,
+      "ppo_update_ns": 267878791
+    },
+    "mode": "timed",
+    "phases": {
+      "buffer_reset": {
+        "calls": 2,
+        "direct_child_ns": 0,
+        "exceptions": 0,
+        "exclusive_ns": 151238,
+        "inclusive_ns": 151238,
+        "parent": null
+      },
+      "collect": {
+        "calls": 2,
+        "direct_child_ns": 33813248,
+        "exceptions": 0,
+        "exclusive_ns": 98915085,
+        "inclusive_ns": 132728333,
+        "parent": null
+      },
+      "env_reset": {
+        "calls": 139,
+        "direct_child_ns": 0,
+        "exceptions": 0,
+        "exclusive_ns": 7951767,
+        "inclusive_ns": 7951767,
+        "parent": "collect"
+      },
+      "env_step": {
+        "calls": 256,
+        "direct_child_ns": 0,
+        "exceptions": 0,
+        "exclusive_ns": 25861481,
+        "inclusive_ns": 25861481,
+        "parent": "collect"
+      },
+      "policy_train": {
+        "calls": 2,
+        "direct_child_ns": 0,
+        "exceptions": 0,
+        "exclusive_ns": 231708,
+        "inclusive_ns": 231708,
+        "parent": null
+      },
+      "ppo_update": {
+        "calls": 2,
+        "direct_child_ns": 0,
+        "exceptions": 0,
+        "exclusive_ns": 267878791,
+        "inclusive_ns": 267878791,
+        "parent": null
+      }
+    },
+    "raw_loop_other_ns": 85698,
+    "training_wall_ns": 401075768,
+    "validation": {
+      "expected_env_step_calls": 256,
+      "expected_updates": 2,
+      "explanation": "integer nesting is exact; only the float wall envelope permits 1 microsecond roundoff",
+      "integer_interval_tolerance_ns": 0,
+      "valid": true,
+      "wall_envelope_tolerance_ns": 1000,
+      "wall_roundoff_clamped_ns": 0
+    }
+  },
+  "provenance": {
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "expected_native_sha256_verified": true,
+    "native_module": "envpool.classic_control.classic_control_envpool",
+    "native_path_verified": true,
+    "native_sha256": "accfaebe22982718d595f45a2c7c4ba67515e22f4d8084bf656cd9768c1b164c",
+    "package_path_verified": true,
+    "phase_helper_sha256": "ff0621b970c36432b8bd1752a9e230a2c677111497cb17c52cd1d28e8f91a20b",
+    "python_version": "3.12.14",
+    "reference_config_sha256": "66d3aef1d59e7b99b390dc4f60f77c1743543c40c97e6322366cb4a71792373f",
+    "reference_script_sha256": "52cca40cd56aa4a9f3f74bdd651ad90dbda662195e2a2a2a67fc4bb1ee23e34d",
+    "script_sha256": "dac59e4b5e227fc5c09728250054267c13e201bf4b4449f86b26ae01e2d1904b",
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "NUMBA_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "torch_deterministic": true,
+    "torch_interop_threads": 1,
+    "torch_threads": 1,
+    "versions": {
+      "envpool": "1.2.7",
+      "gymnasium": "1.3.0",
+      "numba": "0.68.0",
+      "numpy": "1.26.4",
+      "tianshou": "0.5.1",
+      "torch": "2.5.1+cpu"
+    }
+  },
+  "schema_version": 1,
+  "semantic_fingerprints": {
+    "config": "4755f14bc841fdcacfbe50ba6888cff03192827892422073d303a72e0b5205bf",
+    "final": {
+      "optimizer": "ada9f14ff84abc13b5aa452396e94201966322fe4ae0b7408628c0376aeda5a1",
+      "policy": "c02b945a0b052af712b65051605470168b3adbc62df7dfc7f99eea497b856e1f",
+      "return_rms": "b0f94cdeb587a19ad2708ff61512e965ea36ff1bd5b91dfec1753d4eaed9ea01",
+      "rng": "c85d1f0c080492ca59ef6dc5e0053bc447572daecbd6cdea043eb6b0a921237c"
+    },
+    "initial": {
+      "optimizer": "ced1ea0e8620345a26f2e37eac553874755a405d106c33b8543cdd41d07b5fdf",
+      "policy": "4fc4773b32bfa671f39a4c11638e9b17bc86ac0fb958f2edd2ea8024f83f247b",
+      "return_rms": "0c2004e37471457f5283d6a586f9dbe4f4a1bbc3d96075562c3111f449c2b380",
+      "rng": "626bab422b78e978f0d4d0ea3463bcdafca3018d9e0a39f6f476cbdce5411782"
+    },
+    "metrics": "c284346c69cdcc71db12ece6e8c76b940c130aa53f52857f3a4469a653f67bc6"
+  },
+  "semantic_sha256": "98e7735aabc2de0b5d7e2fd54695646e56deb39d5588b0cea1a2a58f717ab55e",
+  "timing": {
+    "env_steps_per_second": 12765.667757563717,
+    "optimizer_steps_per_second": 398.92711742386615,
+    "process_cpu_seconds": 0.4116864910000011,
+    "training_seconds": 0.40107576800801326
+  }
+}

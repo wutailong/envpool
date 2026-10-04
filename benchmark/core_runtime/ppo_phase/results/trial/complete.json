@@ -1,0 +1,5 @@
+{
+  "samples": 32,
+  "semantic_parity": true,
+  "frozen_native_and_script_hashes_match": true
+}

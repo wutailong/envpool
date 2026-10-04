@@ -1,0 +1,31 @@
+test_count_only_and_exact_proxy_forwarding (test_phase_clock.PhaseClockTests.test_count_only_and_exact_proxy_forwarding)
+Preserve argument aliases, attributes and RNG in count-only mode. ... ok
+test_inactive_setup_and_warmup_do_not_count_or_read_clock (test_phase_clock.PhaseClockTests.test_inactive_setup_and_warmup_do_not_count_or_read_clock)
+Exclude setup and disposable warmup from clocks and counters. ... ok
+test_invalid_nesting_and_budget_rejected (test_phase_clock.PhaseClockTests.test_invalid_nesting_and_budget_rejected)
+Reject unexpected nesting and incorrect measured call counts. ... ok
+test_negative_integer_intervals_rejected (test_phase_clock.PhaseClockTests.test_negative_integer_intervals_rejected)
+Reject negative elapsed and exclusive integer-clock intervals. ... ok
+test_nested_partition_and_counts (test_phase_clock.PhaseClockTests.test_nested_partition_and_counts)
+Verify inclusive children and exclusive parents form one partition. ... ok
+test_original_exception_identity_and_balanced_stack (test_phase_clock.PhaseClockTests.test_original_exception_identity_and_balanced_stack)
+Re-raise the identical exception while balancing nested accounting. ... ok
+test_report_requires_finished_region (test_phase_clock.PhaseClockTests.test_report_requires_finished_region)
+Require measurement to finish before building a report. ... ok
+test_wall_tolerance_is_explicit_not_silent (test_phase_clock.PhaseClockTests.test_wall_tolerance_is_explicit_not_silent)
+Report tolerated envelope roundoff and reject larger discrepancies. ... ok
+test_original_helpers_and_reference_budget (test_phase_clock.ReferenceFidelityTests.test_original_helpers_and_reference_budget)
+Check helper identity and the unchanged reference work budget. ... ok
+test_train_and_train_body_match_after_removing_observation (test_phase_clock.ReferenceFidelityTests.test_train_and_train_body_match_after_removing_observation)
+Compare original training ASTs after erasing declared observations. ... ok
+test_balanced_orders_and_four_duplicated_conditions (test_profile_blocks.ProfileBlocksTest.test_balanced_orders_and_four_duplicated_conditions)
+Each native/mode cell has genuine paired replicas. ... ok
+test_hash_and_budget_mismatches_fail (test_profile_blocks.ProfileBlocksTest.test_hash_and_budget_mismatches_fail)
+Fail closed when work or runtime identity differs. ... ok
+test_modes_are_explicit (test_profile_blocks.ProfileBlocksTest.test_modes_are_explicit)
+Do not accidentally pool plain and profiled observations. ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.010s
+
+OK

@@ -1,0 +1,87 @@
+{
+  "purpose": "Attribute reference PPO wall time and quantify observer cost; no core changes",
+  "blocks": 4,
+  "samples": 32,
+  "orders": [
+    "aceghfdb",
+    "dfhbagec",
+    "egacdbhf",
+    "hbdfecag"
+  ],
+  "conditions": {
+    "a": {
+      "runtime": "original",
+      "mode": "plain",
+      "package": "$ORIGINAL_ENVPOOL_PACKAGE",
+      "native_sha256": "a4aec04c8c9642f28b9adf52d60751f4097c960fcd5ce68d313ddba712864b71",
+      "script": "$SOURCE/benchmark/core_runtime/experiments/bench_ppo.py",
+      "script_sha256": "52cca40cd56aa4a9f3f74bdd651ad90dbda662195e2a2a2a67fc4bb1ee23e34d"
+    },
+    "b": {
+      "runtime": "original",
+      "mode": "plain",
+      "package": "$ORIGINAL_ENVPOOL_PACKAGE",
+      "native_sha256": "a4aec04c8c9642f28b9adf52d60751f4097c960fcd5ce68d313ddba712864b71",
+      "script": "$SOURCE/benchmark/core_runtime/experiments/bench_ppo.py",
+      "script_sha256": "52cca40cd56aa4a9f3f74bdd651ad90dbda662195e2a2a2a67fc4bb1ee23e34d"
+    },
+    "c": {
+      "runtime": "original",
+      "mode": "profile",
+      "package": "$ORIGINAL_ENVPOOL_PACKAGE",
+      "native_sha256": "a4aec04c8c9642f28b9adf52d60751f4097c960fcd5ce68d313ddba712864b71",
+      "script": "$SOURCE/benchmark/core_runtime/ppo_phase/profile_ppo.py",
+      "script_sha256": "dac59e4b5e227fc5c09728250054267c13e201bf4b4449f86b26ae01e2d1904b"
+    },
+    "d": {
+      "runtime": "original",
+      "mode": "profile",
+      "package": "$ORIGINAL_ENVPOOL_PACKAGE",
+      "native_sha256": "a4aec04c8c9642f28b9adf52d60751f4097c960fcd5ce68d313ddba712864b71",
+      "script": "$SOURCE/benchmark/core_runtime/ppo_phase/profile_ppo.py",
+      "script_sha256": "dac59e4b5e227fc5c09728250054267c13e201bf4b4449f86b26ae01e2d1904b"
+    },
+    "e": {
+      "runtime": "retained",
+      "mode": "plain",
+      "package": "$RETAINED_ENVPOOL_PACKAGE",
+      "native_sha256": "accfaebe22982718d595f45a2c7c4ba67515e22f4d8084bf656cd9768c1b164c",
+      "script": "$SOURCE/benchmark/core_runtime/experiments/bench_ppo.py",
+      "script_sha256": "52cca40cd56aa4a9f3f74bdd651ad90dbda662195e2a2a2a67fc4bb1ee23e34d"
+    },
+    "f": {
+      "runtime": "retained",
+      "mode": "plain",
+      "package": "$RETAINED_ENVPOOL_PACKAGE",
+      "native_sha256": "accfaebe22982718d595f45a2c7c4ba67515e22f4d8084bf656cd9768c1b164c",
+      "script": "$SOURCE/benchmark/core_runtime/experiments/bench_ppo.py",
+      "script_sha256": "52cca40cd56aa4a9f3f74bdd651ad90dbda662195e2a2a2a67fc4bb1ee23e34d"
+    },
+    "g": {
+      "runtime": "retained",
+      "mode": "profile",
+      "package": "$RETAINED_ENVPOOL_PACKAGE",
+      "native_sha256": "accfaebe22982718d595f45a2c7c4ba67515e22f4d8084bf656cd9768c1b164c",
+      "script": "$SOURCE/benchmark/core_runtime/ppo_phase/profile_ppo.py",
+      "script_sha256": "dac59e4b5e227fc5c09728250054267c13e201bf4b4449f86b26ae01e2d1904b"
+    },
+    "h": {
+      "runtime": "retained",
+      "mode": "profile",
+      "package": "$RETAINED_ENVPOOL_PACKAGE",
+      "native_sha256": "accfaebe22982718d595f45a2c7c4ba67515e22f4d8084bf656cd9768c1b164c",
+      "script": "$SOURCE/benchmark/core_runtime/ppo_phase/profile_ppo.py",
+      "script_sha256": "dac59e4b5e227fc5c09728250054267c13e201bf4b4449f86b26ae01e2d1904b"
+    }
+  },
+  "python": "$PPO_VENV/bin/python",
+  "budget": {
+    "updates": 100,
+    "env_steps": 256000,
+    "optimizer_steps": 8000
+  },
+  "warmup_updates": 2,
+  "counterfactual_scope": "EnvPool Python call time includes conversion and native waits; background work can affect other phases. Any Amdahl model holds the rest constant and is not a hard core bound.",
+  "sampling": "One predeclared fixed trial, all runs retained, no adaptive stopping",
+  "pairing": "Two replicas per condition per block; symmetric slots and condition/label position balance, not elimination of carryover or thermal noise"
+}

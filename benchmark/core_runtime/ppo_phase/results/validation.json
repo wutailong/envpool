@@ -1,0 +1,26 @@
+{
+  "production_core_commit": "ce1c47f238a069454f732a70089d1b9857dcc6de",
+  "parent_research_commit": "cd7d0b8e31420cb92ccdf438d61df1eb1a4cb95b",
+  "observation_code_commit": "065557d4afcb1a0bbb4f89091de0b0115fc8e47a",
+  "runtime_or_algorithm_changes": false,
+  "helper_tests": 18,
+  "pilot_fresh_processes": 4,
+  "pilot_updates": 2,
+  "formal_fresh_processes": 32,
+  "formal_updates_each": 100,
+  "formal_responses_each": 256000,
+  "formal_optimizer_steps_each": 8000,
+  "formal_plain_samples": 16,
+  "formal_profile_samples": 16,
+  "all_formal_semantic_fingerprints_identical": true,
+  "original_native_entries_frozen": 20,
+  "retained_native_entries_frozen": 21,
+  "scopes": [
+    "CPU CartPole20 environments/2 EnvPool threads only",
+    "Fingerprint equality is not a new full step-level journal comparison",
+    "Profiling costs remain inside measurements",
+    "Four independent blocks, descriptive bootstrap only",
+    "Env-call region is not pure C++ and not a hard bound on core benefit",
+    "No training algorithm or hyperparameter optimization"
+  ]
+}

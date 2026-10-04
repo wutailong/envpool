@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "fresh_processes": 4,
+  "updates_per_process": 2,
+  "env_steps": 5120,
+  "optimizer_steps": 160,
+  "one_exact_semantic_fingerprint": true,
+  "profile_counts_valid": true,
+  "timings_not_used_for_performance_claims": true
+}
