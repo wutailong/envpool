@@ -2,9 +2,10 @@
 
 This is historical **first-round** validation of
 [7de9691f](https://github.com/wutailong/envpool/commit/7de9691f724e5739f73c83d52a0ab57bf166d37b)
-against the original 9c31c547 runtime. These two families were not rebuilt for
-the later cumulative core changes. Their recorded success must not be attributed
-to the current retained ce1c47f2 core; see the [current scope](../REVIEW.md).
+against the original 9c31c547 runtime. Their recorded success must not be
+attributed to later core revisions. A separate [current-core report](../current_families/README.md)
+now records newly rebuilt ce1c47f2 ToyText/MiniGrid modules and new positive
+regression results; see also the [current scope](../REVIEW.md).
 
 All work is isolated from the original checkout, installed wheel, Bazel outputs,
 and the primary candidate runtime. No production-source files were edited here.

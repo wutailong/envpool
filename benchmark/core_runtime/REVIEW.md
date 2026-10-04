@@ -1,6 +1,6 @@
 # Core runtime review / 分支导航
 
-核验日期：2026-10-04 UTC。文档复查后，新增了从公开 ce1c47f2 源码重新构建两个客户端的正向验证；生产 core 与历史性能采样不变。历史提交链接固定到已经发布、核验过的版本。
+核验日期：2026-10-04 UTC。固定公开 ce1c47f2 源码复现后，又补充了 ToyText/MiniGrid 的当前版本验证；生产 core 与历史性能采样不变。历史提交链接固定到已经发布、核验过的版本。
 这是累计修改链，不是一组互相独立、需要全部合并的补丁。
 
 ## 先看哪个版本
@@ -11,6 +11,7 @@
 - **已归档的 parser 研究**：[未采用的 player-index 优化](player_action_index/README.md)。减少了连续玩家索引分配，但目标负载没有可靠提速，普通配置有不利结果。生产 core 保持 ce1c47f2，候选补丁只作未应用记录保存。
 - **当前 PPO 耗时诊断**：[32 次原版/保留版 × 普通/计时运行](ppo_phase/README.md)。保留版中 PPO update 约 67.43%、其余采样 24.73%、EnvPool Python step/reset 边界 7.79%。后者并非纯 C++ 时间；算法与超参数未改。
 - **公开源码复现检查**：[全新 clone 的双客户端构建与正向 smoke](published_rebuild/README.md)。Classic Control、renderer 和 Dummy 均从固定公开源码编译，6 个既有正向方法通过，两次短 PPO 指纹相同。外部依赖和其他环境的原版支持模块仍复用，不是全环境干净构建或新的速度结论。
+- **当前 ToyText/MiniGrid 覆盖**：[重新编译的 ce1c47f2 家族测试](current_families/README.md)。59 个原版/当前版场景、6,575 个数组逐字节一致；17 个 ToyText 测试和覆盖 82 个 MiniGrid ID 的两个确定性测试通过。BabyAI 只覆盖一个代表任务，render 对照只覆盖 DoorKey。
 - **原版对照**：[main / 9c31c547](https://github.com/wutailong/envpool/tree/9c31c5478eb61d8f67f8c9a1ec2b37568f2c7ca3)。保持不变，作为历史对照；没有后续修复。
 
 这些累计版本都基于第一轮 core 性能改动，**不是直接基于未优化 main 的纯修复版**。
@@ -32,7 +33,7 @@
 | fix/core-container-ownership | [15f80b09](https://github.com/wutailong/envpool/commit/15f80b0934689f635c49ec8764e6b5211e5fd218) | 回收被丢弃和 C++ 接收后释放的 Container payload，保护 Python 所有权转移异常路径 |
 | perf/core-container-storage | [bf2f16c0](https://github.com/wutailong/envpool/commit/bf2f16c0d724d01c480668703012342ab1f0fd4e) | 复用 typed owner 和 shape，取消额外控制块和 shape 分配 |
 
-之后依次为文档提交 [b8224909](https://github.com/wutailong/envpool/commit/b8224909df38650c0f1e7aadc5004ea8d3e2eecd)，以及直接 tuple 版本 [ce1c47f2](https://github.com/wutailong/envpool/commit/ce1c47f238a069454f732a70089d1b9857dcc6de)。player-index 研究 [cd7d0b8e](https://github.com/wutailong/envpool/commit/cd7d0b8e31420cb92ccdf438d61df1eb1a4cb95b) 以 ce1c47f2 为父提交，PPO 诊断 [ad9650a6](https://github.com/wutailong/envpool/commit/ad9650a6dbdcfd8310f91cd584d67174c1593586) 以 cd7d0b8e 为父提交。文档复查 [44dd3d41](https://github.com/wutailong/envpool/commit/44dd3d4122a7f080fdd67675bc4ff5ff73c6d336) 再以 ad9650a6 为父提交；本次源码复现工具和记录以 44dd3d41 为父提交，生产 core 仍是 ce1c47f2。
+之后依次为文档提交 [b8224909](https://github.com/wutailong/envpool/commit/b8224909df38650c0f1e7aadc5004ea8d3e2eecd)，以及直接 tuple 版本 [ce1c47f2](https://github.com/wutailong/envpool/commit/ce1c47f238a069454f732a70089d1b9857dcc6de)。player-index 研究 [cd7d0b8e](https://github.com/wutailong/envpool/commit/cd7d0b8e31420cb92ccdf438d61df1eb1a4cb95b) 以 ce1c47f2 为父提交，PPO 诊断 [ad9650a6](https://github.com/wutailong/envpool/commit/ad9650a6dbdcfd8310f91cd584d67174c1593586) 以 cd7d0b8e 为父提交。文档复查 [44dd3d41](https://github.com/wutailong/envpool/commit/44dd3d4122a7f080fdd67675bc4ff5ff73c6d336) 再以 ad9650a6 为父提交，公开源码复现 [5fb6a894](https://github.com/wutailong/envpool/commit/5fb6a8946c5f2b10cdd043bb17b684266c60285c) 以 44dd3d41 为父提交。本次家族覆盖记录再以 5fb6a894 为父提交，生产 core 仍是 ce1c47f2。
 
 选择后面的提交就已经包含前面的提交。不要再重复 cherry-pick 整条链。
 没有修改 main，没有创建 PR、合并或发布 release。
@@ -48,11 +49,12 @@ Box2D 的 4 个测试模式场景覆盖 260 个输出记录、1,040 个内部 Co
 
 直接 tuple 一轮增加 12 个用例，共通过 76 个 native 测试，ASan/UBSan 和 TSan 各 74 个用例重复 3 次；上述 Python、rollout、XLA、完整 PPO 和 Box2D 检查也全部重跑通过。
 
-这些结论有边界：只重建了 Classic Control、MuJoCo Gym、Dummy 和 Box2D 测试客户端。
+上述 tuple 轮结论有边界：当轮只重建了 Classic Control、MuJoCo Gym、Dummy 和 Box2D 测试客户端。
 Box2D 的动态诊断字段要求 ENVPOOL_TEST；普通 release spec 不包含它们。
 不是全部环境、全部平台、GPU/Container-valued XLA 或一般异步训练等价性的证明。
 直接 tuple 轮的 8 个 CPU XLA 记录只覆盖 CartPole 和 HalfCheetah，比较基线是前一版 bf2f16c0。
 `families/` 的 ToyText/MiniGrid 结果，以及 `xla/comparison.json` 中包含 MiniGrid 的 12 个记录，属于第一轮 7de9691f；不能算作后来累计 core 的重新验证。
+新增的 `current_families/` 才是 ce1c47f2 的 ToyText/MiniGrid 重新编译与测试记录；它没有重跑 XLA、sanitizer 或完整 PPO，也不能将旧覆盖数量直接归到这个新构建。
 LeakSanitizer 在此环境未启用；泄漏修复另有精确析构计数回归，不等于整个程序 leak-clean。
 玩家 discount 修复有意改变此前错误的多玩家/零玩家行为，不能笼统说所有旧结果都不变。
 
@@ -74,7 +76,7 @@ LeakSanitizer 在此环境未启用；泄漏修复另有精确析构计数回归
 
 ## 复现前核对
 
-1. **选择固定公开提交。** 当前保留的运行时代码为 ce1c47f2；需要全部研究工具与记录时选择 ad9650a6，其生产 core 相同。15f80b09 是停止在所有权修复的较早累计基线。报告中的 `local code commit` 是本地构建溯源标识，不保证可从 GitHub 获取；公开 checkout 应使用这里链接的发布提交。
+1. **选择固定公开提交。** 当前保留的运行时代码为 ce1c47f2；需要 PPO 耗时诊断工具与该轮记录时选择 ad9650a6，其生产 core 相同。后续源码复现和家族验证记录见本页对应报告，ad9650a6 不包含这些后续新增内容。15f80b09 是停止在所有权修复的较早累计基线。报告中的 `local code commit` 是本地构建溯源标识，不保证可从 GitHub 获取；公开 checkout 应使用这里链接的发布提交。
 2. **不要把源码当成运行包。** 必须单独构建所选 revision，使用不同、冻结的 runtime 目录，并检查实际导入的包和 `.so`。EnvPool 的版本号在这些变体中都为 1.2.7，不能用它识别候选；应核对源码和 native SHA256。不要在测量进程运行时替换文件。
 3. **看清路径参数。** `ppo_phase --original-package/--retained-package`、`ppo/verify_ppo_parity.py --original/--candidate` 接收实际 `envpool/` 目录；`run_matrix.py`、`check_rollouts.py`、`xla/check_xla.py` 的 root 参数，以及 `state_tuple/run_paired_ppo.py --baseline-root/--candidate-root`，接收包含 `envpool/` 的父目录。
 4. **保持依赖与构建条件一致。** 记录的通用运行环境为 Python 3.12.14、NumPy 2.5.3、Gymnasium 1.3.0；PPO 和 NumPy sanitizer 转换检查另用 NumPy 1.26.4。PPO 还使用 Torch 2.5.1+cpu、Tianshou 0.5.1、Numba 0.68.0；CPU XLA 使用 JAX/jaxlib 0.11.1。不要把两个 Python 环境混作同一个依赖组合。
@@ -106,6 +108,7 @@ git -C envpool-retained rev-parse HEAD
 - [未采用的 player-index 改动、散列玩家压力负载和全部结果](player_action_index/README.md)
 - [真实 PPO 耗时分解、计时开销与 32 次固定试验](ppo_phase/README.md)
 - [固定公开源码的两客户端重新构建与正向检查](published_rebuild/README.md)
+- [当前 core 的 ToyText/MiniGrid 正向对照与具体覆盖限制](current_families/README.md)
 - [同步 PPO 方法](ppo/README.md) / [CPU XLA 范围](xla/README.md)
 
 每份报告旁边保留原始测量、构建参数、源码/二进制指纹和限制。没有上传二进制、模型权重、

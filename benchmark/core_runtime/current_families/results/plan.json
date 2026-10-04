@@ -1,0 +1,159 @@
+{
+  "source_commit": "ce1c47f238a069454f732a70089d1b9857dcc6de",
+  "original_commit": "9c31c5478eb61d8f67f8c9a1ec2b37568f2c7ca3",
+  "changed_core_headers": [
+    "envpool/core/action_buffer_queue.h",
+    "envpool/core/array.h",
+    "envpool/core/async_envpool.h",
+    "envpool/core/env.h",
+    "envpool/core/py_envpool.h",
+    "envpool/core/state_buffer.h",
+    "envpool/core/state_buffer_queue.h"
+  ],
+  "affected_units": {
+    "toy_text": [
+      {
+        "source": "envpool/toy_text/toy_text.cc",
+        "affected_headers": [
+          "envpool/core/action_buffer_queue.h",
+          "envpool/core/array.h",
+          "envpool/core/async_envpool.h",
+          "envpool/core/env.h",
+          "envpool/core/py_envpool.h",
+          "envpool/core/state_buffer.h",
+          "envpool/core/state_buffer_queue.h"
+        ]
+      }
+    ],
+    "minigrid": [
+      {
+        "source": "envpool/minigrid/impl/babyai_core.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/babyai_env.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/babyai_goto_tasks.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/babyai_instr.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/babyai_open_tasks.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/babyai_pickup_tasks.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/babyai_tasks.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/babyai_unlock_tasks.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/minigrid_core.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/minigrid_env.cc",
+        "affected_headers": [
+          "envpool/core/action_buffer_queue.h",
+          "envpool/core/array.h",
+          "envpool/core/async_envpool.h",
+          "envpool/core/env.h",
+          "envpool/core/state_buffer.h",
+          "envpool/core/state_buffer_queue.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/minigrid_render.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/minigrid_room_tasks.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/minigrid_task_factory.cc",
+        "affected_headers": [
+          "envpool/core/action_buffer_queue.h",
+          "envpool/core/array.h",
+          "envpool/core/async_envpool.h",
+          "envpool/core/env.h",
+          "envpool/core/state_buffer.h",
+          "envpool/core/state_buffer_queue.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/minigrid_tasks.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/impl/minigrid_wfc_tasks.cc",
+        "affected_headers": [
+          "envpool/core/array.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/minigrid.cc",
+        "affected_headers": [
+          "envpool/core/action_buffer_queue.h",
+          "envpool/core/array.h",
+          "envpool/core/async_envpool.h",
+          "envpool/core/env.h",
+          "envpool/core/state_buffer.h",
+          "envpool/core/state_buffer_queue.h"
+        ]
+      },
+      {
+        "source": "envpool/minigrid/minigrid_bindings.cc",
+        "affected_headers": [
+          "envpool/core/action_buffer_queue.h",
+          "envpool/core/array.h",
+          "envpool/core/async_envpool.h",
+          "envpool/core/env.h",
+          "envpool/core/py_envpool.h",
+          "envpool/core/state_buffer.h",
+          "envpool/core/state_buffer_queue.h"
+        ]
+      }
+    ]
+  },
+  "expected_family_cases": 59,
+  "steps_per_environment": 192,
+  "additional_toy_tests": 17,
+  "additional_minigrid_tests": 2,
+  "performance_study": false
+}

@@ -1,0 +1,3 @@
+original rollouts passed
+candidate rollouts passed
+{"passed": true, "comparison": "identical keys, dtype, shape, and ndarray.tobytes(); async keyed by env_id and per-ID output index", "total_arrays": 6575, "total_bytes": 65304189, "mismatches": []}

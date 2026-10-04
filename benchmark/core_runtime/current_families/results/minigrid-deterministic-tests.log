@@ -1,0 +1,9 @@
+Running tests under Python 3.12.14: $PYTHON_VENV/bin/python
+[ RUN      ] _MiniGridEnvPoolDeterministicTest.test_registered_minigrid_envs_different_seed
+[       OK ] _MiniGridEnvPoolDeterministicTest.test_registered_minigrid_envs_different_seed
+[ RUN      ] _MiniGridEnvPoolDeterministicTest.test_registered_minigrid_envs_same_seed
+[       OK ] _MiniGridEnvPoolDeterministicTest.test_registered_minigrid_envs_same_seed
+----------------------------------------------------------------------
+Ran 2 tests in 31.315s
+
+OK

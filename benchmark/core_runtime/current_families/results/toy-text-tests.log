@@ -1,0 +1,41 @@
+Running tests under Python 3.12.14: $PYTHON_VENV/bin/python
+[ RUN      ] _ToyTextEnvTest.test_blackjack
+[       OK ] _ToyTextEnvTest.test_blackjack
+[ RUN      ] _ToyTextEnvTest.test_catch
+[       OK ] _ToyTextEnvTest.test_catch
+[ RUN      ] _ToyTextEnvTest.test_cliffwalking
+[       OK ] _ToyTextEnvTest.test_cliffwalking
+[ RUN      ] _ToyTextEnvTest.test_cliffwalking_slippery
+[       OK ] _ToyTextEnvTest.test_cliffwalking_slippery
+[ RUN      ] _ToyTextEnvTest.test_frozen_lake
+I1004 14:53:17.808935 139839127140160 toy_text_test.py:127] FrozenLakeGymnasiumEnvPool(num_envs=1, batch_size=1, num_threads=0, max_num_players=1, thread_affinity_offset=-1, base_path='$ORIGINAL_RUNTIME/envpool_assets', seed=42, env_seed=[], gym_reset_return_info=True, max_episode_steps=100, reward_threshold=0.7, size=4)
+I1004 14:53:18.444617 139839127140160 toy_text_test.py:127] FrozenLakeGymnasiumEnvPool(num_envs=1, batch_size=1, num_threads=0, max_num_players=1, thread_affinity_offset=-1, base_path='$ORIGINAL_RUNTIME/envpool_assets', seed=42, env_seed=[], gym_reset_return_info=True, max_episode_steps=200, reward_threshold=0.85, size=8)
+[       OK ] _ToyTextEnvTest.test_frozen_lake
+[ RUN      ] _ToyTextEnvTest.test_nchain
+[       OK ] _ToyTextEnvTest.test_nchain
+[ RUN      ] _ToyTextEnvTest.test_seed_determinism_Blackjack_v1
+[       OK ] _ToyTextEnvTest.test_seed_determinism_Blackjack_v1
+[ RUN      ] _ToyTextEnvTest.test_seed_determinism_Catch_v0
+[       OK ] _ToyTextEnvTest.test_seed_determinism_Catch_v0
+[ RUN      ] _ToyTextEnvTest.test_seed_determinism_CliffWalkingSlippery_v1
+[       OK ] _ToyTextEnvTest.test_seed_determinism_CliffWalkingSlippery_v1
+[ RUN      ] _ToyTextEnvTest.test_seed_determinism_CliffWalking_v0
+[       OK ] _ToyTextEnvTest.test_seed_determinism_CliffWalking_v0
+[ RUN      ] _ToyTextEnvTest.test_seed_determinism_FrozenLake8x8_v1
+[       OK ] _ToyTextEnvTest.test_seed_determinism_FrozenLake8x8_v1
+[ RUN      ] _ToyTextEnvTest.test_seed_determinism_FrozenLake_v1
+[       OK ] _ToyTextEnvTest.test_seed_determinism_FrozenLake_v1
+[ RUN      ] _ToyTextEnvTest.test_seed_determinism_NChain_v0
+[       OK ] _ToyTextEnvTest.test_seed_determinism_NChain_v0
+[ RUN      ] _ToyTextEnvTest.test_seed_determinism_Taxi_v3
+[       OK ] _ToyTextEnvTest.test_seed_determinism_Taxi_v3
+[ RUN      ] _ToyTextEnvTest.test_taxi
+[       OK ] _ToyTextEnvTest.test_taxi
+[ RUN      ] _ToyTextEnvTest.test_taxi_v4_fickle_passenger_changes_destination_once
+[       OK ] _ToyTextEnvTest.test_taxi_v4_fickle_passenger_changes_destination_once
+[ RUN      ] _ToyTextEnvTest.test_taxi_v4_rainy_transitions
+[       OK ] _ToyTextEnvTest.test_taxi_v4_rainy_transitions
+----------------------------------------------------------------------
+Ran 17 tests in 2.101s
+
+OK

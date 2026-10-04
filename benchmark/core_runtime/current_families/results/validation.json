@@ -1,0 +1,35 @@
+{
+  "source_commit": "ce1c47f238a069454f732a70089d1b9857dcc6de",
+  "original_commit": "9c31c5478eb61d8f67f8c9a1ec2b37568f2c7ca3",
+  "changed_core_headers": 7,
+  "rebuilt_units": {
+    "toy_text": 1,
+    "minigrid": 17
+  },
+  "fresh_minigrid_archive_members": 15,
+  "toy_text_tests": 17,
+  "minigrid_determinism_tests": 2,
+  "minigrid_prefix_ids": 82,
+  "babyai_cross_runtime_tasks": 1,
+  "cross_runtime_cases": 59,
+  "exact_arrays": 6575,
+  "exact_bytes": 65304189,
+  "mismatches": 0,
+  "responses_per_runtime": 296826,
+  "render_task": "MiniGrid-DoorKey-8x8-v0",
+  "render_arrays": 12,
+  "render_selected_environment_frames": 84,
+  "native_and_python_hashes_unchanged": true,
+  "source_clean": true,
+  "performance_study": false,
+  "limitations": [
+    "Reused external libraries; not a clean all-family/platform release build",
+    "Single-player Gymnasium parity does not check dm_env discount or the multi-player discount fix",
+    "MiniGrid candidate-versus-candidate suite excludes all BabyAI IDs",
+    "Only one of 96 registered BabyAI tasks is in cross-runtime parity",
+    "Upstream MiniGrid/BabyAI oracle dependency unavailable; no oracle suite claimed",
+    "No new GPU, XLA, sanitizer, or full PPO validation",
+    "Resource budget prevents further broad rebuilds without a capacity plan"
+  ],
+  "babyai_registered_ids": 96
+}
