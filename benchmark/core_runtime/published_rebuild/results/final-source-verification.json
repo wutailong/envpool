@@ -1,6 +1,0 @@
-{
-  "source_commit_after_smoke": "ce1c47f238a069454f732a70089d1b9857dcc6de",
-  "source_tree_after_smoke": "7521d1b10ca2f53d6098d0c8d24667a6c5f59358",
-  "source_clean": true,
-  "all_693_dependency_files_unchanged_after_smoke": true
-}

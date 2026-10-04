@@ -1,5 +1,9 @@
 # Where reference PPO spends its time
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 For this fixed CPU CartPole workload, the retained runtime spends about **67.43%
 inside PPO update, 24.73% in remaining collection, and 7.79% inside the Python
 EnvPool step/reset boundary**. That boundary includes adaptation, conversion,
@@ -158,7 +162,8 @@ To recompute the **published historical trial** without running any training,
 use this separate command instead:
 
 ```sh
-python -B "$D/summarize_profile_blocks.py" "$D/results/trial" --output archived-summary-recomputed.json
+: "${ARCHIVE_ROOT:?Extract the archive as described in ../ARCHIVE.md}"
+python -B "$D/summarize_profile_blocks.py" "$ARCHIVE_ROOT/benchmark/core_runtime/ppo_phase/results/trial" --output archived-summary-recomputed.json
 ```
 
 Outputs must be fresh paths. Keep the same pinned dependencies and separate frozen
@@ -166,10 +171,10 @@ packages; the runner supplies independently measured native hashes. No weights,
 checkpoints or rollout arrays are written. This study does not retest every
 family/platform, GPU or asynchronous PPO, nor prove general training equivalence.
 
-Evidence: [summary and raw measurements](results/trial/summary.json),
-[raw rows](results/trial/samples.jsonl), [predeclared plan](results/trial/plan.json),
-[completion](results/trial/complete.json), [validation](results/validation.json),
-[helper tests](results/all-helper-tests.log), [pilot checks](results/pilot-validation.json),
-[source freeze](results/source-freeze.json), [native freeze](results/runtime-freeze.json),
-[before](results/freeze-before.json) and [after](results/freeze-after.json).
+Evidence: [summary and raw measurements](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/trial/summary.json),
+[raw rows](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/trial/samples.jsonl), [predeclared plan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/trial/plan.json),
+[completion](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/trial/complete.json), [validation](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/validation.json),
+[helper tests](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/all-helper-tests.log), [pilot checks](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/pilot-validation.json),
+[source freeze](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/source-freeze.json), [native freeze](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/runtime-freeze.json),
+[before](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/freeze-before.json) and [after](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo_phase/results/freeze-after.json).
 Private machine paths, credentials, binaries and model artifacts are not published.

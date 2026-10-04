@@ -1,5 +1,9 @@
 # Reuse the typed Container owner and shape
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 This one-function change follows the validated
 [Container ownership repair](../container_ownership/README.md), published as
 [`15f80b0934689f635c49ec8764e6b5211e5fd218`](https://github.com/wutailong/envpool/commit/15f80b0934689f635c49ec8764e6b5211e5fd218).
@@ -188,12 +192,12 @@ were verified before and after both timing windows. Full prior comparators,
 main and earlier branches remain unchanged. No binaries, weights, assets,
 credentials or private machine paths are published.
 
-Key records: [allocation comparison](results/allocation-comparison.json),
-[allocation control](results/allocation-control.jsonl), [allocation candidate](results/allocation-alias-candidate.jsonl),
-[validation scope](results/validation.json), [native](results/native.xml),
-[ASan/UBSan](results/address.log), [TSan](results/thread.log),
-[general throughput](results/performance-summary.json), [Dummy throughput](results/container-performance-summary.json),
-[initial adverse PPO window](results/ppo-initial/summary.json),
-[fixed confirmation](results/ppo-confirmation/summary-recomputed.json),
-[code-generation check](results/classic-codegen.json), and
-[build commands](results/build-commands.json). Raw samples accompany each summary.
+Key records: [allocation comparison](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/allocation-comparison.json),
+[allocation control](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/allocation-control.jsonl), [allocation candidate](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/allocation-alias-candidate.jsonl),
+[validation scope](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/validation.json), [native](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/native.xml),
+[ASan/UBSan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/address.log), [TSan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/thread.log),
+[general throughput](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/performance-summary.json), [Dummy throughput](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/container-performance-summary.json),
+[initial adverse PPO window](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/ppo-initial/summary.json),
+[fixed confirmation](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/ppo-confirmation/summary-recomputed.json),
+[code-generation check](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/classic-codegen.json), and
+[build commands](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_storage/results/build-commands.json). Raw samples accompany each summary.

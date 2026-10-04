@@ -1,1 +1,0 @@
-{"note":"Initial textual patch precondition did not match formatting and made no change; the resulting unchanged-header repeat is a control run, not candidate evidence. A subsequent apply_patch service transport error also made no change; source state was checked before the successful edit."}

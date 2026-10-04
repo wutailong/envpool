@@ -1,6 +1,10 @@
 # Deterministic synchronous PPO parity
 
-The `report.json` beside this page is the historical **first-round**
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
+The [report.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo/report.json) in the archive is the historical **first-round**
 [7de9691f](https://github.com/wutailong/envpool/commit/7de9691f724e5739f73c83d52a0ab57bf166d37b)
 comparison against original 9c31c547. Later cumulative revisions reused this
 harness and recorded their own baseline/candidate reports, including the
@@ -67,5 +71,5 @@ checkpoints, every metric, import/version provenance, and an exact comparator
 report. Comparisons use scalar values, tensor dtype/shape and contiguous bytes;
 wall times, runtime paths and archive serialization bytes are excluded.
 
-`report.json` is the sanitized numeric result. Large local checkpoints and trace
+[report.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo/report.json) is the sanitized numeric result. Large local checkpoints and trace
 arrays are intentionally excluded from Git. Rerunning the harness recreates them.

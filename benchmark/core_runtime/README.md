@@ -1,5 +1,9 @@
 # Core runtime: measured throughput and correctness
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](ARCHIVE.md).
+
 > Historical first-round report. For the cumulative fixes, current experimental
 > branch, validation limits and later adverse measurements, start with
 > [the core runtime review / 分支导航](REVIEW.md). The numbers below predate those
@@ -7,7 +11,7 @@
 
 These results show **configuration-dependent gains and regressions**, not a
 universal speedup. All 234 final timing samples and all 18 configuration/affinity
-comparisons are included. Exploratory candidate-v1 samples are excluded.
+comparisons are retained in the immutable archive. Exploratory candidate-v1 samples are excluded.
 
 The strongest repeatable-looking case here is CartPole with 256 environments,
 full batches and one worker: +21.6% versus the installed original and +13.5%
@@ -54,8 +58,8 @@ and `env_steps_per_s` retain this response-count meaning.
 
 All 54 variant/case ranges, sample counts, coefficients of variation (sample
 standard deviation divided by mean), and median vector-call latencies are in
-[results/dispersion.txt](results/dispersion.txt). Unrounded summary numbers,
-including CPU/wall-time ratios, are in [results/summary.json](results/summary.json).
+[results/dispersion.txt](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/results/dispersion.txt). Unrounded summary numbers,
+including CPU/wall-time ratios, are in [results/summary.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/results/summary.json).
 Min/max are observed sample ranges, not confidence intervals.
 
 ## Measurement method and machine

@@ -1,5 +1,9 @@
 # Rejected experiment: lazy player-action indices
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 **Do not apply the production patch as a performance recommendation.**
 This research branch keeps the published
 [direct-state-tuple core, ce1c47f2](https://github.com/wutailong/envpool/commit/ce1c47f238a069454f732a70089d1b9857dcc6de)
@@ -78,7 +82,7 @@ freedom. Published tests are active; the candidate env.h patch is not.
 
 ## Fixed runtime results
 
-The [plan](results/plan.json) fixes 160 general/Box2D, 64 normal Dummy and 32
+The [plan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/plan.json) fixes 160 general/Box2D, 64 normal Dummy and 32
 interleaved Dummy samples, plus sixteen full-budget PPO runs. Each throughput
 case has eight balanced blocks, a/b identical control and c/d identical candidate,
 orders acdb/cabd/bdca/dbac, 400 untimed warmup calls and at least three measured
@@ -133,18 +137,19 @@ into the fixed performance trial.
 
 ```sh
 D=benchmark/core_runtime/player_action_index
-R="$D/results"
+: "${ARCHIVE_ROOT:?Extract the archive as described in ../ARCHIVE.md}"
+R="$ARCHIVE_ROOT/benchmark/core_runtime/player_action_index/results"
 python "$D/../experiments/summarize_paired_blocks.py" "$R/performance.jsonl" --plan "$R/plan.json" --json-out general-recomputed.json
 python "$D/../experiments/summarize_paired_blocks.py" "$R/container-performance.jsonl" --plan "$R/container-performance.jsonl.plan.json" --json-out container-recomputed.json
 python "$D/../experiments/summarize_paired_blocks.py" "$R/interleaved-performance.jsonl" --plan "$R/interleaved-performance.jsonl.plan.json" --json-out interleaved-recomputed.json
 python "$D/summarize_paired_ppo.py" "$R/ppo-throughput" --output ppo-recomputed.json
 ```
 
-Evidence: [allocation](results/allocation-comparison.json), [validation](results/validation.json),
-[native](results/native.xml), [ASan/UBSan](results/address.log), [TSan](results/thread.log),
-[general](results/performance-summary.json), [normal Dummy](results/container-performance-summary.json),
-[interleaved](results/interleaved-performance-summary.json), [PPO](results/ppo-throughput/summary.json),
-[build commands](results/build-commands.json), [provenance](results/runtime-provenance.json).
+Evidence: [allocation](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/allocation-comparison.json), [validation](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/validation.json),
+[native](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/native.xml), [ASan/UBSan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/address.log), [TSan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/thread.log),
+[general](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/performance-summary.json), [normal Dummy](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/container-performance-summary.json),
+[interleaved](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/interleaved-performance-summary.json), [PPO](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/ppo-throughput/summary.json),
+[build commands](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/build-commands.json), [provenance](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_action_index/results/runtime-provenance.json).
 Raw records accompany every summary. No binaries, weights, credentials or
 private machine paths are published. The useful deliverable is reproducible
 coverage and a documented rejection; the production recommendation stays with

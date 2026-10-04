@@ -1,5 +1,9 @@
 # Rejected single-player action-metadata reuse experiment
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 **Rejected: the allocation saving did not establish a robust net runtime gain.**
 No production action cache or cache-specific regression test from this trial is
 retained. The complete [prototype patch](prototypes/action-metadata.patch) is
@@ -10,7 +14,7 @@ The tested control is the initialized shutdown baseline published as
 [`6685e510c1fad428b02152c1a378d6289880c4df`](https://github.com/wutailong/envpool/commit/6685e510c1fad428b02152c1a378d6289880c4df).
 Its tree equals local base `dffcc5fd36d88e7e0bd1a50e53653c36e0e46507`:
 `b2ee911677b39d4344b33500bc0d2293f948a37f`, as recorded in
-[baseline publication provenance](results/baseline-publication.json).
+[baseline publication provenance](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/baseline-publication.json).
 The immutable local prototype is `f3e015c307b2ef20bba077bcd94915a552c8a132`.
 This trial predates the separate player-discount correctness repair; these
 measurements and validation results must not be attributed to that repair.
@@ -26,7 +30,7 @@ batch reordering, replacement storage, rank growth/shrink, empty tails,
 independent copied metadata, borrowed lifetime, reset/throw recovery, bounds,
 and immediate receive/send reuse across worker threads.
 
-The [audit](results/allocation-comparison.json) intercepts global scalar
+The [audit](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/allocation-comparison.json) intercepts global scalar
 `operator new` during direct serial CartPole `EnvStep`, after 10 warmup calls.
 It is neither a throughput measurement nor a whole-process allocation census:
 
@@ -35,22 +39,22 @@ It is neither a throughput measurement nor a whole-process allocation census:
 - All 10,000 measured calls: **68,062 to 50,000 allocations**;
   **6,224,496 to 6,080,000 bytes**.
 
-[Control](results/defined-allocations.jsonl) and
-[candidate](results/candidate-allocations.jsonl) raw counters are retained,
+[Control](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/defined-allocations.jsonl) and
+[candidate](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/candidate-allocations.jsonl) raw counters are retained,
 along with the [audit source](prototypes/count_action_allocations.cc).
 The packaged audit source was license-header/format normalized and rebuilt
 against both frozen sources; all EnvStep counters were reproduced exactly
-([control rerun](results/public-audit-defined.jsonl),
-[prototype rerun](results/public-audit-candidate.jsonl)).
+([control rerun](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/public-audit-defined.jsonl),
+[prototype rerun](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/public-audit-candidate.jsonl)).
 The separate `Wait` allocation counts fluctuate with background state-buffer
 refill availability; their difference is **not attributable to this patch**.
 
 ## Balanced throughput trial and rejection
 
-[The fixed plan](results/plan.json) has seven configurations, eight blocks,
+[The fixed plan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/plan.json) has seven configurations, eight blocks,
 400 untimed warmup calls, seed 42, at least three measured seconds in each fresh
 process, and default scheduling on nine available logical CPUs. All **224 raw
-samples** are in [throughput.jsonl](results/throughput.jsonl); no configurations
+samples** are in [throughput.jsonl](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/throughput.jsonl); no configurations
 or blocks were discarded, and no extra sampling sought a favorable result.
 
 Labels `a/b` use one control runtime, and `c/d` use one prototype runtime.
@@ -77,7 +81,7 @@ The latter itself has a positive descriptive interval. Other A/A effects are
 larger still: CartPole 20/20/1 control `b/a` is +9.385%. Thus the planned trial
 does not establish enough robust benefit to justify the added cache complexity.
 This does not prove every true effect is zero or explain every timing sample.
-[The complete existing summary](results/paired-summary.json) retains every block,
+[The complete existing summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/paired-summary.json) retains every block,
 A/A contrast, range, coefficient of variation, CPU cost, and scheduler statistic.
 
 ### Full-budget synchronous PPO
@@ -88,23 +92,23 @@ untimed priming updates, then starts a fresh seeded 256,000-response run with
 are identical. Control median: **19.892 s**, range 19.823–19.926 s; prototype
 median: **19.949 s**, range 19.883–20.211 s. Overlapping ranges and the slower
 prototype median do not support a training speedup. All runs remain in
-[raw samples](results/ppo-throughput.jsonl) and the
-[existing summary](results/ppo-throughput-summary.json).
+[raw samples](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/ppo-throughput.jsonl) and the
+[existing summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/ppo-throughput-summary.json).
 
 ## Correctness and provenance
 
 The rejected prototype passed the recorded gates:
 
-- 59 native core/Dummy tests: [XML](results/native.xml)
-- 57 tests in each of three ASan/UBSan repeats: [XML](results/address.xml),
-  [all-repeat log](results/address-log.txt)
-- 57 tests in each of three TSan repeats: [XML](results/thread.xml),
-  [all-repeat log](results/thread-log.txt)
+- 59 native core/Dummy tests: [XML](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/native.xml)
+- 57 tests in each of three ASan/UBSan repeats: [XML](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/address.xml),
+  [all-repeat log](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/address-log.txt)
+- 57 tests in each of three TSan repeats: [XML](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/thread.xml),
+  [all-repeat log](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/thread-log.txt)
 - 11 Dummy and five Classic Control Python tests:
-  [Dummy log](results/dummy-python-log.txt), [Classic log](results/classic-python-log.txt)
-- [5,499 exact rollout arrays](results/rollout-comparison.json) and
-  [eight exact CPU XLA cases](results/xla-comparison.json)
-- [Full PPO exact parity](results/ppo-parity.json): 101 checkpoints, 223 arrays,
+  [Dummy log](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/dummy-python-log.txt), [Classic log](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/classic-python-log.txt)
+- [5,499 exact rollout arrays](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/rollout-comparison.json) and
+  [eight exact CPU XLA cases](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/xla-comparison.json)
+- [Full PPO exact parity](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/ppo-parity.json): 101 checkpoints, 223 arrays,
   4,925 tensors, 106,238 scalars, maximum absolute difference zero
 
 PPO parity covers one fixed-seed synchronous CPU configuration, not general or
@@ -113,21 +117,21 @@ natively and were omitted only from sanitizer runs; short sync/async/multiplayer
 coverage remained. LeakSanitizer was disabled because sandbox thread inspection
 was unavailable. Dependencies were not all rebuilt with sanitizers.
 The 23 experiment-harness tests are inherited baseline validation, **not newly
-rerun here**. See the bounded [validation record](results/validation.json).
+rerun here**. See the bounded [validation record](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/validation.json).
 
-[Source](results/source-freeze.json) and [header](results/header-freeze.json)
+[Source](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/source-freeze.json) and [header](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/header-freeze.json)
 SHA-256 manifests, plus both complete 21-module runtime manifests
-([control](results/defined-runtime-freeze.json),
-[prototype](results/candidate-runtime-freeze.json)), were reverified after timing.
+([control](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/defined-runtime-freeze.json),
+[prototype](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/candidate-runtime-freeze.json)), were reverified after timing.
 Only Classic Control, MuJoCo Gym, and Dummy clients were rebuilt; the other 18
 modules are read-only control links. No GPU, all-family, full-release, or
 cross-platform validation is claimed. Throughput rows contain no measured binary
 hashes, so row-level identity remains unverified; see
-[runtime provenance](results/runtime-provenance.json) for the separate evidence.
+[runtime provenance](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/runtime-provenance.json) for the separate evidence.
 
 ## Reproduce in isolation
 
-The [actual native build argv](results/native-build-commands.json) records the
+The [actual native build argv](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/action_metadata/results/native-build-commands.json) records the
 Linux x86-64 C++17/O3 clients using existing read-only Bazel dependencies.
 MuJoCo's compiler garbage-collector parameters limit build memory, without
 changing runtime optimization flags. Location prefixes in evidence are replaced

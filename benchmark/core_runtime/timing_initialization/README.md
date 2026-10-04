@@ -1,5 +1,9 @@
 # Initialize timing accumulators; reject an inconclusive cursor optimization
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 The retained production change initializes all three protected duration counters
 in `AsyncEnvPool` to zero. Previously, `dur_send_` and `dur_recv_` were read by
 `+=` without an initialized floating-point value. The unused `dur_send_all_`
@@ -45,16 +49,16 @@ The initialized source is the comparison control: this avoids using undefined
 counter reads as the experimental baseline. Labels `a` and `b` use the identical
 control runtime; `c` and `d` use the identical cursor runtime. Both complete
 native manifests were verified before and after timing. See
-[runtime provenance](results/runtime-provenance.json). The raw timing format has
+[runtime provenance](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/runtime-provenance.json). The raw timing format has
 no per-row binary hashes; the analysis explicitly leaves that row-level claim
 unverified and relies on the separate frozen-runtime provenance.
 
 ## Bounded measurement and outcome
 
-[The saved plan](results/plan.json) specifies seven configurations, eight blocks,
+[The saved plan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/plan.json) specifies seven configurations, eight blocks,
 400 untimed warmup calls, seed 42, at least three measured seconds per fresh
 process, and default scheduling on nine available logical CPUs. All 224 samples
-are retained in [raw JSONL](results/cursor-throughput.jsonl). No build, environment
+are retained in [raw JSONL](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/cursor-throughput.jsonl). No build, environment
 test, or other benchmark ran concurrently. The host is shared and nonstationary.
 
 The orders `acdb`, `cabd`, `bdca`, `dbac` give treatment-level ABBA/BAAB and rotate
@@ -79,7 +83,7 @@ Every interval crosses zero. Same-binary block effects include +7.31% for the
 20/20/2 control pair and +10.72% for the 1024/256/8 cursor pair. These observations
 show why small positive point estimates are insufficient here; they do not prove
 that all real differences are zero or that scheduling explains every sample.
-See [the complete paired summary](results/cursor-paired-summary.json) for every
+See [the complete paired summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/cursor-paired-summary.json) for every
 block, sample range, coefficient of variation, CPU cost, and scheduler statistic.
 No additional sampling was used to search for a favorable result.
 
@@ -101,8 +105,8 @@ made. Dependencies were not all rebuilt with sanitizers. Only Classic Control,
 MuJoCo Gym, and Dummy native clients were rebuilt. Other families, GPU XLA,
 other platforms, and the complete release build are not newly validated.
 
-The [source hashes](results/source-freeze.json), native test XML, frozen binary
-manifests, and [normalized native build commands](results/native-build-commands.json)
+The [source hashes](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/source-freeze.json), native test XML, frozen binary
+manifests, and [normalized native build commands](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/native-build-commands.json)
 record the actual selected-source artifacts. Build method and toolchain match
 [the preceding shutdown validation](../shutdown/README.md#actual-build-and-execution-method):
 GCC 14.2, Linux x86-64, C++17/O3 native clients, Python 3.12.14, existing read-only
@@ -117,21 +121,21 @@ fixed-seed 256,000-response CartPole run: 100 updates, 8,000 optimizer steps,
 101 checkpoints, 223 arrays, 4,925 tensors, and 106,238 scalars. Maximum absolute
 difference is zero. This is one deterministic synchronous CPU configuration,
 not a promise about asynchronous training trajectories. Reports are
-[initialized control](results/defined-ppo-parity.json) and
-[cursor prototype](results/cursor-ppo-parity.json).
+[initialized control](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/defined-ppo-parity.json) and
+[cursor prototype](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/cursor-ppo-parity.json).
 
 Eight additional full-budget PPO throughput runs use two ABBA/BAAB blocks,
 with two untimed priming updates discarded before each freshly seeded run.
 All final model/optimizer/RNG/metric fingerprints are equal. The initialized
 control median is 20.217 s (range 20.090–20.346); cursor median is 20.164 s
 (range 20.049–20.523). The overlapping ranges do not establish a training
-speedup. [Raw samples](results/ppo-throughput.jsonl) and
-[summary](results/ppo-throughput-summary.json) retain all eight runs.
+speedup. [Raw samples](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/ppo-throughput.jsonl) and
+[summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/ppo-throughput-summary.json) retain all eight runs.
 
 The 23 lightweight experiment-helper tests, Python Ruff checks, C++ formatting,
 and cpplint passed. All 104 native modules in the five earlier control runtimes
 retain their recorded hashes, and their five source checkouts remain clean.
-See [the validation summary](results/validation.json).
+See [the validation summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/timing_initialization/results/validation.json).
 
 ## Reproduce the comparison
 
@@ -155,7 +159,7 @@ python benchmark/core_runtime/experiments/run_blocks.py \
   --paired-replicates --out new-samples.jsonl
 python benchmark/core_runtime/experiments/summarize_paired_blocks.py \
   new-samples.jsonl \
-  --plan benchmark/core_runtime/timing_initialization/results/plan.json \
+  --plan benchmark/core_runtime/timing_initialization/inputs/plan.json \
   --json-out new-summary.json
 python -m unittest discover \
   -s benchmark/core_runtime/experiments -p 'test*blocks.py'

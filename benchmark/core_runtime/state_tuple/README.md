@@ -1,5 +1,9 @@
 # Direct typed state tuples
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 Retain this candidate for its exact per-state allocation reduction and
 workload-specific gains in the fixed measurement window below. Small CartPole,
 HalfCheetah and full PPO timings are inconclusive; there is no universal speedup
@@ -48,8 +52,8 @@ Exactly one allocation and 576 requested bytes disappear per measured EnvStep:
 10,000 calls and 5,760,000 bytes in total. These are compiler-specific requested
 allocation traffic, not retained memory, allocator footprint, RSS or throughput.
 Wait-metadata allocation counts remain zero. Variable receive-caller allocation
-counts are excluded from causal comparisons. See the [comparison](results/allocation-comparison.json)
-and raw [control](results/allocation-control.jsonl)/[candidate](results/allocation-candidate.jsonl).
+counts are excluded from causal comparisons. See the [comparison](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/allocation-comparison.json)
+and raw [control](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/allocation-control.jsonl)/[candidate](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/allocation-candidate.jsonl).
 
 ## Executed correctness gates
 
@@ -121,12 +125,12 @@ confirmation, adaptive sampling or discarded adverse timing window.
 
 ## Reproduction and evidence
 
-The [original plan](results/plan.json) declares `expected_general_samples=160`.
-The [analysis plan](results/analysis-plan.json) only aliases it as
+The [original plan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/plan.json) declares `expected_general_samples=160`.
+The [analysis plan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/analysis-plan.json) only aliases it as
 `expected_samples` for the unchanged inherited summarizer; sampling did not
 change. Keep both records. Recompute summaries into fresh output files:
 
-The allocation entries in `results/build-commands.json` are historical commands
+The allocation entries in [results/build-commands.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/build-commands.json) are historical commands
 from a checkout used first before and then after the edit. Both contain the
 placeholder `$CANDIDATE_SOURCE`; replaying both against today's candidate would
 incorrectly compare two candidates. For a fresh allocation-control build, use
@@ -136,17 +140,18 @@ revisions. The archived commands remain unchanged as execution evidence.
 
 ```sh
 D=benchmark/core_runtime/state_tuple
-R="$D/results"
+: "${ARCHIVE_ROOT:?Extract the archive as described in ../ARCHIVE.md}"
+R="$ARCHIVE_ROOT/benchmark/core_runtime/state_tuple/results"
 python "$D/../experiments/summarize_paired_blocks.py" "$R/performance.jsonl" --plan "$R/analysis-plan.json" --json-out general-recomputed.json
 python "$D/../experiments/summarize_paired_blocks.py" "$R/container-performance.jsonl" --plan "$R/container-performance.jsonl.plan.json" --binary-hash-field binary_sha256 --json-out container-recomputed.json
 python "$D/summarize_paired_ppo.py" "$R/ppo-throughput" --output ppo-recomputed.json
 python "$D/run_paired_ppo.py" --python "$PPO_PYTHON" --baseline-root "$CONTROL_ROOT" --candidate-root "$CANDIDATE_ROOT" --output ppo-fresh
 ```
 
-Key records: [validation](results/validation.json), [native](results/native.xml),
-[ASan/UBSan](results/address.log), [TSan](results/thread.log),
-[general throughput](results/performance-summary.json), [Dummy throughput](results/container-performance-summary.json),
-[PPO throughput](results/ppo-throughput/summary.json), [build commands](results/build-commands.json),
-[freeze before](results/freeze-before.json) and [freeze after](results/freeze-after.json).
+Key records: [validation](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/validation.json), [native](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/native.xml),
+[ASan/UBSan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/address.log), [TSan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/thread.log),
+[general throughput](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/performance-summary.json), [Dummy throughput](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/container-performance-summary.json),
+[PPO throughput](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/ppo-throughput/summary.json), [build commands](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/build-commands.json),
+[freeze before](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/freeze-before.json) and [freeze after](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/state_tuple/results/freeze-after.json).
 Raw rows accompany each summary. Published evidence excludes private machine
 paths, binaries, weights, credentials and other private artifacts.

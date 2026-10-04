@@ -1,5 +1,9 @@
 # Additional ToyText / MiniGrid core validation
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 This is historical **first-round** validation of
 [7de9691f](https://github.com/wutailong/envpool/commit/7de9691f724e5739f73c83d52a0ab57bf166d37b)
 against the original 9c31c547 runtime. Their recorded success must not be
@@ -24,7 +28,7 @@ The candidate family modules were rebuilt against the five modified core headers
   MiniGrid IDs for same-seed full-length rollouts and different-seed behavior.
 - Original/candidate rollout comparison: all 59 cases passed, with 6,575 exact
   dtype/shape/byte comparisons covering 65,304,189 bytes. Full counts and coverage
-  are in `results/summary.json` and `results/parity/comparison.json`.
+  are in [results/summary.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/families/results/summary.json) and [results/parity/comparison.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/families/results/parity/comparison.json).
 
 The final build discovered the installed OpenCV include version (`opencv5`), after
 an initial include-path attempt used `opencv4`. This was a build-script issue;
@@ -98,9 +102,9 @@ fresh `.d` files must reference the candidate core headers.
 
 ## Publication and limits
 
-Publish the two scripts, this README and sanitized JSON summaries. The concise
-`results/summary.json`, `results/build-and-test-summary.json`, and
-`results/parity/comparison.json` contain no machine paths. Do not upload native
+The current tree keeps the two scripts and this README. Archived sanitized summaries
+[results/summary.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/families/results/summary.json), [results/build-and-test-summary.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/families/results/build-and-test-summary.json), and
+[results/parity/comparison.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/families/results/parity/comparison.json) contain no machine paths. Do not upload native
 binaries, NPZ rollout evidence, object files, or raw path-containing build logs.
 
 This is Linux CPU regression coverage. It is not a clean all-family build,

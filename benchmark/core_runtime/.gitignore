@@ -1,0 +1,4 @@
+# Generated run output belongs outside the source tree; keep conclusions in Markdown.
+**/results/
+ppo/report.json
+xla/comparison.json

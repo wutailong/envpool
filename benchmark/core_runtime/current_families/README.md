@@ -1,5 +1,9 @@
 # Current-core ToyText and MiniGrid coverage
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 The retained public core
 [ce1c47f2](https://github.com/wutailong/envpool/commit/ce1c47f238a069454f732a70089d1b9857dcc6de)
 now has fresh ToyText and MiniGrid builds and ordinary positive regression
@@ -127,18 +131,18 @@ so the fresh-path checks above are essential; keep distinct revisions separate.
 Use `--compare-only --output "$OUT"` to recheck newly saved NPZ records without
 recording more rollouts. Large NPZ arrays are kept locally, not published.
 
-Evidence: [validation](results/validation.json), [plan](results/plan.json),
-[compiled closure](results/build-closure.json),
-[ToyText build commands](results/build-toy_text.json),
-[MiniGrid build commands](results/build-minigrid.json),
-[runtime freeze](results/runtime-freeze.json),
-[59-case comparison](results/comparison.json),
-[original imports/cases](results/original-report.json),
-[current imports/cases](results/candidate-report.json),
-[registry scope](results/registry-scope.json),
-[ToyText tests](results/toy-text-tests.log),
-[MiniGrid tests](results/minigrid-deterministic-tests.log),
-[parity log](results/parity.log).
+Evidence: [validation](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/validation.json), [plan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/plan.json),
+[compiled closure](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/build-closure.json),
+[ToyText build commands](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/build-toy_text.json),
+[MiniGrid build commands](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/build-minigrid.json),
+[runtime freeze](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/runtime-freeze.json),
+[59-case comparison](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/comparison.json),
+[original imports/cases](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/original-report.json),
+[current imports/cases](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/candidate-report.json),
+[registry scope](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/registry-scope.json),
+[ToyText tests](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/toy-text-tests.log),
+[MiniGrid tests](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/minigrid-deterministic-tests.log),
+[parity log](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/current_families/results/parity.log).
 Build diagnostic logs retain warnings; duplicated command lines are represented
 once in the build JSON. Private roots are normalized. No binaries, assets,
 credentials or model artifacts are uploaded.

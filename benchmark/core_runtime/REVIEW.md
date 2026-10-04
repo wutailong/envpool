@@ -1,5 +1,8 @@
 # Core runtime review / 分支导航
 
+当前分支已清理中间测试原始文件，保留结论、负面结果、方法和限制。
+证据链接已固定到清理前提交；参见[归档与复现说明](ARCHIVE.md)。
+
 核验日期：2026-10-04 UTC。固定公开 ce1c47f2 源码复现后，又补充了 ToyText/MiniGrid 的当前版本验证；生产 core 与历史性能采样不变。历史提交链接固定到已经发布、核验过的版本。
 这是累计修改链，不是一组互相独立、需要全部合并的补丁。
 
@@ -53,7 +56,7 @@ Box2D 的 4 个测试模式场景覆盖 260 个输出记录、1,040 个内部 Co
 Box2D 的动态诊断字段要求 ENVPOOL_TEST；普通 release spec 不包含它们。
 不是全部环境、全部平台、GPU/Container-valued XLA 或一般异步训练等价性的证明。
 直接 tuple 轮的 8 个 CPU XLA 记录只覆盖 CartPole 和 HalfCheetah，比较基线是前一版 bf2f16c0。
-`families/` 的 ToyText/MiniGrid 结果，以及 `xla/comparison.json` 中包含 MiniGrid 的 12 个记录，属于第一轮 7de9691f；不能算作后来累计 core 的重新验证。
+`families/` 的 ToyText/MiniGrid 结果，以及 [xla/comparison.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/xla/comparison.json) 中包含 MiniGrid 的 12 个记录，属于第一轮 7de9691f；不能算作后来累计 core 的重新验证。
 新增的 `current_families/` 才是 ce1c47f2 的 ToyText/MiniGrid 重新编译与测试记录；它没有重跑 XLA、sanitizer 或完整 PPO，也不能将旧覆盖数量直接归到这个新构建。
 LeakSanitizer 在此环境未启用；泄漏修复另有精确析构计数回归，不等于整个程序 leak-clean。
 玩家 discount 修复有意改变此前错误的多玩家/零玩家行为，不能笼统说所有旧结果都不变。
@@ -87,14 +90,14 @@ LeakSanitizer 在此环境未启用；泄漏修复另有精确析构计数回归
 例如，在尚不存在的目录里取得保留版本源码：
 
 ```sh
-git clone --branch perf/core-state-tuple https://github.com/wutailong/envpool.git envpool-retained
+git clone --branch docs/core-current-family-coverage https://github.com/wutailong/envpool.git envpool-retained
 git -C envpool-retained switch --detach ce1c47f238a069454f732a70089d1b9857dcc6de
 git -C envpool-retained rev-parse HEAD
 ```
 
 这只取得源码，不安装运行包，也不验证本机的构建或性能。公开提交可以固定源码；换机器/编译器后的 native 文件不要求逐字节重现本机 SHA256，应为新构建记录自己的指纹并验证导入与测试。
 
-本次文档复查逐一核对了 12 个公开分支的提交与父链接。704 个吞吐原始样本的 7 份汇总、三轮各 16 次 PPO 和 32 次 phase 试验汇总均重算一致；初始不利的 8 次 PPO 窗口保持独立。18 个既有诊断工具测试通过，10 个测量源码指纹保持不变。修正 fresh PPO 汇总路径、分配探针控制组头文件的重放说明，以及两处表格舍入，原始证据不变。没有重跑训练或环境基准，也没有扩大旧测试的证明范围。
+此前文档复查曾逐一核对 12 个公开分支的提交与父链接；历史分支现已精简为 main 和当前累计分支，历史版本仍可按固定提交访问。704 个吞吐原始样本的 7 份汇总、三轮各 16 次 PPO 和 32 次 phase 试验汇总均重算一致；初始不利的 8 次 PPO 窗口保持独立。18 个既有诊断工具测试通过，10 个测量源码指纹保持不变。修正 fresh PPO 汇总路径、分配探针控制组头文件的重放说明，以及两处表格舍入，原始证据不变。没有重跑训练或环境基准，也没有扩大旧测试的证明范围。
 
 ## 报告入口
 
@@ -111,7 +114,7 @@ git -C envpool-retained rev-parse HEAD
 - [当前 core 的 ToyText/MiniGrid 正向对照与具体覆盖限制](current_families/README.md)
 - [同步 PPO 方法](ppo/README.md) / [CPU XLA 范围](xla/README.md)
 
-每份报告旁边保留原始测量、构建参数、源码/二进制指纹和限制。没有上传二进制、模型权重、
+当前目录保留结论、方法、复现工具和限制；原始测量、构建参数和指纹通过固定旧提交链接查阅。没有上传二进制、模型权重、
 资源包、凭证或私人机器路径。
 GitHub workflows 的触发条件是 main push 或 PR（release 另有版本 tag）；当前这些独立分支
 没有 hosted CI runs/status checks。这不是 CI 通过，现有证据来自已记录的本地测试。

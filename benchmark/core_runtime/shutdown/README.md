@@ -1,5 +1,9 @@
 # Shutdown wake-up correctness
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 The selected fix uses one stop-aware dequeue check and wakes workers without
 writing shutdown actions into the ring. It fixes the reproduced teardown race;
 it does **not** establish a throughput improvement. The exact subset of pending
@@ -22,7 +26,7 @@ demonstrates the explicit oversubscribed configuration, not a race on every
 ordinary shutdown. It is separate from the earlier 20-environment/1-worker and
 1,024-environment/8-worker performance observations.
 
-The [sanitized baseline TSan report](results/baseline-tsan.txt) identifies a
+The [sanitized baseline TSan report](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/shutdown/results/baseline-tsan.txt) identifies a
 write in `ActionBufferQueue::EnqueueBulk` from the destructor racing a worker's
 payload copy in `Dequeue`. The ring has `2 * num_envs` slots. After a real reset
 was queued, enqueueing one sentinel per worker could wrap around and overwrite
@@ -73,8 +77,8 @@ allocation does not itself imply faster stepping or training.
 Classic Control, MuJoCo Gym, and dummy native clients were rebuilt from the
 selected one-check source. The final source/runtime hashes were checked against
 the frozen validation snapshots. Earlier prototype passes were not substituted
-for these results. See the [validation summary](results/validation.json) and
-[selected PPO parity report](results/one-check-ppo-parity.json).
+for these results. See the [validation summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/shutdown/results/validation.json) and
+[selected PPO parity report](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/shutdown/results/one-check-ppo-parity.json).
 
 | Check | Selected one-check result |
 | --- | --- |
@@ -94,7 +98,7 @@ unchanged cursors/payloads and output on stop, and normal ordered delivery throu
 ring wraparound. Pool regressions cover idle and pending-reset destruction for
 `(environments, workers)` of `(1, 2)`, `(1, 8)`, and `(2, 3)`, repeated 32 times
 per shape. A gated reset verifies destruction joins in-flight work before
-releasing its environment. An [additional TSan stress run](results/one-check-pending-stress.txt)
+releasing its environment. An [additional TSan stress run](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/shutdown/results/one-check-pending-stress.txt)
 repeated the selected-source pending-reset test 50 times: 32 lifecycles per
 shape across three shapes, totaling 4,800. This count is separate from any
 alternative design's original-reproducer run.
@@ -131,7 +135,7 @@ rebuilt with sanitizers.
 
 Validation ran serially. Only Classic Control, MuJoCo Gym, and dummy native
 clients were rebuilt; reused modules establish no new coverage for other
-families. [The sanitized build manifest](results/native-build-commands.json)
+families. [The sanitized build manifest](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/shutdown/results/native-build-commands.json)
 records the native build commands with location placeholders. The Bazel recipes
 below are suggested portable reruns, not the commands used for these local
 standalone builds.
@@ -183,9 +187,9 @@ tradeoffs. Both rejected alternatives passed independent correctness checks:
   worker from 1,719 to 2,124 bytes. These body sizes reflect inlining and cold
   paths, not total executed-work estimates, and do not establish timing causes.
 
-The [raw final samples](results/comparison.jsonl),
-[complete per-variant statistics](results/comparison-summary.json), and
-[pooled-control contrasts](results/comparison-pooled.json) retain all cases.
+The [raw final samples](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/shutdown/results/comparison.jsonl),
+[complete per-variant statistics](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/shutdown/results/comparison-summary.json), and
+[pooled-control contrasts](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/shutdown/results/comparison-pooled.json) retain all cases.
 The [two-check](prototypes/two-check.patch) and
 [guarded](prototypes/guarded.patch) source/test patches can each be applied separately
 to a fresh published-baseline worktree to reproduce the rejected alternatives.
@@ -216,8 +220,8 @@ These are similar measured times with overlapping ranges, **not a demonstrated
 training speedup**. All eight semantic fingerprints matched. Those fingerprints
 are a timing-harness sanity check; the separate full PPO parity test above is
 the detailed correctness evidence. See the
-[training summary](results/ppo-throughput-summary.json) and
-[eight raw samples](results/ppo-throughput.jsonl).
+[training summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/shutdown/results/ppo-throughput-summary.json) and
+[eight raw samples](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/shutdown/results/ppo-throughput.jsonl).
 
 ## Reproduce on a fresh Linux checkout
 

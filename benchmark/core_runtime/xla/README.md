@@ -1,6 +1,10 @@
 # CPU XLA / JAX correctness
 
-This page and `comparison.json` record the **first-round**
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
+This page and [comparison.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/xla/comparison.json) record the **first-round**
 [7de9691f](https://github.com/wutailong/envpool/commit/7de9691f724e5739f73c83d52a0ab57bf166d37b)
 comparison against original 9c31c547: twelve cases, including MiniGrid.
 The later retained ce1c47f2 core reran eight CartPole/HalfCheetah cases against
@@ -36,7 +40,7 @@ python benchmark/core_runtime/xla/check_xla.py \
 
 Both JSON `cases` arrays must match exactly. Synchronous modes additionally
 perform byte equality checks within the script against NumPy stepping. The
-sanitized `comparison.json` records all cases, hashes and package versions.
+sanitized [comparison.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/xla/comparison.json) records all cases, hashes and package versions.
 
 This validates CPU FFI only. CUDA/GPU XLA, cross-platform behavior, and all
 registered environment families are not claimed.

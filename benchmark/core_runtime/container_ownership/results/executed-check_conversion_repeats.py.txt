@@ -1,8 +1,0 @@
-import importlib.util
-import pathlib
-import unittest
-p=pathlib.Path.cwd()/'envpool-core-container/benchmark/core_runtime/container_ownership/test_conversion.py'
-s=importlib.util.spec_from_file_location('test_conversion',p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
-suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromModule(m) for _ in range(25))
-r=unittest.TextTestRunner(verbosity=2).run(suite)
-raise SystemExit(not r.wasSuccessful())

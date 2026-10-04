@@ -1,2 +1,0 @@
-{"compact_steps":10000,"wait_metadata_alloc_calls":100000,"wait_metadata_alloc_bytes":6560000}
-{"steps":10000,"env_step_alloc_calls":108062,"env_step_alloc_bytes":6544496,"recv_alloc_calls":336940,"recv_alloc_bytes":16179764}

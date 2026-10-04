@@ -1,5 +1,9 @@
 # Observation-only reference PPO phase profile
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 These tools observe the unchanged reference workload. This document describes
 the instrumentation; completed real-runtime validation and all 32 fixed-trial
 results are in [the study report](README.md). No runtime or algorithm was changed.

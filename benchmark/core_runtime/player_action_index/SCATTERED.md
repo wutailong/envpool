@@ -1,5 +1,9 @@
 # Scattered player-action throughput
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 `bench_interleaved.py` adds one real Dummy case, `DummyInterleavedPlayers4`,
 with N=B=64, T=4, max_num_players=4, scalar seed=42, state_num=10,
 action_num=6, default process affinity, and worker affinity offset=-1.

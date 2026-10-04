@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Smoke tests using existing timing records and synthetic arrays only."""
+"""Reporting regressions using deterministic synthetic records and arrays only."""
 
 import contextlib
 import io
@@ -27,38 +27,120 @@ from check_rollouts import arrays_equal, compare
 from summarize import dispersion, summarize
 
 ROOT = Path(__file__).resolve().parent
-INPUTS = [
-    ROOT / "results" / name
-    for name in [
-        "final-pinned-classic.jsonl",
-        "final-pinned-heavy.jsonl",
-        "final-default-confirm.jsonl",
-    ]
-]
 
 
 class ToolTests(unittest.TestCase):
     """Exercise reporting, CLI construction, and exact archive comparisons."""
 
+    def setUp(self):
+        """Generate controlled samples rather than depend on archived runs."""
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.samples = Path(self.temporary.name) / "samples.jsonl"
+        self.records = []
+        for variant, scale in [
+            ("original", 100),
+            ("rebuilt", 80),
+            ("candidate", 120),
+        ]:
+            for rep in range(3):
+                self.records.append({
+                    "env": "Synthetic-v0",
+                    "num_envs": 8,
+                    "batch_size": 4,
+                    "threads": 2,
+                    "pin": True,
+                    "variant": variant,
+                    "rep": rep,
+                    "env_steps_per_s": scale * (rep + 1),
+                    "us_per_call": 2 * (rep + 1),
+                    "cpu_seconds": 2 * (rep + 1),
+                    "seconds": 2,
+                })
+        self.write_samples()
+
+    def write_samples(self):
+        """Write only this test's temporary synthetic records."""
+        self.samples.write_text(
+            "".join(json.dumps(row) + "\n" for row in self.records)
+        )
+
     def test_summary(self):
-        """Reproduce all saved sample counts, medians, and ranges exactly."""
-        rows = summarize(INPUTS)
+        """Check every numeric field, grouping and formatted dispersion."""
+        rows = summarize([self.samples])
+        expected = {"config": ["Synthetic-v0", 8, 4, 2, True], "variants": {}}
+        for variant, scale in [
+            ("original", 100),
+            ("rebuilt", 80),
+            ("candidate", 120),
+        ]:
+            expected["variants"][variant] = {
+                "median": scale * 2,
+                "min": scale,
+                "max": scale * 3,
+                "cv": 0.5,
+                "samples": 3,
+                "median_us_per_call": 4,
+                "median_cpu_seconds_per_wall_second": 2,
+            }
+        expected["vs_original_pct"] = (240 / 200 - 1) * 100
+        expected["vs_rebuilt_pct"] = 50.0
+        self.assertEqual(rows, [expected])
+        self.assertAlmostEqual(rows[0]["vs_original_pct"], 20)
         self.assertEqual(
-            rows, json.loads((ROOT / "results/summary.json").read_text())
+            dispersion(rows),
+            "Synthetic-v0 N=8, batch=4, threads=2, affinity=pinned\n"
+            "  original  median=200; range=100..300; CV=50.0%; n=3; vector-call latency=4.00 us\n"
+            "  rebuilt   median=160; range=80..240; CV=50.0%; n=3; vector-call latency=4.00 us\n"
+            "  candidate median=240; range=120..360; CV=50.0%; n=3; vector-call latency=4.00 us\n\n",
         )
-        self.assertEqual(len(rows), 18)
-        self.assertEqual(
-            sum(v["samples"] for r in rows for v in r["variants"].values()), 234
-        )
-        self.assertEqual(
-            dispersion(rows).strip(),
-            (ROOT / "results/dispersion.txt").read_text().strip(),
-        )
+
+    def test_single_sample_and_separate_configuration(self):
+        """Keep configurations separate and handle absent rebuilt controls."""
+        for variant, rate in [("original", 50), ("candidate", 40)]:
+            self.records.append(
+                dict(
+                    self.records[0],
+                    variant=variant,
+                    env_steps_per_s=rate,
+                    pin=False,
+                )
+            )
+        self.write_samples()
+        rows = summarize([self.samples])
+        self.assertEqual(len(rows), 2)
+        self.assertFalse(rows[1]["config"][-1])
+        self.assertIsNone(rows[1]["vs_rebuilt_pct"])
+        self.assertAlmostEqual(rows[1]["vs_original_pct"], -20)
+        for value in rows[1]["variants"].values():
+            self.assertEqual(value["cv"], 0)
+            self.assertEqual(value["samples"], 1)
+            self.assertEqual(value["median"], value["min"])
+            self.assertEqual(value["median"], value["max"])
+        self.assertIn("affinity=default", dispersion(rows))
 
     def test_duplicate_samples(self):
         """Reject accidental re-pooling of the same experiment."""
         with self.assertRaisesRegex(ValueError, "duplicate"):
-            summarize([INPUTS[0], INPUTS[0]])
+            summarize([self.samples, self.samples])
+
+    def test_invalid_variant(self):
+        """Unknown labels must not silently enter a comparison."""
+        self.records[0]["variant"] = "unexpected"
+        self.write_samples()
+        with self.assertRaisesRegex(ValueError, "unexpected variant"):
+            summarize([self.samples])
+
+    def test_missing_control(self):
+        """Each configuration needs both the original and candidate."""
+        self.records = [
+            row for row in self.records if row["variant"] != "original"
+        ]
+        self.write_samples()
+        with self.assertRaisesRegex(
+            ValueError, "requires original and candidate"
+        ):
+            summarize([self.samples])
 
     def test_help(self):
         """Every runnable script explains itself without importing EnvPool."""

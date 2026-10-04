@@ -1,5 +1,9 @@
 # Fresh public-source client rebuild
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 A new clone from the public fork at
 [ce1c47f2](https://github.com/wutailong/envpool/commit/ce1c47f238a069454f732a70089d1b9857dcc6de)
 successfully rebuilt Classic Control and Dummy, passed six existing positive
@@ -115,19 +119,19 @@ Do not benchmark concurrently with compilation or tests.
 
 ## Evidence
 
-[Validation scope](results/validation.json),
-[exact commands/toolchain/project dependencies/link-map audit](results/build-provenance.json),
-[deduplicated header fingerprints](results/header-inputs.json),
-[post-smoke source/header verification](results/final-source-verification.json),
-[mixed runtime and Python manifest](results/runtime-manifest.json),
-[positive methods](results/positive-smoke.json),
-[PPO comparison](results/ppo-smoke-comparison.json),
-[fresh PPO record](results/ppo-fresh.json),
-[retained PPO record](results/ppo-retained.json),
-[helper tests](results/helper-tests.log),
-[positive test log](results/positive-smoke.log),
-[Classic warnings](results/compile-classic.log),
-[Dummy warnings](results/compile-dummy.log).
+[Validation scope](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/validation.json),
+[exact commands/toolchain/project dependencies/link-map audit](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/build-provenance.json),
+[deduplicated header fingerprints](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/header-inputs.json),
+[post-smoke source/header verification](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/final-source-verification.json),
+[mixed runtime and Python manifest](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/runtime-manifest.json),
+[positive methods](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/positive-smoke.json),
+[PPO comparison](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/ppo-smoke-comparison.json),
+[fresh PPO record](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/ppo-fresh.json),
+[retained PPO record](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/ppo-retained.json),
+[helper tests](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/helper-tests.log),
+[positive test log](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/positive-smoke.log),
+[Classic warnings](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/compile-classic.log),
+[Dummy warnings](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/published_rebuild/results/compile-dummy.log).
 
 Machine roots are normalized placeholders. No binaries, checkpoints, assets or
 credentials are uploaded. Existing branch controls and native files are unchanged.

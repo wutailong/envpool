@@ -1,5 +1,9 @@
 # Initialize discount for every player, without empty-slice writes
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 The selected repair in `Env::Allocate` preserves scalar assignment when the
 actual `player_num` is exactly one and uses `Fill(float(!done))` otherwise.
 It preserves the existing default `1 - done`, initializes every allocated
@@ -50,9 +54,9 @@ The new five selected regressions were compiled against unchanged baseline
 headers. Exactly three failed, as expected: nonterminal multi-player defaults,
 zero-player adjacent-slot preservation, and the real Dummy regression. The
 single-player and terminal controls passed. See the
-[negative-control record](results/baseline-negative-control.json),
-[complete baseline log](results/baseline-discount-log.txt), and
-[baseline XML](results/baseline-discount.xml).
+[negative-control record](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/baseline-negative-control.json),
+[complete baseline log](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/baseline-discount-log.txt), and
+[baseline XML](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/baseline-discount.xml).
 
 The terminal-only cases also pass against fresh zero-initialized baseline
 storage. They check the required result, but alone do not prove that every
@@ -107,7 +111,7 @@ contrast pools each pair's log rates inside each block, then weights blocks
 equally. All 128 samples are retained; same-binary contrasts expose host variation.
 No builds, native/runtime checks, or other benchmarks run during timing.
 Rows contain no measured binary hashes; the separate
-[runtime provenance](results/runtime-provenance.json) records identical control
+[runtime provenance](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/runtime-provenance.json) records identical control
 roots and complete frozen-manifest checks before and after measurement.
 Rates count environment responses, including ordinary autoresets.
 
@@ -119,8 +123,8 @@ ranges are evidence about these runs, not guarantees of performance neutrality.
 
 ### Initial direct-Fill trial
 
-The complete first trial is retained in [raw samples](results/direct-throughput.jsonl)
-and [paired summary](results/direct-paired-summary.json). Direct Fill measured
+The complete first trial is retained in [raw samples](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/direct-throughput.jsonl)
+and [paired summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/direct-paired-summary.json). Direct Fill measured
 -6.07% for CartPole 20/20/1, with seven of eight blocks negative and a descriptive
 interval [-8.54%, -3.29%]. Other effects were -2.87% for 256/256/4, -1.32% for
 1024/256/8, and +1.27% for HalfCheetah 256/64/4; their intervals crossed zero.
@@ -130,7 +134,7 @@ one alternative, rather than retaining an avoidable generic fill unexamined.
 
 ### Code-generation evidence and final same-window comparison
 
-[Static assembly evidence](results/codegen.json) shows that direct Fill leaves
+[Static assembly evidence](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/codegen.json) shows that direct Fill leaves
 runtime size checks, vector-loop selection, and scalar-remainder handling in
 CartPole's WriteState. Its size grows from 2,711 to 2,887 bytes. The actual-count
 scalar path restores the baseline's normalized 451-instruction sequence exactly
@@ -139,11 +143,11 @@ and RIP-relative displacements were normalized; registers, immediates, stack
 offsets, call symbols, and local branch offsets match. This is one function on
 this GCC build, not whole-binary identity or proof of a throughput cause.
 
-The [final plan](results/comparison-plan.json) compares all three runtimes in
+The [final plan](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/comparison-plan.json) compares all three runtimes in
 one window: duplicate baseline labels a/b, direct Fill, and the scalar-preserving
 repair. It uses four-label Williams orders, eight blocks, and all
-[128 raw samples](results/comparison.jsonl). Control log rates are pooled within
-each block. The [complete summary](results/comparison-summary.json) includes
+[128 raw samples](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/comparison.jsonl). Control log rates are pooled within
+each block. The [complete summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/comparison-summary.json) includes
 both repairs versus control, the direct between-repair contrast, and A/A.
 
 | Environment | N/B/T | Direct Fill vs control | Selected vs control | Selected descriptive 95% interval |
@@ -168,8 +172,8 @@ this final comparison.
 The final eight PPO runs again have identical semantic fingerprints. Baseline
 median is 19.875 s (range 19.607–20.252); selected median is 19.984 s
 (range 19.671–20.164). Their ranges overlap. See
-[raw PPO samples](results/fast-ppo-throughput.jsonl) and
-[summary](results/fast-ppo-throughput-summary.json).
+[raw PPO samples](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/fast-ppo-throughput.jsonl) and
+[summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/player_discount/results/fast-ppo-throughput-summary.json).
 
 
 ## Reproduce

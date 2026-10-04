@@ -1,5 +1,9 @@
 # Own dynamic Container outputs through their actual storage lifetime
 
+Raw run files have been removed from the current tree. This report retains the
+conclusions, adverse findings, method and limitations; evidence links below point
+to the immutable pre-cleanup commit. See [archive and replay instructions](../ARCHIVE.md).
+
 This repair fixes missing destruction of `Container<T>` payloads when a queued
 output is abandoned or a C++ `Recv()` result loses its last owning `Array`.
 It also makes the Python conversion handoff exception-safe. This is a resource
@@ -191,7 +195,7 @@ bazel test --config=test //envpool/core:container_output_test
 
 The recorded execution used direct compilation against the existing read-only
 Bazel dependency tree, not a new full Bazel release build. Exact compiler/link
-argument arrays are in [build-commands.json](results/build-commands.json), with
+argument arrays are in [build-commands.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/build-commands.json), with
 machine roots replaced by named variables. `native-baseline` uses the separately
 preserved three-case negative source; its original temporary filename is
 relocated to `negative_control.cc`. The baseline is expected to fail two cases.
@@ -209,9 +213,9 @@ B=benchmark/core_runtime
 python "$B/container_ownership/check_box2d.py" record --variant control --envpool-root "$CONTROL_ROOT" --out control-box.json
 python "$B/container_ownership/check_box2d.py" record --variant candidate --envpool-root "$CANDIDATE_ROOT" --out candidate-box.json
 python "$B/container_ownership/check_box2d.py" compare control-box.json candidate-box.json
-python "$B/experiments/run_blocks.py" --python "$PYTHON" --variant a="$CONTROL_ROOT" --variant b="$CONTROL_ROOT" --variant c="$CANDIDATE_ROOT" --variant d="$CANDIDATE_ROOT" --paired-replicates --cases "$B/container_ownership/results/cases.json" --blocks 8 --seconds 3 --warmup 400 --affinities default --out general.jsonl
+python "$B/experiments/run_blocks.py" --python "$PYTHON" --variant a="$CONTROL_ROOT" --variant b="$CONTROL_ROOT" --variant c="$CANDIDATE_ROOT" --variant d="$CANDIDATE_ROOT" --paired-replicates --cases "$B/container_ownership/inputs/cases.json" --blocks 8 --seconds 3 --warmup 400 --affinities default --out general.jsonl
 python "$B/container_ownership/run_container_blocks.py" --python "$PYTHON" --baseline-root "$CONTROL_ROOT" --candidate-root "$CANDIDATE_ROOT" --out dummy.jsonl
-python "$B/experiments/summarize_paired_blocks.py" general.jsonl --plan "$B/container_ownership/results/plan.json" --json-out general-summary.json
+python "$B/experiments/summarize_paired_blocks.py" general.jsonl --plan "$B/container_ownership/inputs/plan.json" --json-out general-summary.json
 python "$B/experiments/summarize_paired_blocks.py" dummy.jsonl --plan dummy.jsonl.plan.json --binary-hash-field binary_sha256 --json-out dummy-summary.json
 python "$B/experiments/run_ppo_blocks.py" --python "$PPO_PYTHON" --variant control="$CONTROL_ROOT" --variant candidate="$CANDIDATE_ROOT" --blocks 2 --output ppo-times
 ```
@@ -224,22 +228,22 @@ helper tests also passed. The exact executed validation scripts are included as
 normalized text records.
 
 Key evidence:
-- [Validation scope](results/validation.json), [negative-control log](results/baseline.log),
-  [native XML](results/native.xml), [ASan/UBSan repeats](results/address.log),
-  [TSan repeats](results/thread.log)
-- [NumPy normal probe](results/conversion-final.log),
-  [initial sanitizer setup failure](results/conversion-asan.log),
-  [corrected sanitizer launch](results/conversion-sanitizer-launch.json),
-  [50 passing sanitizer cases](results/conversion-asan-preloaded-cxx.log)
-- [Box2D comparison](results/box2d-comparison.json) and
-  [per-case counts/fingerprints](results/box2d-record-summary.json),
-  [rollout comparison](results/rollout-comparison.json),
-  [CPU XLA](results/xla-comparison.json), [PPO parity](results/ppo-parity.json)
-- All [160 general/Box2D samples](results/performance.jsonl) and
-  [summary](results/performance-summary.json); all [64 Dummy samples](results/container-performance.jsonl)
-  and [summary](results/container-performance-summary.json)
-- All [eight PPO timing samples](results/ppo-throughput-samples.jsonl) and
-  [summary](results/ppo-throughput-summary.json), [frozen-runtime provenance](results/runtime-provenance.json)
+- [Validation scope](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/validation.json), [negative-control log](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/baseline.log),
+  [native XML](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/native.xml), [ASan/UBSan repeats](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/address.log),
+  [TSan repeats](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/thread.log)
+- [NumPy normal probe](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/conversion-final.log),
+  [initial sanitizer setup failure](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/conversion-asan.log),
+  [corrected sanitizer launch](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/conversion-sanitizer-launch.json),
+  [50 passing sanitizer cases](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/conversion-asan-preloaded-cxx.log)
+- [Box2D comparison](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/box2d-comparison.json) and
+  [per-case counts/fingerprints](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/box2d-record-summary.json),
+  [rollout comparison](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/rollout-comparison.json),
+  [CPU XLA](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/xla-comparison.json), [PPO parity](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/ppo-parity.json)
+- All [160 general/Box2D samples](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/performance.jsonl) and
+  [summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/performance-summary.json); all [64 Dummy samples](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/container-performance.jsonl)
+  and [summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/container-performance-summary.json)
+- All [eight PPO timing samples](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/ppo-throughput-samples.jsonl) and
+  [summary](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/ppo-throughput-summary.json), [frozen-runtime provenance](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/container_ownership/results/runtime-provenance.json)
 
 No native binaries, weights, assets, credentials or private machine paths are
 included. Full Box2D per-element traces and PPO checkpoints remain local; the
