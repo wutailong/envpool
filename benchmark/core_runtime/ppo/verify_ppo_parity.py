@@ -17,6 +17,10 @@ Uses the same Tianshou PPO implementation/network as the reference trainer.
 Does not modify either supplied EnvPool package. Checkpoint contents, arrays,
 and metrics are compared by exact values and array bytes, not archive bytes.
 No claim about asynchronous scheduling or general PPO equivalence is implied.
+
+Default comparison requires different native binaries, as in the original
+harness. Use compare --python-only (or run --python-only) for wrapper-only
+changes: native hashes must match and loaded Python wrapper hashes must differ.
 """
 
 import argparse
@@ -31,6 +35,12 @@ import time
 from pathlib import Path
 
 sys.dont_write_bytecode = True
+
+REQUIRED_WRAPPERS = (
+    "envpool.python.envpool",
+    "envpool.python.gymnasium_envpool",
+)
+OPTIONAL_WRAPPERS = ("envpool.python.protocol",)
 
 
 def sha256(path):
@@ -56,6 +66,75 @@ def load_package(package):
     sys.modules["envpool"] = module
     spec.loader.exec_module(module)
     return module
+
+
+def loaded_wrapper_provenance(package):
+    """Hash already-imported wrapper files from the selected package only."""
+    package = Path(package).resolve()
+    records = {}
+    for name in REQUIRED_WRAPPERS + OPTIONAL_WRAPPERS:
+        module = sys.modules.get(name)
+        if name in OPTIONAL_WRAPPERS and module is None:
+            continue
+        assert module is not None, f"Required wrapper was not loaded: {name}"
+        path = Path(module.__file__).resolve()
+        expected = package.joinpath(*name.split(".")[1:]).with_suffix(".py")
+        assert path == expected, f"Wrapper outside selected package: {name}"
+        assert Path(module.__spec__.origin).resolve() == path, (
+            f"Wrapper import origin differs from its file: {name}"
+        )
+        records[name] = {"path": str(path), "sha256": sha256(path)}
+    return records
+
+
+def wrapper_hashes(provenance):
+    """Validate a recorded wrapper manifest and return its content hashes."""
+    records = provenance.get("python_wrappers")
+    assert isinstance(records, dict), "Missing loaded Python wrapper provenance"
+    assert set(REQUIRED_WRAPPERS) <= set(records), (
+        "Missing required loaded Python wrappers"
+    )
+    assert set(records) <= set(REQUIRED_WRAPPERS + OPTIONAL_WRAPPERS), (
+        "Unexpected loaded Python wrapper names"
+    )
+    package = Path(provenance["envpool_package"]).parent
+    hashes = {}
+    for name, record in records.items():
+        expected = package.joinpath(*name.split(".")[1:]).with_suffix(".py")
+        assert Path(record["path"]) == expected, (
+            f"Recorded wrapper outside selected package: {name}"
+        )
+        digest = record["sha256"]
+        assert (
+            isinstance(digest, str)
+            and len(digest) == 64
+            and all(char in "0123456789abcdef" for char in digest)
+        ), f"Invalid wrapper SHA-256: {name}"
+        hashes[name] = digest
+    return hashes
+
+
+def verify_runtime_distinction(left, right, python_only=False):
+    """Reject accidental same-runtime comparisons in either explicit mode."""
+    assert left["native_binary"] != right["native_binary"]
+    if not python_only:
+        assert left["native_sha256"] != right["native_sha256"], (
+            "Both runs used the same native binary!"
+        )
+        return
+    assert left["native_sha256"] == right["native_sha256"], (
+        "Python-only comparison requires identical native binary hashes"
+    )
+    assert left["envpool_package"] != right["envpool_package"], (
+        "Both runs used the same EnvPool package!"
+    )
+    left_hashes, right_hashes = wrapper_hashes(left), wrapper_hashes(right)
+    assert set(left_hashes) == set(right_hashes), (
+        "Python-only comparison requires the same loaded wrapper-module set"
+    )
+    assert left_hashes != right_hashes, (
+        "Both runs used the same Python wrapper contents!"
+    )
 
 
 def train(args):
@@ -96,6 +175,7 @@ def train(args):
         "envpool_package": envpool.__file__,
         "native_binary": str(native_path),
         "native_sha256": sha256(native_path),
+        "python_wrappers": loaded_wrapper_provenance(args.package),
         "versions": {
             "envpool": envpool.__version__,
             "torch": torch.__version__,
@@ -436,6 +516,9 @@ def train(args):
     )
     assert summary["env_steps"] == cfg["updates"] * cfg["steps_per_collect"]
     assert sha256(native_path) == provenance["native_sha256"]
+    assert (
+        loaded_wrapper_provenance(args.package) == provenance["python_wrappers"]
+    )
     print(
         json.dumps({
             "complete": True,
@@ -605,10 +688,7 @@ def compare(args):
         "script_sha256",
     ):
         equal(lp[name], rp[name], "provenance/" + name)
-    assert lp["native_binary"] != rp["native_binary"]
-    assert lp["native_sha256"] != rp["native_sha256"], (
-        "Both runs used the same native binary!"
-    )
+    verify_runtime_distinction(lp, rp, getattr(args, "python_only", False))
     result = {
         "passed": not failures,
         "comparison": "Exact values and contiguous array bytes; zero tolerance",
@@ -633,6 +713,12 @@ def compare(args):
             "No cross-platform or full-family claim",
         ],
     }
+    if getattr(args, "python_only", False):
+        result.update({
+            "runtime_comparison_mode": "python-only",
+            "original_python_wrappers": lp["python_wrappers"],
+            "candidate_python_wrappers": rp["python_wrappers"],
+        })
     write_json(args.output, result)
     print(json.dumps(result, indent=2), flush=True)
     if failures:
@@ -690,6 +776,8 @@ def run(args):
         "--output",
         str(output / "comparison.json"),
     ]
+    if getattr(args, "python_only", False):
+        command.append("--python-only")
     commands.append(command)
     write_json(
         output / "commands.json",
@@ -723,6 +811,11 @@ def main():
         else:
             current.add_argument("--original", type=Path, required=True)
             current.add_argument("--candidate", type=Path, required=True)
+            current.add_argument(
+                "--python-only",
+                action="store_true",
+                help="require equal native hashes and different loaded wrapper hashes",
+            )
         if mode != "compare":
             current.add_argument(
                 "--config",

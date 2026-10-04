@@ -1,0 +1,55 @@
+diff --git a/envpool/python/envpool.py b/envpool/python/envpool.py
+--- a/envpool/python/envpool.py
++++ b/envpool/python/envpool.py
+@@ -120,12 +120,20 @@
+             return None
+         return players_env_id
+ 
++    def _get_max_num_players(self: EnvPool) -> int:
++        """Cache native config metadata without caching Python overrides."""
++        if type(self).config is not EnvPoolMixin.config:
++            return self.config.get("max_num_players", 1)
++        if not hasattr(self, "_max_num_players"):
++            self._max_num_players = self.config.get("max_num_players", 1)
++        return self._max_num_players
++
+     def _infer_players_env_id(
+         self: EnvPool, adict: dict[str, Any]
+     ) -> np.ndarray:
+         """Fill in players.env_id for the simplified multiplayer API."""
+         env_id = _normalize_env_id(adict["env_id"])
+-        if self.config.get("max_num_players", 1) == 1:
++        if self._get_max_num_players() == 1:
+             return env_id
+         env_id = np.asarray(env_id, dtype=np.int32)
+         player_count = self._player_action_count(adict)
+@@ -140,7 +148,7 @@
+                 "pass a dict action with explicit players.env_id."
+             )
+         players_per_env = player_count // env_id.shape[0]
+-        max_num_players = self.config.get("max_num_players", 1)
++        max_num_players = self._get_max_num_players()
+         if players_per_env > max_num_players:
+             raise RuntimeError(
+                 "Cannot infer players.env_id for multiplayer action; "
+diff --git a/envpool/python/protocol.py b/envpool/python/protocol.py
+--- a/envpool/python/protocol.py
++++ b/envpool/python/protocol.py
+@@ -151,6 +151,7 @@
+     _last_action_name: str
+     _last_action_type: Any
+     _last_players_env_id: np.ndarray
++    _max_num_players: int
+     spec: Any
+ 
+     def __init__(self, spec: EnvSpec):
+@@ -177,6 +178,9 @@
+         self, env_id: np.ndarray, player_count: int
+     ) -> np.ndarray | None:
+         """Reuse cached player-to-env mapping when available."""
++
++    def _get_max_num_players(self) -> int:
++        """Read max_num_players without caching Python config overrides."""
+ 
+     def _infer_players_env_id(self, adict: dict[str, Any]) -> np.ndarray:
+         """Infer players.env_id for simplified multiplayer actions."""

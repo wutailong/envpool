@@ -1,0 +1,60 @@
+{
+  "purpose": "One Python wrapper immutable max_num_players scalar-cache candidate versus retained97688bda wrapper/native runtime",
+  "production_change_scope": "Python wrapper and private protocol typing only; native binaries identical",
+  "blocks": 8,
+  "seconds": 3,
+  "warmup": 400,
+  "seed": 42,
+  "case_order_seed": 20261003,
+  "affinities": [
+    "default"
+  ],
+  "orders": [
+    "acdb",
+    "cabd",
+    "bdca",
+    "dbac"
+  ],
+  "cases": [
+    {
+      "env": "CartPole-v1",
+      "n": 20,
+      "batch": 20,
+      "threads": 1
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 20,
+      "batch": 20,
+      "threads": 2
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 256,
+      "batch": 256,
+      "threads": 4
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 1024,
+      "batch": 256,
+      "threads": 8
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "n": 256,
+      "batch": 64,
+      "threads": 4
+    }
+  ],
+  "expected_general_samples": 160,
+  "paired_replicates": true,
+  "ppo_samples": 16,
+  "ppo_budget": "256000responses,100updates,8000optimizersteps;2untimedprimingupdates",
+  "native_dummy_perf": "Not rerun: existing benchmark bypasses the changed Python wrapper; positive multiplayer functional tests instead",
+  "scope": "Freeze final candidate after correctness gates; one fixed trial, retain all adverse/A-A results; no adaptive extension",
+  "correctness": "Exact original/current rollout comparison,positive wrapper mapping/config semantics,CPU XLA and full synchronous PPO parity,ordinary ToyText/MiniGrid checks",
+  "response_unit": "environment response including normal autoreset; vector calls reported separately",
+  "case_count": 5,
+  "expected_samples": 160
+}

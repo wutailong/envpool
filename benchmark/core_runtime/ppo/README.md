@@ -73,3 +73,15 @@ wall times, runtime paths and archive serialization bytes are excluded.
 
 [report.json](https://github.com/wutailong/envpool/blob/a1e56dde2923c22b28b6bdf7f123ab36d22c4751/benchmark/core_runtime/ppo/report.json) is the sanitized numeric result. Large local checkpoints and trace
 arrays are intentionally excluded from Git. Rerunning the harness recreates them.
+
+## Python-only runtime comparisons
+
+For a wrapper-only change, use `verify_ppo_parity.py run --python-only` with
+distinct actual `envpool/` package directories. This explicit mode requires
+identical native hashes and different hashes of actually loaded Python wrappers;
+paths or labels alone are insufficient. Fresh training records are required,
+because historical records lack the wrapper manifests. The default mode still
+requires different native binaries. Run without Python assertion optimization.
+See the [metadata-cache study](../wrapper_metadata/README.md) for validation and
+the intentionally unretained performance candidate. Twenty-one identity and
+training-preservation tests are in `test_python_only.py`.

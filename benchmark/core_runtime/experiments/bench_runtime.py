@@ -14,6 +14,8 @@
 """Measure one public-API throughput sample in the selected Python process."""
 
 import argparse
+import hashlib
+import importlib.machinery
 import json
 import math
 import os
@@ -25,6 +27,30 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from runtime import VARIANTS, load_runtime, positive_int
+
+
+def runtime_identity(env):
+    """Fingerprint the actual native pool and imported wrappers after timing."""
+    names = {
+        "envpool.python.envpool",
+        "envpool.python.gymnasium_envpool",
+        "envpool.python.protocol",
+    }
+    for cls in type(env).__mro__:
+        module = sys.modules.get(cls.__module__)
+        path = getattr(module, "__file__", "") or ""
+        if any(
+            path.endswith(s) for s in importlib.machinery.EXTENSION_SUFFIXES
+        ):
+            names.add(cls.__module__)
+    if len(names) == 3:
+        raise RuntimeError("Could not identify the native pool module")
+    records = {}
+    for name in sorted(names):
+        path = Path(sys.modules[name].__file__).resolve()
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        records[name] = {"path": str(path), "sha256": digest}
+    return records
 
 
 def scheduler_stats():
@@ -131,8 +157,13 @@ def main() -> None:
         rss_kb = peak_rss / 1024 if sys.platform == "darwin" else peak_rss
     except ImportError:
         rss_kb = None
+    identity = runtime_identity(env)
     print(
         json.dumps({
+            "runtime_modules": identity,
+            "runtime_hashes": {
+                name: value["sha256"] for name, value in identity.items()
+            },
             "scheduler_run_seconds": sched_delta[0] / 1e9,
             "scheduler_wait_seconds": sched_delta[1] / 1e9,
             "scheduler_timeslices": sched_delta[2],
