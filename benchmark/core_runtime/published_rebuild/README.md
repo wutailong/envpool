@@ -98,8 +98,12 @@ that local prerequisite, not a file supplied by this repository. The helper
 does not download dependencies, install packages or configure Bazel. A cached
 dependency tree is required; this is not a standalone clean-install recipe.
 
+Use the retained branch to obtain the history, then detach at the exact runtime
+commit. Do not add `--depth 1`: the required source and command templates are in
+that ancestor commit, not the latest documentation tree.
+
 ```sh
-git clone --depth 1 --branch perf/core-state-tuple https://github.com/wutailong/envpool.git "$SOURCE"
+git clone --branch docs/core-current-family-coverage https://github.com/wutailong/envpool.git "$SOURCE"
 git -C "$SOURCE" switch --detach ce1c47f238a069454f732a70089d1b9857dcc6de
 unset PYTHONPATH ENVPOOL_ASSETS_PATH
 export PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0
