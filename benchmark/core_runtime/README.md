@@ -1,5 +1,10 @@
 # Core runtime: measured throughput and correctness
 
+> Historical first-round report. For the cumulative fixes, current experimental
+> branch, validation limits and later adverse measurements, start with
+> [the core runtime review / 分支导航](REVIEW.md). The numbers below predate those
+> follow-up repairs and are preserved as historical evidence.
+
 These results show **configuration-dependent gains and regressions**, not a
 universal speedup. All 234 final timing samples and all 18 configuration/affinity
 comparisons are included. Exploratory candidate-v1 samples are excluded.
