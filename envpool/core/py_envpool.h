@@ -92,15 +92,18 @@ Array NumpyToArray(const py::array& arr) {
 template <typename dtype>
 Array NumpyToArrayIncRef(const py::array& arr) {
   using ArrayT = py::array_t<dtype, py::array::c_style | py::array::forcecast>;
-  auto* arr_ptr = new ArrayT(arr);
+  auto owner = std::make_unique<ArrayT>(arr);
   ShapeSpec spec(
-      arr_ptr->itemsize(),
-      std::vector<int>(arr_ptr->shape(), arr_ptr->shape() + arr_ptr->ndim()));
-  return Array(spec, reinterpret_cast<char*>(arr_ptr->mutable_data()),
-               [arr_ptr](char* p) {
-                 py::gil_scoped_acquire acquire;
-                 delete arr_ptr;
-               });
+      owner->itemsize(),
+      std::vector<int>(owner->shape(), owner->shape() + owner->ndim()));
+  // Conversion and shape allocation can throw before Array owns the callback.
+  char* data = reinterpret_cast<char*>(owner->mutable_data());
+  // NOLINTNEXTLINE(readability/casting)
+  return Array(spec, data, [owner = std::move(owner)](char* /*data*/) mutable {
+    py::gil_scoped_acquire acquire;
+    // Release Python ownership now, not when a weak control block later dies.
+    owner.reset();
+  });
 }
 
 template <typename Spec>

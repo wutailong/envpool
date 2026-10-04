@@ -3,8 +3,9 @@
 **Decision: do not apply this production change.** One vector allocation is
 reliably removed, but the fixed throughput study below does not establish a
 useful speed benefit and has an adverse multi-player Dummy signal. The
-[prototype](prototypes/direct_list.patch) remains unapplied; current production
-core is unchanged from ce1c47f2. This report and its tests preserve the finding
+[prototype](prototypes/direct_list.patch) remains unapplied. This experiment
+left ce1c47f2 unchanged; later retained changes are listed in the
+[review](../REVIEW.md). This report and its tests preserve the finding
 without adding generated raw records to the repository.
 
 This focused candidate-header probe compares the old `ToNumpy` plus
@@ -30,10 +31,14 @@ constructed. Counters are diagnostic, not a timing benchmark.
 
 ## Build and run
 
-Apply the prototype only to a separate, clean experimental checkout of this
-branch, not to the retained runtime used as control:
+Apply the prototype only to the exact historical experimental base, in a
+separate checkout. Its zero-context line offsets do not target later core fixes.
+Keep the retained runtime used as control unchanged:
 
 ```sh
+git clone --branch docs/core-current-family-coverage https://github.com/wutailong/envpool.git envpool-recv-list
+cd envpool-recv-list
+git checkout --detach ad4a29269024ae209212bb0e45477b607771400d
 git apply --check --unidiff-zero benchmark/core_runtime/recv_list/prototypes/direct_list.patch
 git apply --unidiff-zero benchmark/core_runtime/recv_list/prototypes/direct_list.patch
 ```

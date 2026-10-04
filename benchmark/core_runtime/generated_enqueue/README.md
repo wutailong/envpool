@@ -4,7 +4,8 @@
 allocation and shows a favorable eight-thread CartPole signal, but the heavier
 HalfCheetah workload is adverse in seven of eight blocks. The
 [unapplied prototype](prototypes/generated_enqueue.patch) includes its ten
-regression tests and Bazel target. Production core remains ce1c47f2.
+regression tests and Bazel target. This experiment left ce1c47f2 unchanged;
+later retained changes are listed in the [review](../REVIEW.md).
 
 The fixed runtime comparison is complete. The retained comparator is the
 cumulative [ce1c47f2 core](https://github.com/wutailong/envpool/commit/ce1c47f238a069454f732a70089d1b9857dcc6de), also present in

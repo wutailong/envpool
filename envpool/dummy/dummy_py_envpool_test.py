@@ -15,7 +15,9 @@
 
 import gc
 import os
+import sys
 import time
+import weakref
 from typing import Any
 
 import numpy as np
@@ -57,6 +59,57 @@ def _make_multiplayer_action(
 
 
 class _DummyEnvPoolTest(absltest.TestCase):
+    def test_readonly_reset_rejection_releases_input(self) -> None:
+        """Rejected positive ID arrays must not retain a Python owner."""
+        config = DummyEnvSpec.gen_config(
+            num_envs=2, batch_size=2, num_threads=1, max_num_players=1
+        )
+        env = _DummyEnvPool(_DummyEnvSpec(config))
+        ids = np.arange(2, dtype=np.int32)
+        ids.setflags(write=False)
+        observer = weakref.ref(ids)
+        refs = sys.getrefcount(ids)
+        for _ in range(16):
+            with self.assertRaisesRegex(ValueError, "array is not writeable"):
+                env._reset(ids)
+            self.assertEqual(sys.getrefcount(ids), refs)
+        del ids
+        gc.collect()
+        self.assertIsNone(observer())
+        env._reset(np.arange(2, dtype=np.int32))
+        state = dict(zip(env._state_keys, env._recv(), strict=True))
+        np.testing.assert_array_equal(state["info:env_id"], [0, 1])
+
+    def test_readonly_send_releases_partial_conversions(self) -> None:
+        """A late conversion error must release both prior and failing fields."""
+        config = DummyEnvSpec.gen_config(
+            num_envs=2, batch_size=2, num_threads=1, max_num_players=1
+        )
+        env = _DummyEnvPool(_DummyEnvSpec(config))
+        env._reset(np.arange(2, dtype=np.int32))
+        env._recv()
+        action = (
+            np.arange(2, dtype=np.int32),
+            np.arange(2, dtype=np.int32),
+            np.zeros((2, 6), dtype=np.float64),
+            np.zeros(2, dtype=np.int32),
+            np.zeros(2, dtype=np.int32),
+        )
+        action[-1].setflags(write=False)
+        observers = [weakref.ref(field) for field in action]
+        refs = [sys.getrefcount(field) for field in action]
+        for _ in range(16):
+            with self.assertRaisesRegex(ValueError, "array is not writeable"):
+                env._send(action)
+            self.assertEqual([sys.getrefcount(field) for field in action], refs)
+        action[-1].setflags(write=True)
+        env._send(action)
+        state = dict(zip(env._state_keys, env._recv(), strict=True))
+        np.testing.assert_array_equal(state["info:env_id"], [0, 1])
+        del action, env
+        gc.collect()
+        self.assertTrue(all(observer() is None for observer in observers))
+
     def test_config(self) -> None:
         ref_config_keys = [
             "num_envs",

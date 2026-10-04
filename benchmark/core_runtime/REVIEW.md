@@ -3,26 +3,28 @@
 当前分支已清理中间测试原始文件，保留结论、负面结果、方法和限制。
 证据链接已固定到清理前提交；参见[归档与复现说明](ARCHIVE.md)。
 
-核验日期：2026-10-04 UTC。固定公开 ce1c47f2 源码复现后，又补充了 ToyText/MiniGrid 的当前版本验证；生产 core 与历史性能采样不变。历史提交链接固定到已经发布、核验过的版本。
+核验日期：2026-10-04 UTC。固定公开 ce1c47f2 源码复现后，补充了家族验证和两轮未采用的性能实验。当前分支再修复 NumPy 输入转换失败时的所有权泄漏；历史性能采样仍归属于各自版本。
 这是累计修改链，不是一组互相独立、需要全部合并的补丁。
 
 ## 先看哪个版本
 
+- **最新保留修复**：[NumPy 输入转换异常安全](numpy_input_owner/README.md)。原版和 ce1 都会在拒绝正尺寸、只读输入时泄漏引用；当前分支加入 RAII 修复，保持拒绝行为和成功转换语义。它是 ce1 上的累计修复，不是新的通用加速结论。
+
 - **最新未采用实验**：[直接生成 ActionSlice 批次](generated_enqueue/README.md)。每次 Send/Reset 少一次分配，256 个提交 ID 少 3,072 字节分配流量；八线程 CartPole 窗口内 +11.00%，但 HalfCheetah -4.44%，完整 PPO 未证实加速。经过完整并发、sanitizer、轨迹和修正后的家族验证，仍因跨负载取舍不加入通用 core，只保留未应用源码/测试和结论。
 
-- **前一未采用实验**：[直接构造 Python recv 列表](recv_list/README.md)。每次确实少一次 C++ 分配，语义、生命周期和完整 PPO 对照通过；192 个吞吐样本没有可靠净提速，多玩家 Dummy 出现不利信号，16 次 PPO 也未证实加速。因此只保留未应用补丁、测试和结论，生产 core 仍为 ce1c47f2。
+- **前一未采用实验**：[直接构造 Python recv 列表](recv_list/README.md)。每次确实少一次 C++ 分配，语义、生命周期和完整 PPO 对照通过；192 个吞吐样本没有可靠净提速，多玩家 Dummy 出现不利信号，16 次 PPO 也未证实加速。因此只保留未应用补丁、测试和结论；该实验结束时生产 core 仍为 ce1c47f2。
 
 - **累计正确性修复基线**：[fix/core-container-ownership / 15f80b09](https://github.com/wutailong/envpool/tree/15f80b0934689f635c49ec8764e6b5211e5fd218)。包含完成通知生命周期、关闭队列、计时初始化、玩家 discount 和动态 Container 输出释放修复。
 - **前一轮分配优化实验**：[perf/core-container-storage / bf2f16c0](https://github.com/wutailong/envpool/tree/bf2f16c0d724d01c480668703012342ab1f0fd4e)。包含前面的全部修改，再减少 Container backing buffer 的重复内存分配。非标量字段每次创建由 5 次堆分配降为 3 次，端到端更快尚未证实。
 - **保留的直接 tuple 版本**：[perf/core-state-tuple / ce1c47f2](https://github.com/wutailong/envpool/tree/ce1c47f238a069454f732a70089d1b9857dcc6de)，[详细报告](state_tuple/README.md)。每个 CartPole state 少一次 576 字节的临时分配。固定本轮计时中，多线程 CartPole、Dummy 和 Box2D 诊断客户端有正向信号；小批量 CartPole、HalfCheetah 和完整 PPO 尚不能确认加速。
-- **已归档的 parser 研究**：[未采用的 player-index 优化](player_action_index/README.md)。减少了连续玩家索引分配，但目标负载没有可靠提速，普通配置有不利结果。生产 core 保持 ce1c47f2，候选补丁只作未应用记录保存。
+- **已归档的 parser 研究**：[未采用的 player-index 优化](player_action_index/README.md)。减少了连续玩家索引分配，但目标负载没有可靠提速，普通配置有不利结果。该实验未改变 ce1c47f2 生产 core，候选补丁只作未应用记录保存。
 - **当前 PPO 耗时诊断**：[32 次原版/保留版 × 普通/计时运行](ppo_phase/README.md)。保留版中 PPO update 约 67.43%、其余采样 24.73%、EnvPool Python step/reset 边界 7.79%。后者并非纯 C++ 时间；算法与超参数未改。
 - **公开源码复现检查**：[全新 clone 的双客户端构建与正向 smoke](published_rebuild/README.md)。Classic Control、renderer 和 Dummy 均从固定公开源码编译，6 个既有正向方法通过，两次短 PPO 指纹相同。外部依赖和其他环境的原版支持模块仍复用，不是全环境干净构建或新的速度结论。
 - **当前 ToyText/MiniGrid 覆盖**：[重新编译的 ce1c47f2 家族测试](current_families/README.md)。59 个原版/当前版场景、6,575 个数组逐字节一致；17 个 ToyText 测试和覆盖 82 个 MiniGrid ID 的两个确定性测试通过。BabyAI 只覆盖一个代表任务，render 对照只覆盖 DoorKey。
 - **原版对照**：[main / 9c31c547](https://github.com/wutailong/envpool/tree/9c31c5478eb61d8f67f8c9a1ec2b37568f2c7ca3)。保持不变，作为历史对照；没有后续修复。
 
 这些累计版本都基于第一轮 core 性能改动，**不是直接基于未优化 main 的纯修复版**。
-历史导航分支 docs/core-runtime-review / b8224909 只增加文档。直接 tuple 版本 ce1c47f2 在其后。本研究分支再添加测试和记录，不应用被否决的 parser 改动。需要修复基线时，请明确选择 15f80b09。
+历史导航分支 docs/core-runtime-review / b8224909 只增加文档。直接 tuple 版本 ce1c47f2 在其后。本研究分支继续累计已验证修改，但不应用被否决的性能原型。15f80b09 只作历史修复对照，不包含后来的修复；实际使用优先当前分支，并按所需环境重新编译。
 早期 perf/core-runtime 没有后续发现的修复，不应把它的历史速度表当成当前推荐或安全保证。
 
 ## 已核验的提交链
@@ -91,7 +93,7 @@ LeakSanitizer 在此环境未启用；泄漏修复另有精确析构计数回归
 6. **为实际使用的客户端重建。** 只重建四个客户端不代表全部安装模块都采用新 core。保持一致的 Python/native ABI 和客户端头文件版本；没有旧/新头文件混用的 ABI 保证。Box2D 的此处证据来自 `ENVPOOL_TEST` 诊断构建。
 7. **分开重算旧数据与测量新版本。** 所有输出使用新路径。[PPO phase 页面](ppo_phase/README.md#reproduce-and-inspect)明确列出两种命令，避免运行新 trial 后误总结归档 trial。性能运行应串行，避免构建、其他测试和截图取样负载；保留不利样本及 A/A 波动。
 
-例如，在尚不存在的目录里取得保留版本源码：
+当前分支包含最新累计修复。下面命令刻意取得历史 ce1 性能对照，不是最新输入所有权修复：
 
 ```sh
 git clone --branch docs/core-current-family-coverage https://github.com/wutailong/envpool.git envpool-retained

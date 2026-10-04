@@ -30,6 +30,11 @@ training, sanitizer, GPU, release or all-family validation is implied.
 
 ## Short conclusion map
 
+- The later [NumPy input-owner repair](numpy_input_owner/README.md) is applied
+  on top of ce1. It fixes leaked ownership on rejected conversions and keeps
+  accepted alias/copy semantics. Its new regression checks and results belong
+  to this repair, not to the older a1e56dde raw-record archive.
+
 - The later [generated ActionSlice batch experiment](generated_enqueue/README.md)
   is also unapplied: less allocation and a favorable CartPole signal, but
   adverse HalfCheetah results. Its fresh raw data stays local; it is not part
@@ -40,7 +45,7 @@ training, sanitizer, GPU, release or all-family validation is implied.
   multi-player timings. Its current report contains conclusions and methods;
   its newly generated raw runs are local, not in the older a1e56dde archive.
 
-- The retained runtime remains the cumulative **ce1c47f2** core. Completion
+- At cleanup, the retained runtime was the cumulative **ce1c47f2** core. Completion
   lifetime, shutdown, timing initialization, player discount and Container
   ownership repairs are documented in [REVIEW.md](REVIEW.md).
 - Direct tuple construction removes one 576-byte temporary allocation per
@@ -48,7 +53,7 @@ training, sanitizer, GPU, release or all-family validation is implied.
   end-to-end PPO speedup; prior adverse timings and A/A noise remain relevant.
 - Action metadata, cursor and player-index prototypes remain unapplied. Their
   reports explain the inconclusive or adverse performance findings.
-- Current ToyText/MiniGrid comparison: 59 cases, 6,575 arrays and 65,304,189 bytes
+- The ce1 ToyText/MiniGrid comparison at cleanup: 59 cases, 6,575 arrays and 65,304,189 bytes
   match exactly. Seventeen ToyText tests and two MiniGrid determinism tests
   passed, covering 82 MiniGrid-prefixed IDs. BabyAI parity covers only one of
   96 tasks; render parity covers DoorKey. No new XLA/oracle/all-family claim.

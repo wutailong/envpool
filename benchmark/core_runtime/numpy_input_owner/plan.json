@@ -1,0 +1,48 @@
+{
+  "purpose": "Bounded throughput regression screen for minimal NumPy conversion exception-ownership repair; no expected successful-path allocation reduction or speedup claim",
+  "blocks": 4,
+  "seconds": 3,
+  "warmup": 400,
+  "seed": 42,
+  "affinities": [
+    "default"
+  ],
+  "cases": [
+    {
+      "env": "CartPole-v1",
+      "n": 20,
+      "batch": 20,
+      "threads": 1
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 256,
+      "batch": 256,
+      "threads": 4
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 1024,
+      "batch": 256,
+      "threads": 8
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "n": 256,
+      "batch": 64,
+      "threads": 4
+    }
+  ],
+  "case_count": 4,
+  "expected_samples": 64,
+  "paired_replicates": true,
+  "orders": [
+    "acdb",
+    "cabd",
+    "bdca",
+    "dbac"
+  ],
+  "scope": "64 environment samples, then 16 full-budget synchronous PPO trials; no adaptive sample extension",
+  "case_order_seed": 20261003,
+  "response_unit": "environment response, including auto-reset"
+}
