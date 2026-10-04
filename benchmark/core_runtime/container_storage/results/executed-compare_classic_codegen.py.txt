@@ -1,0 +1,25 @@
+import hashlib,json,pathlib,re,subprocess
+r=pathlib.Path.cwd();w=r/'envpool-core-container-storage-work/results';roots={'control':r/'envpool-core-container-work/runtime-box-candidate','candidate':r/'envpool-core-container-storage-work/runtime-box-candidate'}
+all_rows={};function_rows={};symbols={}
+for label,root in roots.items():
+ p=root/'envpool/classic_control/classic_control_envpool.so'
+ raw=subprocess.check_output(['objdump','-d','-j','.text','--no-show-raw-insn','--demangle',str(p)],text=True)
+ rows=[];fns={};current=''
+ for line in raw.splitlines():
+  m=re.match(r'^[0-9a-f]+ <(.+)>:$',line)
+  if m:current=m[1]
+  m=re.match(r'^\s*([0-9a-f]+):\s+(.*)$',line)
+  if not m:continue
+  instruction=m[2].split('#',1)[0].strip()
+  instruction=re.sub(r'-?0x[0-9a-f]+\(%rip\)','RIP_OFFSET(%rip)',instruction)
+  item=(m[1],current,instruction);rows.append(item);fns.setdefault(current,[]).append((m[1],instruction))
+ all_rows[label]=rows;function_rows[label]=fns
+ symbols[label]=subprocess.check_output(['nm','-C',str(p)],text=True)
+a=all_rows['control'];b=all_rows['candidate'];assert len(a)==len(b)
+differences=[{'control':x,'candidate':y} for x,y in zip(a,b) if x!=y]
+selected={}
+for name,rows in function_rows['control'].items():
+ if ('CartPoleEnv::WriteState' in name or name.startswith('classic_control::CartPoleEnv::Step') or ('AsyncEnvPool<' in name and 'CartPole' in name and 'Worker' in name)):
+  other=function_rows['candidate'].get(name);selected[name]={'instruction_count':len(rows),'identical_after_RIP_normalization':rows==other,'normalized_sha256':hashlib.sha256(json.dumps(rows).encode()).hexdigest()}
+report={'normalization':'Strip objdump comments and only RIP-relative displacements; retain instruction addresses, other immediates, branches and symbol names. This is not full binary identity.','decoded_instructions':len(a),'remaining_differences':len(differences),'differences':differences,'selected_functions':selected,'optimized_container_factory_symbols_present':{k:any('StateArrayFactoryHelper<std::unique_ptr' in line for line in v.splitlines()) for k,v in symbols.items()}}
+(w/'classic-codegen.json').write_text(json.dumps(report,indent=2)+'\n');print('Instructions',len(a),'remaining differences',len(differences));print(json.dumps(selected,indent=2));print(json.dumps(differences[:12],indent=2))

@@ -1,0 +1,41 @@
+{
+  "control": {
+    ".text": {
+      "address": "000000000004f880",
+      "bytes": 3232623,
+      "sha256": "b39074a418d41bb175cc825df53d5c2217c97a972162658f17f6af27985eaffe"
+    },
+    ".rodata": {
+      "address": "0000000000365000",
+      "bytes": 248010,
+      "sha256": "127f6a06ed241d72c7a66ada56109b0d62758cebc7a21d7ed5453500e6d762f6"
+    },
+    ".data.rel.ro": {
+      "address": "00000000003fd0e0",
+      "bytes": 48368,
+      "sha256": "7e0187b1029891816e5c418d822a28c726079955e38d5e8c39f73d948bed2731"
+    }
+  },
+  "candidate": {
+    ".text": {
+      "address": "000000000004f880",
+      "bytes": 3232623,
+      "sha256": "7745dd56a2993eb391944b0ed09a9b18ea1532c3c3df6e4de588bc6426a6c7c5"
+    },
+    ".rodata": {
+      "address": "0000000000365000",
+      "bytes": 248074,
+      "sha256": "a15779c387134dc8ad9871791d01610d0f8c2704221dddf9b87b3bf58b924b6a"
+    },
+    ".data.rel.ro": {
+      "address": "00000000003fd0e0",
+      "bytes": 48368,
+      "sha256": "7637024dab4ebd707c45b6a5bc23908276be6aa3dfab080ae0ef6dae0823aa30"
+    }
+  },
+  "identical_sections": {
+    ".text": false,
+    ".rodata": false,
+    ".data.rel.ro": false
+  }
+}

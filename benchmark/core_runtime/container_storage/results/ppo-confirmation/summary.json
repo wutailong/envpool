@@ -1,0 +1,81 @@
+{
+  "source_sha256": "17b4cddf54ff438499a569a883227c7f3482d102c7676d8a16336f72fab4a3e7",
+  "samples": 16,
+  "blocks": 4,
+  "semantic_parity": true,
+  "same_binary_pairs_verified": true,
+  "interpretation": "Positive means faster at the identical fixed budget; four-block bootstrap is descriptive, not a significance guarantee. Initial eight trials remain separate.",
+  "metrics": {
+    "control": {
+      "samples": 8,
+      "seconds": [
+        20.991861670998333,
+        20.750070697999035,
+        20.716003408000688,
+        20.608342029001506,
+        21.324392740003532,
+        20.74100465900119,
+        20.90531770400412,
+        20.662750987001345
+      ],
+      "median_seconds": 20.745537678500114,
+      "min_seconds": 20.608342029001506,
+      "max_seconds": 21.324392740003532
+    },
+    "candidate": {
+      "samples": 8,
+      "seconds": [
+        20.28349133199663,
+        20.343867520001368,
+        20.9751705009985,
+        20.51516349099984,
+        20.61172742099734,
+        20.23388908099878,
+        20.451545437004825,
+        21.045228705996124
+      ],
+      "median_seconds": 20.483354464002332,
+      "min_seconds": 20.23388908099878,
+      "max_seconds": 21.045228705996124
+    }
+  },
+  "candidate_over_control_rate": {
+    "block_geomean_effect_pct": 1.3660647028460804,
+    "block_effects_pct": [
+      2.741796034947509,
+      -0.3942814880316238,
+      2.980821758111234,
+      0.18035501925717015
+    ],
+    "exploratory_block_bootstrap_95pct": [
+      -0.10737643610921783,
+      2.8612394664926684
+    ]
+  },
+  "b_over_a_same_binary_rate": {
+    "block_geomean_effect_pct": -0.5637596448445541,
+    "block_effects_pct": [
+      1.1652537310276085,
+      0.5224164993364301,
+      -2.735778167825263,
+      -1.1603110770055949
+    ],
+    "exploratory_block_bootstrap_95pct": [
+      -1.9512089354015956,
+      0.843322886601699
+    ]
+  },
+  "d_over_c_same_binary_rate": {
+    "block_geomean_effect_pct": 0.7356169271869263,
+    "block_effects_pct": [
+      -0.29677831879992095,
+      2.2422780603258285,
+      -1.8331231161811874,
+      2.902877295116777
+    ],
+    "exploratory_block_bootstrap_95pct": [
+      -1.0679329656027923,
+      2.5720458683306116
+    ]
+  }
+}

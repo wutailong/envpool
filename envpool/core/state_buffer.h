@@ -49,19 +49,22 @@ template <typename Dtype>
 struct StateArrayFactoryHelper<Container<Dtype>> {
   static constexpr bool kIsContainer = true;
   static Array Make(const ShapeSpec& spec) {
+    // Expose the existing protected owner/shape constructor only here. The
+    // fieldless bridge moves its Array base into the return value.
+    struct OwnedArray final : Array {
+      OwnedArray(std::shared_ptr<char> owner, std::vector<std::size_t>&& shape,
+                 std::size_t element_size)
+          : Array(std::move(owner), std::move(shape), element_size) {}
+    };
     auto shape = spec.Shape();
-    // Every slot is a live, null Container, including unused batch capacity.
-    // Acquire typed ownership before Array's shape/control-block allocations.
+    // Every slot is live and null, including unused original capacity. The
+    // alias keeps typed delete[] at final strong ownership, even with weak
+    // observers, without another control block or a second Shape() copy.
     std::shared_ptr<Container<Dtype>[]> owner(
         new Container<Dtype>[Prod(shape.data(), shape.size())]);
     auto* data = reinterpret_cast<char*>(owner.get());
-    return Array(spec, data, [owner = std::move(owner)](char* unused) mutable {
-      static_cast<void>(unused);
-      // A weak Array owner may retain this deleter's control
-      // block. Release payloads at the last strong owner, not when
-      // that control block dies.
-      owner.reset();
-    });
+    return OwnedArray(std::shared_ptr<char>(owner, data), std::move(shape),
+                      spec.element_size);
   }
 };
 

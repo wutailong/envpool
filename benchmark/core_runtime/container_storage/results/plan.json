@@ -1,0 +1,47 @@
+{
+  "hypothesis": "Reuse the typed backing owner and shape without redundant ownership/shape allocations; check actual runtime cost separately.",
+  "comparison": "published Container ownership repair15f80b09 versus one-function aliasing owner",
+  "blocks": 8,
+  "seconds": 3,
+  "warmup": 400,
+  "affinities": [
+    "default"
+  ],
+  "order": "acdb,cabd,bdca,dbac; a/b identical control, c/d identical candidate",
+  "case_count": 5,
+  "expected_samples": 160,
+  "cases": [
+    {
+      "env": "CartPole-v1",
+      "n": 20,
+      "batch": 20,
+      "threads": 1
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 256,
+      "batch": 256,
+      "threads": 4
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 1024,
+      "batch": 256,
+      "threads": 8
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "n": 256,
+      "batch": 64,
+      "threads": 4
+    },
+    {
+      "env": "BipedalWalker-v3",
+      "n": 64,
+      "batch": 16,
+      "threads": 4
+    }
+  ],
+  "box2d_mode": "ENVPOOL_TEST in both clients",
+  "decision": "Retain only with reviewed lifetime/exception safety and confirmed allocation reduction; report complete runtime uncertainty and any convincing regressions without universal speed claims."
+}
