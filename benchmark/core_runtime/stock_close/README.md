@@ -1,6 +1,12 @@
-# Defensive stock-allocator shutdown
+# Defensive stock shutdown and constructor cleanup
 
-**Retained correctness repair; no new speed claim.**
+**Retained correctness repairs; no new speed claim.**
+The initial shutdown study below describes
+[2eb7d289](https://github.com/wutailong/envpool/commit/2eb7d2892d7b9829771d6a3f73c805c4735c589d).
+The current source additionally contains the
+[constructor-launch cleanup](#constructor-launch-cleanup-follow-up) described at
+the end; earlier measurements keep their original binary attribution.
+
 The source-level shutdown review found that teardown relied on background stock
 allocators supplying items for a fixed consumer drain. That assumption is not
 part of the allocator's stop contract. The repair cancels producer waits and
@@ -185,3 +191,79 @@ rollback and terminal-cancellation rules. Lowering stock capacity instead remove
 ready burst buffers and can move work into the receive caller. Neither tradeoff
 is justified by these counts. Both changes are deferred pending a concrete
 memory-constrained workload and representative stock-occupancy evidence.
+
+## Constructor-launch cleanup follow-up
+
+**Retained defensive change; the exceptional launch branches are source-reviewed,
+not directly exercised by these tests.** A later synchronous thread-launch
+exception could leave earlier recorded threads without the class destructor's
+cleanup, because a failed constructor does not call that destructor. This is a
+source-derived finding; no original-version abort, resource exhaustion or launch
+failure was reproduced.
+
+The two core constructors now reserve handle-vector capacity before launching and
+use body-local catches. Their private stop/wake/join helpers are shared with normal
+destruction, signal only the successfully recorded core handles, and run while
+queues, flags and environment storage remain alive. After successful cleanup,
+a bare rethrow preserves the original exception. The initialization ThreadPool
+dependency receives the same bounded rollback pattern through a checked-in patch
+after `invoke_result.patch`; its stop-under-mutex, notification and normal task
+drain behavior remain intact. No cache file, task algorithm, member layout, queue
+capacity, public API or destructor exception specification was changed.
+
+Reserve alone is insufficient: thread creation can still fail after reservation.
+Cleanup failures, exceptions escaping background work/factories, invalid
+configurations and universal constructor exception safety remain outside scope.
+The stock allocator's later-launch case requires at least two creators under the
+current hardware-count formula; this host has one. Normal worker progress and
+returning factories remain prerequisites for joining.
+
+### Final-candidate checks
+
+- **45 positive native executions:** the nine stock-close cases, the two selected
+  typed-output cases above, and four new ThreadPool lifecycle cases, each in
+  optimized, ASan+UBSan and TSan builds. All passed. New cases use one/three workers,
+  verify task results and completion by destruction. They do not guarantee pending
+  tasks at destructor entry or exercise constructor rollback branches.
+- **5,499 exact rollout arrays**, **eight CPU XLA records**, and **one full fixed
+  synchronous PPO pair** matched the prior retained stock-close runtime: 101
+  checkpoints, 4,925 tensors, 223 arrays, 106,238 scalar comparisons, maximum
+  absolute difference zero. The previous PPO configuration is unchanged; this is
+  a fresh correctness comparison, not a throughput measurement.
+- Final touched C++ files pass project-config clang-format and cpplint. Native
+  tests were rebuilt after a two-line formatting-only reflow; earlier outputs
+  remain separately identified and are not added to the final coverage count.
+
+Comparison baseline is **2eb7d289**, not original main or the earlier NumPy-owner
+control. Frozen native identities for this comparison are:
+
+| Client | Baseline SHA256 | Constructor-repair SHA256 |
+| --- | --- | --- |
+| ClassicControl | `5ecb6f7660e56d0d5f541338e46edd7e67f2d07da3d6f764cfeff05b05ad95c6` | `abe524a823c57dc16e3bbc749ace8bba6186c7bb4f329801dc505f7af447b435` |
+| MuJoCo Gym | `c837c2e1e0bd929ef0e0f93488e98f5dc7751a2fcb86dcbcb65607e38d461f5f` | `6dea5c2e984703102df1d3dc1c060a402eb350e3ba94c7e62e23ceca86109e24` |
+
+Matching GCC 14.2/C++17/O3 clients were freshly built; 7,881 build inputs and
+410 semantic-validation inputs stayed frozen. Actual compiler dependencies prove
+the final core snapshot and derived ThreadPool header were selected. The pinned
+[upstream source](https://github.com/progschj/ThreadPool/blob/9a42ec1329f259a5f4881a291db1dcb8f2ad9040/ThreadPool.h)
+was independently fetched and checked against its Git blob; applying the existing
+patch then the new patch exactly matched the derived header. The archive ZIP was
+unavailable, so no fresh ZIP checksum verification is claimed. Existing-patch
+line offsets were accepted with zero fuzz; the new patch needed no offsets.
+
+Cached link inputs were unchanged. The 55 Bazel archives had 207 member/object/
+dependency freshness checks; four retained OpenCV archives lacked historical
+per-member dependency files, so their evidence is limited to prior hashes, member
+inventory and defined-symbol checks. Core/test and GoogleTest sanitizer units
+were freshly instrumented; external archives were not all instrumented. LSan
+remains excluded. Only ClassicControl and MuJoCo Gym release clients were rebuilt;
+the 19 other support modules were unchanged. There is no new all-family, GPU,
+cross-platform, clean-wheel, speed or asynchronous-training claim.
+
+The new ordinary test target is `//envpool/core:threadpool_lifecycle_test`. The
+selected native suite additionally uses `//envpool/core:stock_close_test` and
+`//envpool/core:container_output_test`, with the latter restricted to the two
+positive tests named above. The recorded build used focused GCC commands, not a
+fresh Bazel dependency build. CI workflows trigger on main pushes or pull requests
+(and release tags where configured); this non-main branch update alone does not
+produce hosted CI evidence. Raw records and binaries remain outside the repository.

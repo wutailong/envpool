@@ -12,4 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-exports_files(["invoke_result.patch"])
+exports_files([
+    "constructor_rollback.patch",
+    "invoke_result.patch",
+])

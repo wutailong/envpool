@@ -96,31 +96,31 @@ class StateBufferQueue {
     // hardcode here :(
     std::size_t create_buffer_thread_num =
         std::max<std::size_t>(1, processor_count / 64);
-    for (std::size_t i = 0; i < create_buffer_thread_num; ++i) {
-      create_buffer_thread_.emplace_back([&]() {
-        while (!quit_) {
-          auto buffer = std::make_unique<StateBuffer>(
-              batch_, max_num_players_, specs_, is_player_state_, factories_);
-          {
-            std::scoped_lock lock(stock_buffer_put_mu_);
-            if (!stock_buffer_.PutOrStop(std::move(buffer), quit_)) {
-              break;
+    // Reserve before launching so every started thread has a recorded handle.
+    create_buffer_thread_.reserve(create_buffer_thread_num);
+    try {
+      for (std::size_t i = 0; i < create_buffer_thread_num; ++i) {
+        create_buffer_thread_.emplace_back([&]() {
+          while (!quit_) {
+            auto buffer = std::make_unique<StateBuffer>(
+                batch_, max_num_players_, specs_, is_player_state_, factories_);
+            {
+              std::scoped_lock lock(stock_buffer_put_mu_);
+              if (!stock_buffer_.PutOrStop(std::move(buffer), quit_)) {
+                break;
+              }
             }
           }
-        }
-      });
+        });
+      }
+    } catch (...) {
+      // Constructor-body cleanup runs while all worker dependencies are alive.
+      StopAndJoinCreators();
+      throw;
     }
   }
 
-  ~StateBufferQueue() {
-    // Wake producers without requiring another stock item to be published.
-    // Keep all owned storage alive until even a pre-stop admitted Put finishes.
-    quit_ = true;
-    stock_buffer_.WakeProducersForStop(create_buffer_thread_.size());
-    for (auto& t : create_buffer_thread_) {
-      t.join();
-    }
-  }
+  ~StateBufferQueue() { StopAndJoinCreators(); }
 
   /**
    * Allocate slice of memory for the current env to write.
@@ -164,6 +164,16 @@ class StateBufferQueue {
   }
 
  private:
+  void StopAndJoinCreators() {
+    // Wake producers without requiring another stock item to be published.
+    // Keep all owned storage alive until even a pre-stop admitted Put finishes.
+    quit_ = true;
+    stock_buffer_.WakeProducersForStop(create_buffer_thread_.size());
+    for (auto& t : create_buffer_thread_) {
+      t.join();
+    }
+  }
+
   StateBuffer& SelectBuffer() {
     std::size_t pos = alloc_count_.fetch_add(1);
     std::size_t offset = (pos / batch_) % queue_size_;

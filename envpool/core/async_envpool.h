@@ -118,49 +118,48 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
     if (num_threads_ == 0) {
       num_threads_ = std::min(batch_, processor_count);
     }
-    for (std::size_t i = 0; i < num_threads_; ++i) {
-      workers_.emplace_back([this] {
-        for (;;) {
-          ActionSlice raw_action;
-          if (!action_buffer_queue_->DequeueOrStop(&raw_action, stop_)) {
-            break;
+    // Reserve before launching so every started thread has a recorded handle.
+    workers_.reserve(num_threads_);
+    try {
+      for (std::size_t i = 0; i < num_threads_; ++i) {
+        workers_.emplace_back([this] {
+          for (;;) {
+            ActionSlice raw_action;
+            if (!action_buffer_queue_->DequeueOrStop(&raw_action, stop_)) {
+              break;
+            }
+            int env_id = raw_action.env_id;
+            int order = raw_action.order;
+            bool reset = raw_action.force_reset || envs_[env_id]->IsDone();
+            envs_[env_id]->EnvStep(state_buffer_queue_.get(), order, reset,
+                                   raw_action.force_reset);
           }
-          int env_id = raw_action.env_id;
-          int order = raw_action.order;
-          bool reset = raw_action.force_reset || envs_[env_id]->IsDone();
-          envs_[env_id]->EnvStep(state_buffer_queue_.get(), order, reset,
-                                 raw_action.force_reset);
-        }
-      });
-    }
-    if (spec.config["thread_affinity_offset"_] >= 0) {
-      std::size_t thread_affinity_offset =
-          spec.config["thread_affinity_offset"_];
-#ifdef __linux__
-      for (std::size_t tid = 0; tid < num_threads_; ++tid) {
-        cpu_set_t cpuset;
-        CPU_ZERO(&cpuset);
-        std::size_t cid = (thread_affinity_offset + tid) % processor_count;
-        CPU_SET(cid, &cpuset);
-        pthread_setaffinity_np(workers_[tid].native_handle(), sizeof(cpu_set_t),
-                               &cpuset);
+        });
       }
+      if (spec.config["thread_affinity_offset"_] >= 0) {
+        std::size_t thread_affinity_offset =
+            spec.config["thread_affinity_offset"_];
+#ifdef __linux__
+        for (std::size_t tid = 0; tid < num_threads_; ++tid) {
+          cpu_set_t cpuset;
+          CPU_ZERO(&cpuset);
+          std::size_t cid = (thread_affinity_offset + tid) % processor_count;
+          CPU_SET(cid, &cpuset);
+          pthread_setaffinity_np(workers_[tid].native_handle(),
+                                 sizeof(cpu_set_t), &cpuset);
+        }
 #else
-      (void)thread_affinity_offset;
+        (void)thread_affinity_offset;
 #endif
+      }
+    } catch (...) {
+      // Constructor-body cleanup runs while queues and environments are alive.
+      StopAndJoinWorkers();
+      throw;
     }
   }
 
-  ~AsyncEnvPool() override {
-    stop_ = 1;
-    // LOG(INFO) << "envpool send: " << dur_send_.count();
-    // LOG(INFO) << "envpool recv: " << dur_recv_.count();
-    // Wake idle workers without overwriting actions still being dequeued.
-    action_buffer_queue_->WakeForShutdown(workers_.size());
-    for (auto& worker : workers_) {
-      worker.join();
-    }
-  }
+  ~AsyncEnvPool() override { StopAndJoinWorkers(); }
 
   void Send(const Action& action) {
     SendImpl(action.template AllValues<Array>());
@@ -238,6 +237,18 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
       stepping_env_num_ += shared_offset;
     }
     action_buffer_queue_->EnqueueBulk(actions);
+  }
+
+ private:
+  void StopAndJoinWorkers() {
+    stop_ = 1;
+    // LOG(INFO) << "envpool send: " << dur_send_.count();
+    // LOG(INFO) << "envpool recv: " << dur_recv_.count();
+    // Wake idle workers without overwriting actions still being dequeued.
+    action_buffer_queue_->WakeForShutdown(workers_.size());
+    for (auto& worker : workers_) {
+      worker.join();
+    }
   }
 };
 

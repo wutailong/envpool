@@ -155,6 +155,17 @@ cc_test(
     ],
 )
 
+cc_test(
+    name = "threadpool_lifecycle_test",
+    size = "small",
+    timeout = "short",
+    srcs = ["threadpool_lifecycle_test.cc"],
+    deps = [
+        "@com_google_googletest//:gtest_main",
+        "@threadpool",
+    ],
+)
+
 cc_library(
     name = "action_buffer_queue",
     hdrs = ["action_buffer_queue.h"],

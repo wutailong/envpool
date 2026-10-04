@@ -125,6 +125,7 @@ def workspace():
         build_file = "//third_party/threadpool:threadpool.BUILD",
         patches = [
             "//third_party/threadpool:invoke_result.patch",
+            "//third_party/threadpool:constructor_rollback.patch",
         ],
     )
 
