@@ -61,6 +61,12 @@ void InplaceInitialize(const Spec& spec, Array* arr) {
   InitializeHelper<typename Spec::dtype>::Init(arr);
 }
 
+template <typename SpecTuple, typename StateTuple, std::size_t... I>
+void InplaceInitializeTuple(const SpecTuple& specs, StateTuple& state,
+                            std::index_sequence<I...>) {
+  (InplaceInitialize(std::get<I>(specs), &std::get<I>(state)), ...);
+}
+
 template <typename SpecTuple>
 struct SpecToTArray;
 
@@ -230,16 +236,15 @@ class Env {
   }
 
   State Allocate(int player_num = 1) {
-    slice_ = sbq_->Allocate(player_num, order_);
-    // Inplace initialize all container fields
-    int i = 0;
-    std::apply(
-        [&](auto&&... spec) {
-          (InplaceInitialize(spec, &slice_.arr[i++]), ...);
-        },
-        spec_.state_spec.AllValues());
+    auto slice =
+        sbq_->AllocateTuple<typename State::Values>(player_num, order_);
     // The typed state owns the views; only the completion callback stays here.
-    State state(std::move(slice_.arr));
+    slice_.done_write = std::move(slice.done_write);
+    State state(std::move(slice.arr));
+    // Initialize all container fields without copying either tuple.
+    InplaceInitializeTuple(
+        spec_.state_spec.AllValues(), state.AllValues(),
+        std::make_index_sequence<std::tuple_size_v<typename State::Values>>{});
     bool done = IsDone();
     int max_episode_steps = CurrentMaxEpisodeSteps();
     state["done"_] = done;

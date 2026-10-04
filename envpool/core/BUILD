@@ -233,6 +233,21 @@ cc_test(
     ],
 )
 
+cc_test(
+    name = "state_tuple_test",
+    size = "small",
+    srcs = ["state_tuple_test.cc"],
+    deps = [
+        ":array",
+        ":env",
+        ":env_spec",
+        ":spec",
+        ":state_buffer",
+        ":state_buffer_queue",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "cuda_driver",
     hdrs = ["cuda_driver.h"],

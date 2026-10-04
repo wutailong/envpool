@@ -1,0 +1,1032 @@
+{
+  "schema_version": 1,
+  "source_sha256": "3dd4082cb4f9617008dcd6b573a7aef164489e7016da7b201952b52fd13cddb4",
+  "samples": 160,
+  "plan": {
+    "hypothesis": "Construct typed state views directly and remove the temporary per-state vector allocation; test speed independently of allocation savings.",
+    "comparison": "published bf2f16c0 container-storage allocation version versus direct typed state tuple",
+    "blocks": 8,
+    "seconds": 3,
+    "warmup": 400,
+    "affinities": [
+      "default"
+    ],
+    "order": "acdb,cabd,bdca,dbac; a/b identical control, c/d identical candidate",
+    "case_count": 5,
+    "expected_general_samples": 160,
+    "expected_container_samples": 64,
+    "expected_ppo_samples": 16,
+    "ppo_plan": "One initial four-label four-block balanced trial using the unchanged 256000-response PPO budget, with same-binary A/A labels; no adaptive stopping.",
+    "cases": [
+      {
+        "env": "CartPole-v1",
+        "n": 20,
+        "batch": 20,
+        "threads": 1
+      },
+      {
+        "env": "CartPole-v1",
+        "n": 256,
+        "batch": 256,
+        "threads": 4
+      },
+      {
+        "env": "CartPole-v1",
+        "n": 1024,
+        "batch": 256,
+        "threads": 8
+      },
+      {
+        "env": "HalfCheetah-v4",
+        "n": 256,
+        "batch": 64,
+        "threads": 4
+      },
+      {
+        "env": "BipedalWalker-v3",
+        "n": 64,
+        "batch": 16,
+        "threads": 4
+      }
+    ],
+    "box2d_mode": "ENVPOOL_TEST in both clients",
+    "decision": "Retain only if lifetime review, all correctness gates, exact measured allocation reduction, and runtime tradeoffs justify it. Preserve adverse results; no universal speed guarantee.",
+    "created_before_measurement": true,
+    "expected_samples": 160,
+    "analysis_schema_note": "Original predeclared plan preserved unchanged; expected_samples aliases expected_general_samples=160 for the inherited general-only summarizer."
+  },
+  "control_labels": [
+    "a",
+    "b"
+  ],
+  "treatment_labels": [
+    "c",
+    "d"
+  ],
+  "primary_estimand": "mean_blocks(mean(log(c), log(d)) - mean(log(a), log(b)))",
+  "bootstrap_replicates": 10000,
+  "bootstrap_seed": 738,
+  "bootstrap_caveat": "Few blocks; descriptive uncertainty, not proof of statistical significance. Each interval resamples complete blocks.",
+  "configurations": [
+    {
+      "config": [
+        "BipedalWalker-v3",
+        64,
+        16,
+        4,
+        false
+      ],
+      "blocks": 8,
+      "settings": {
+        "warmup": 400,
+        "requested_seconds": 3.0,
+        "seed": 42,
+        "async": true,
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "worker_affinity_offset": -1,
+        "runtime_selection": "explicit-root"
+      },
+      "same_binary_pairs": {
+        "status": "unverified",
+        "reason": "No measured binary hashes in rows; pair identity requires separate provenance."
+      },
+      "metrics": {
+        "a": {
+          "n": 8,
+          "median": 62398.24350994149,
+          "min": 60429.94482114693,
+          "max": 63423.386431467516,
+          "cv": 0.017014183468746696,
+          "cpu_us_per_response": 69.42013817388064,
+          "runnable_wait_ns_per_response": 174.31962909087719,
+          "voluntary_switches_per_1m_responses": 159811.0846509907,
+          "scheduler_thread_sets_stable": true
+        },
+        "c": {
+          "n": 8,
+          "median": 66106.52365185434,
+          "min": 62352.939107536804,
+          "max": 69074.18972309286,
+          "cv": 0.029541726590842043,
+          "cpu_us_per_response": 66.0985546748384,
+          "runnable_wait_ns_per_response": 44.063011169433594,
+          "voluntary_switches_per_1m_responses": 153403.48785998777,
+          "scheduler_thread_sets_stable": true
+        },
+        "d": {
+          "n": 8,
+          "median": 64684.24367103979,
+          "min": 62632.15134291588,
+          "max": 67844.48466337736,
+          "cv": 0.02847045595173283,
+          "cpu_us_per_response": 67.33164459412487,
+          "runnable_wait_ns_per_response": 52.1346307805037,
+          "voluntary_switches_per_1m_responses": 150902.40478515625,
+          "scheduler_thread_sets_stable": true
+        },
+        "b": {
+          "n": 8,
+          "median": 62647.66831710681,
+          "min": 58082.0646916349,
+          "max": 65940.81626727674,
+          "cv": 0.03999693372906794,
+          "cpu_us_per_response": 69.34496350137613,
+          "runnable_wait_ns_per_response": 53.792350278642914,
+          "voluntary_switches_per_1m_responses": 158133.43292790058,
+          "scheduler_thread_sets_stable": true
+        }
+      },
+      "primary": {
+        "block_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "block_log_effects": [
+          0.09260357599211488,
+          0.053039883226905005,
+          0.030367908043565706,
+          0.0464958689964039,
+          0.053903165092055616,
+          0.059510136615275044,
+          0.022100269670819017,
+          0.033911751886536834
+        ],
+        "block_geomean_effect_pct": 5.0211497357258095,
+        "block_effects_pct": [
+          9.702676131124253,
+          5.4471700014784465,
+          3.0833716212911653,
+          4.7593751446040615,
+          5.538239934927315,
+          6.131651908224995,
+          2.2346289657198657,
+          3.4493310616770154
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          3.664066458422427,
+          6.608213885363681
+        ]
+      },
+      "aa_diagnostics": {
+        "b_over_a": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            -0.004484685929345034,
+            0.005236491173569391,
+            -0.003352977102627719,
+            0.010372901516868538,
+            0.011201975011656984,
+            -0.08530834669215537,
+            0.06443073434288316,
+            0.01714673626957186
+          ],
+          "block_geomean_effect_pct": 0.19071699133298076,
+          "block_effects_pct": [
+            -0.44746447415352747,
+            0.5250225556334541,
+            -0.334736215225546,
+            1.0426886558853425,
+            1.1264952069867429,
+            -8.177089216261985,
+            6.655170028170648,
+            1.7294585386335783
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -2.7637403192898344,
+            2.67433791062697
+          ]
+        },
+        "d_over_c": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            0.02496276606711234,
+            0.04866415242843303,
+            -0.039329929861493085,
+            0.010675037518058872,
+            -0.028017892868311023,
+            -0.032020605406152924,
+            -0.042453810521623225,
+            -0.08572671148093391
+          ],
+          "block_geomean_effect_pct": -1.7746516662303085,
+          "block_effects_pct": [
+            2.5276944720764596,
+            4.986769600805433,
+            -3.8566548792580995,
+            1.0732219021495446,
+            -2.762903186009101,
+            -3.151337418668375,
+            -4.1565265901006,
+            -8.21549665421702
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -4.443338493616868,
+            1.0244164027840241
+          ]
+        }
+      }
+    },
+    {
+      "config": [
+        "CartPole-v1",
+        20,
+        20,
+        1,
+        false
+      ],
+      "blocks": 8,
+      "settings": {
+        "warmup": 400,
+        "requested_seconds": 3.0,
+        "seed": 42,
+        "async": false,
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "worker_affinity_offset": -1,
+        "runtime_selection": "explicit-root"
+      },
+      "same_binary_pairs": {
+        "status": "unverified",
+        "reason": "No measured binary hashes in rows; pair identity requires separate provenance."
+      },
+      "metrics": {
+        "a": {
+          "n": 8,
+          "median": 390083.03913603607,
+          "min": 320386.8791923819,
+          "max": 484831.1083122671,
+          "cv": 0.15235194861741058,
+          "cpu_us_per_response": 3.6624529459924413,
+          "runnable_wait_ns_per_response": 7.386956333559217,
+          "voluntary_switches_per_1m_responses": 149369.29304764286,
+          "scheduler_thread_sets_stable": true
+        },
+        "c": {
+          "n": 8,
+          "median": 387678.3848165356,
+          "min": 358084.40851344174,
+          "max": 498663.6289227839,
+          "cv": 0.13901051880267604,
+          "cpu_us_per_response": 3.616571986532864,
+          "runnable_wait_ns_per_response": 8.648369520428425,
+          "voluntary_switches_per_1m_responses": 150745.072827717,
+          "scheduler_thread_sets_stable": true
+        },
+        "d": {
+          "n": 8,
+          "median": 461439.8262746978,
+          "min": 332667.58665677044,
+          "max": 514148.97200153983,
+          "cv": 0.1390042294012162,
+          "cpu_us_per_response": 3.1453739216232726,
+          "runnable_wait_ns_per_response": 6.688660981261709,
+          "voluntary_switches_per_1m_responses": 148827.20916156983,
+          "scheduler_thread_sets_stable": true
+        },
+        "b": {
+          "n": 8,
+          "median": 423235.7506421756,
+          "min": 325830.5471104261,
+          "max": 479410.2529875462,
+          "cv": 0.12879843480708034,
+          "cpu_us_per_response": 3.3338349177229327,
+          "runnable_wait_ns_per_response": 5.79075987522838,
+          "voluntary_switches_per_1m_responses": 148544.64197597452,
+          "scheduler_thread_sets_stable": true
+        }
+      },
+      "primary": {
+        "block_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "block_log_effects": [
+          0.05848236963511688,
+          0.10695575794503753,
+          -0.2136416714382836,
+          0.06906107631209579,
+          0.008250717302841437,
+          0.16084609352668622,
+          -0.009511716132976744,
+          0.08788169729103501
+        ],
+        "block_geomean_effect_pct": 3.4109366244330634,
+        "block_effects_pct": [
+          6.022629335341089,
+          11.288501707005944,
+          -19.23622671540106,
+          7.150165051908533,
+          0.8284848274604671,
+          17.450419110485342,
+          -0.9466622845848588,
+          9.185894451637939
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -4.7236424457466955,
+          10.0979902606789
+        ]
+      },
+      "aa_diagnostics": {
+        "b_over_a": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            0.007633326687598085,
+            0.25444418681327186,
+            -0.09039849635994912,
+            -0.008609448747625592,
+            0.12156033418403211,
+            -0.14500261372933743,
+            -0.05875103143780258,
+            0.19215885999057924
+          ],
+          "block_geomean_effect_pct": 3.4718479954961476,
+          "block_effects_pct": [
+            0.766253479680566,
+            28.974456458017368,
+            -8.643294042314592,
+            -0.8572493574358898,
+            12.925749669945516,
+            -13.497996782044902,
+            -5.705849727458244,
+            21.186301822177985
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -5.176363426986706,
+            13.568874423857327
+          ]
+        },
+        "d_over_c": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            0.030581274144310555,
+            0.2458767555855239,
+            -0.09098091371910577,
+            -0.06468549004544677,
+            0.2256480912427996,
+            0.2581681063638097,
+            -0.09539108909292615,
+            0.15774370465815224
+          ],
+          "block_geomean_effect_pct": 8.694396306503952,
+          "block_effects_pct": [
+            3.1053684649525617,
+            27.874196602494592,
+            -8.696486282194167,
+            -6.263777322669505,
+            25.3134598635921,
+            29.455642350644474,
+            -9.09826418323028,
+            17.08660687295243
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -1.6166667655338505,
+            20.31255096655636
+          ]
+        }
+      }
+    },
+    {
+      "config": [
+        "CartPole-v1",
+        256,
+        256,
+        4,
+        false
+      ],
+      "blocks": 8,
+      "settings": {
+        "warmup": 400,
+        "requested_seconds": 3.0,
+        "seed": 42,
+        "async": false,
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "worker_affinity_offset": -1,
+        "runtime_selection": "explicit-root"
+      },
+      "same_binary_pairs": {
+        "status": "unverified",
+        "reason": "No measured binary hashes in rows; pair identity requires separate provenance."
+      },
+      "metrics": {
+        "a": {
+          "n": 8,
+          "median": 1569018.5728610645,
+          "min": 1174683.3866579556,
+          "max": 1690156.7847043066,
+          "cv": 0.13426140458396185,
+          "cpu_us_per_response": 1.9470360926118424,
+          "runnable_wait_ns_per_response": 2.355464361851511,
+          "voluntary_switches_per_1m_responses": 24112.332895187646,
+          "scheduler_thread_sets_stable": true
+        },
+        "c": {
+          "n": 8,
+          "median": 1849174.1804354633,
+          "min": 1684809.7961869517,
+          "max": 2363281.0471818396,
+          "cv": 0.12821514000207024,
+          "cpu_us_per_response": 1.5365091980316117,
+          "runnable_wait_ns_per_response": 2.7002705820145145,
+          "voluntary_switches_per_1m_responses": 24525.075939319577,
+          "scheduler_thread_sets_stable": true
+        },
+        "d": {
+          "n": 8,
+          "median": 1881238.603073129,
+          "min": 1532127.724938418,
+          "max": 1961656.268297205,
+          "cv": 0.08665059081594349,
+          "cpu_us_per_response": 1.509476674086778,
+          "runnable_wait_ns_per_response": 2.2623279740187994,
+          "voluntary_switches_per_1m_responses": 24257.307950292696,
+          "scheduler_thread_sets_stable": true
+        },
+        "b": {
+          "n": 8,
+          "median": 1516418.7097280563,
+          "min": 1209329.8386224105,
+          "max": 1894479.7557787288,
+          "cv": 0.15103651900201148,
+          "cpu_us_per_response": 2.03897018787076,
+          "runnable_wait_ns_per_response": 2.4198738239008875,
+          "voluntary_switches_per_1m_responses": 24095.82052780749,
+          "scheduler_thread_sets_stable": true
+        }
+      },
+      "primary": {
+        "block_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "block_log_effects": [
+          0.2265919665039835,
+          0.2365045300172941,
+          0.10518802570248909,
+          0.27864273402778217,
+          0.46476068077954835,
+          0.13804243452627496,
+          0.23398940832477066,
+          0.17179649133907482
+        ],
+        "block_geomean_effect_pct": 26.104347614541318,
+        "block_effects_pct": [
+          25.431795976730076,
+          26.681329429326738,
+          11.091947213355537,
+          32.1335191430769,
+          59.163323487909516,
+          14.802426510641789,
+          26.363110816659084,
+          18.743615508108867
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          18.311423706161865,
+          36.26070841852715
+        ]
+      },
+      "aa_diagnostics": {
+        "b_over_a": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            -0.11663077672643496,
+            -0.2954767206744542,
+            -0.08382753752555949,
+            -0.0454151192075507,
+            0.10074617463351743,
+            0.40041682126587474,
+            0.10714812645802319,
+            -0.18937863119493592
+          ],
+          "block_geomean_effect_pct": -1.5185723998927658,
+          "block_effects_pct": [
+            -11.008629063527236,
+            -25.582326154596934,
+            -8.041016284112295,
+            -4.439928872474159,
+            10.599587632359956,
+            49.24466515129996,
+            11.30991216987515,
+            -17.25268597705447
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -13.362750194875145,
+            13.761013875488647
+          ]
+        },
+        "d_over_c": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            -0.12171889949723358,
+            -0.190625829081851,
+            0.10625623119069338,
+            -0.1862617764836898,
+            -0.054343403906301546,
+            0.109687946359589,
+            0.09638692489650857,
+            -0.12906170579740817
+          ],
+          "block_geomean_effect_pct": -4.515863671215041,
+          "block_effects_pct": [
+            -11.460278087158455,
+            -17.355823922168902,
+            11.21067964509165,
+            -16.994372267469515,
+            -5.289318952736961,
+            11.592978616779035,
+            10.118505748932554,
+            -12.108027057050322
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -12.111442445698417,
+            3.9870623280111004
+          ]
+        }
+      }
+    },
+    {
+      "config": [
+        "CartPole-v1",
+        1024,
+        256,
+        8,
+        false
+      ],
+      "blocks": 8,
+      "settings": {
+        "warmup": 400,
+        "requested_seconds": 3.0,
+        "seed": 42,
+        "async": true,
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "worker_affinity_offset": -1,
+        "runtime_selection": "explicit-root"
+      },
+      "same_binary_pairs": {
+        "status": "unverified",
+        "reason": "No measured binary hashes in rows; pair identity requires separate provenance."
+      },
+      "metrics": {
+        "a": {
+          "n": 8,
+          "median": 3044996.2371433973,
+          "min": 2765410.7125444277,
+          "max": 3652447.144493526,
+          "cv": 0.08913512326502146,
+          "cpu_us_per_response": 2.5016982632348954,
+          "runnable_wait_ns_per_response": 141.0302128756743,
+          "voluntary_switches_per_1m_responses": 8020.820289513689,
+          "scheduler_thread_sets_stable": true
+        },
+        "c": {
+          "n": 8,
+          "median": 3469472.623044608,
+          "min": 2981709.3898939574,
+          "max": 4403248.909201654,
+          "cv": 0.12712135279654174,
+          "cpu_us_per_response": 2.199354720637445,
+          "runnable_wait_ns_per_response": 115.92989466460199,
+          "voluntary_switches_per_1m_responses": 9676.666058666418,
+          "scheduler_thread_sets_stable": true
+        },
+        "d": {
+          "n": 8,
+          "median": 3296744.0872836895,
+          "min": 2797508.1800057287,
+          "max": 4266977.733668111,
+          "cv": 0.12917300891901004,
+          "cpu_us_per_response": 2.342285436257561,
+          "runnable_wait_ns_per_response": 118.29662384029932,
+          "voluntary_switches_per_1m_responses": 10397.652456044381,
+          "scheduler_thread_sets_stable": true
+        },
+        "b": {
+          "n": 8,
+          "median": 3049773.041949044,
+          "min": 2718742.1924418174,
+          "max": 4155029.792583911,
+          "cv": 0.141341149879926,
+          "cpu_us_per_response": 2.5453079574315414,
+          "runnable_wait_ns_per_response": 138.51149910272903,
+          "voluntary_switches_per_1m_responses": 7312.21895750616,
+          "scheduler_thread_sets_stable": true
+        }
+      },
+      "primary": {
+        "block_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "block_log_effects": [
+          -0.03917290926898431,
+          0.09616167997559089,
+          0.09063157515343434,
+          0.1733799463901562,
+          0.04047160777540881,
+          0.15486925365975068,
+          0.27510891897837375,
+          -0.02105429772400491
+        ],
+        "block_geomean_effect_pct": 10.108875973133802,
+        "block_effects_pct": [
+          -3.841557208949917,
+          10.09370490805014,
+          9.486555526831888,
+          18.931789629182216,
+          4.130174440981276,
+          16.750530407993875,
+          31.667407785323746,
+          -2.0834203348157456
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          3.0791925811922227,
+          17.970765263255156
+        ]
+      },
+      "aa_diagnostics": {
+        "b_over_a": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            -0.29522804938381597,
+            -0.04149474104523421,
+            0.10181807652871022,
+            -0.04939854897389928,
+            -0.0825781800314207,
+            0.09650867150093845,
+            -0.0036656309952078914,
+            0.35181871569778167
+          ],
+          "block_geomean_effect_pct": 0.976995659413702,
+          "block_effects_pct": [
+            -25.563818314506637,
+            -4.064561947050233,
+            10.718203100666091,
+            -4.81982855009113,
+            -7.9260548396359205,
+            10.131913119226722,
+            -0.3658920771483351,
+            42.16507773874246
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -10.243540800953955,
+            13.985760126775592
+          ]
+        },
+        "d_over_c": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            0.03222740539705704,
+            -0.1344115265064083,
+            0.015213688774343481,
+            -0.45361357166346394,
+            -0.012266762944376453,
+            -0.02987925302369021,
+            0.11505881694925968,
+            -0.05064195160503182
+          ],
+          "block_geomean_effect_pct": -6.273492980017134,
+          "block_effects_pct": [
+            3.275233205780417,
+            -12.576977834295791,
+            1.5330006060466967,
+            -36.46718053663375,
+            -1.2191832903762494,
+            -2.943728101289119,
+            12.193942468555313,
+            -4.938102279532311
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -17.39986031929669,
+            2.7495996198366157
+          ]
+        }
+      }
+    },
+    {
+      "config": [
+        "HalfCheetah-v4",
+        256,
+        64,
+        4,
+        false
+      ],
+      "blocks": 8,
+      "settings": {
+        "warmup": 400,
+        "requested_seconds": 3.0,
+        "seed": 42,
+        "async": true,
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "worker_affinity_offset": -1,
+        "runtime_selection": "explicit-root"
+      },
+      "same_binary_pairs": {
+        "status": "unverified",
+        "reason": "No measured binary hashes in rows; pair identity requires separate provenance."
+      },
+      "metrics": {
+        "a": {
+          "n": 8,
+          "median": 95336.57349701023,
+          "min": 90909.53498128611,
+          "max": 103896.5565703919,
+          "cv": 0.041080037277994946,
+          "cpu_us_per_response": 43.51387991594587,
+          "runnable_wait_ns_per_response": 28.84061175607806,
+          "voluntary_switches_per_1m_responses": 32915.953411558876,
+          "scheduler_thread_sets_stable": true
+        },
+        "c": {
+          "n": 8,
+          "median": 99118.70550096247,
+          "min": 79951.17023918872,
+          "max": 102521.09110039196,
+          "cv": 0.07523261436474334,
+          "cpu_us_per_response": 41.84378823000246,
+          "runnable_wait_ns_per_response": 24.33718867481203,
+          "voluntary_switches_per_1m_responses": 33376.59333881579,
+          "scheduler_thread_sets_stable": true
+        },
+        "d": {
+          "n": 8,
+          "median": 96707.70423111969,
+          "min": 77557.1732825116,
+          "max": 102145.66026290436,
+          "cv": 0.07695796710188024,
+          "cpu_us_per_response": 42.84117675781249,
+          "runnable_wait_ns_per_response": 13.186426798502605,
+          "voluntary_switches_per_1m_responses": 33129.32956985563,
+          "scheduler_thread_sets_stable": true
+        },
+        "b": {
+          "n": 8,
+          "median": 96327.3903526804,
+          "min": 86468.9855772785,
+          "max": 99988.23037595613,
+          "cv": 0.05153811975007394,
+          "cpu_us_per_response": 43.13760938178169,
+          "runnable_wait_ns_per_response": 20.58487185916385,
+          "voluntary_switches_per_1m_responses": 33277.23911830357,
+          "scheduler_thread_sets_stable": true
+        }
+      },
+      "primary": {
+        "block_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "block_log_effects": [
+          -0.05896527706730659,
+          -0.0305491117641008,
+          -0.03647752224667933,
+          0.0850188701761887,
+          -0.08639561202316415,
+          0.025366359248440773,
+          0.05183569291997614,
+          0.039662611599627695
+        ],
+        "block_geomean_effect_pct": -0.13121370390437095,
+        "block_effects_pct": [
+          -5.726049673089628,
+          -3.008720323097993,
+          -3.5820233752307304,
+          8.873761117510528,
+          -8.276870829375447,
+          2.569082301823856,
+          5.320267963906154,
+          4.045967594176226
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -3.9236831720802576,
+          3.8786477650195224
+        ]
+      },
+      "aa_diagnostics": {
+        "b_over_a": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            -0.10299918286781562,
+            -0.040648503444277395,
+            0.018104931284391057,
+            -0.09990691960601517,
+            0.02946946053471322,
+            0.0714728781930063,
+            0.022689683254997206,
+            0.0031726632378390462
+          ],
+          "block_geomean_effect_pct": -1.2254913042460918,
+          "block_effects_pct": [
+            -9.787228936119792,
+            -3.9833434118632174,
+            1.826981914410145,
+            -9.507835542081832,
+            2.9907982152540864,
+            7.408901907119512,
+            2.29490520687831,
+            0.31777014606351517
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -5.420194192459964,
+            2.6772524714711174
+          ]
+        },
+        "d_over_c": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            -0.2583637069101936,
+            -0.07509230388376942,
+            0.02435706786408609,
+            -0.04614603760081337,
+            0.1773910012154527,
+            0.005838634369624174,
+            0.043315420325725995,
+            -0.02688292853674845
+          ],
+          "block_geomean_effect_pct": -1.925996706847986,
+          "block_effects_pct": [
+            -22.76857150234685,
+            -7.234214404630814,
+            2.465612435161403,
+            -4.50974996625347,
+            19.409789558957165,
+            0.585571241658782,
+            4.426722601758563,
+            -2.652479898027333
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -9.92563681298521,
+            5.9970331841326265
+          ]
+        }
+      }
+    }
+  ]
+}

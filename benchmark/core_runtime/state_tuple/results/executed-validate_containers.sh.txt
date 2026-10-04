@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+cd $WORKSPACE
+source deps/env.sh
+unset PYTHONPATH ENVPOOL_ASSETS_PATH
+export PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMBA_NUM_THREADS=1 PYTHONHASHSEED=0
+W=$PWD/envpool-core-state-tuple-work
+S=$PWD/envpool-core-state-tuple
+PYTHONPATH=$W/build/conversion-normal .rl-venv/bin/python "$S/benchmark/core_runtime/container_ownership/test_conversion.py" > "$W/logs/conversion-normal.log" 2>&1
+LD_PRELOAD="$(g++ -print-file-name=libasan.so):$(g++ -print-file-name=libstdc++.so)" ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 PYTHONMALLOC=malloc PYTHONPATH=$W/build/conversion-asan timeout 120 .rl-venv/bin/python "$W/tools/check_conversion_repeats.py" > "$W/logs/conversion-asan.log" 2>&1
+.venv/bin/python "$W/tools/make_box_runtime.py"
+.venv/bin/python "$S/benchmark/core_runtime/container_ownership/check_box2d.py" record --variant control --envpool-root "$PWD/envpool-core-container-storage-work/runtime-box-candidate" --out "$W/results/box2d-control.json" > "$W/logs/box2d-control.log" 2>&1
+.venv/bin/python "$S/benchmark/core_runtime/container_ownership/check_box2d.py" record --variant candidate --envpool-root "$W/runtime-box-candidate" --out "$W/results/box2d-candidate.json" > "$W/logs/box2d-candidate.log" 2>&1
+.venv/bin/python "$S/benchmark/core_runtime/container_ownership/check_box2d.py" compare "$W/results/box2d-control.json" "$W/results/box2d-candidate.json" > "$W/results/box2d-comparison.json" 2>&1
+printf 'State tuple: real Box2D test-mode Container parity and normal/sanitized partial Python conversion gates passed.\n' >> envpool-core-overnight-work/logs/progress.log

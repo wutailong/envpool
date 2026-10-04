@@ -1,0 +1,51 @@
+{
+  "hypothesis": "Construct typed state views directly and remove the temporary per-state vector allocation; test speed independently of allocation savings.",
+  "comparison": "published bf2f16c0 container-storage allocation version versus direct typed state tuple",
+  "blocks": 8,
+  "seconds": 3,
+  "warmup": 400,
+  "affinities": [
+    "default"
+  ],
+  "order": "acdb,cabd,bdca,dbac; a/b identical control, c/d identical candidate",
+  "case_count": 5,
+  "expected_general_samples": 160,
+  "expected_container_samples": 64,
+  "expected_ppo_samples": 16,
+  "ppo_plan": "One initial four-label four-block balanced trial using the unchanged 256000-response PPO budget, with same-binary A/A labels; no adaptive stopping.",
+  "cases": [
+    {
+      "env": "CartPole-v1",
+      "n": 20,
+      "batch": 20,
+      "threads": 1
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 256,
+      "batch": 256,
+      "threads": 4
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 1024,
+      "batch": 256,
+      "threads": 8
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "n": 256,
+      "batch": 64,
+      "threads": 4
+    },
+    {
+      "env": "BipedalWalker-v3",
+      "n": 64,
+      "batch": 16,
+      "threads": 4
+    }
+  ],
+  "box2d_mode": "ENVPOOL_TEST in both clients",
+  "decision": "Retain only if lifetime review, all correctness gates, exact measured allocation reduction, and runtime tradeoffs justify it. Preserve adverse results; no universal speed guarantee.",
+  "created_before_measurement": true
+}

@@ -122,6 +122,13 @@ class StateBuffer {
     std::function<void()> done_write;
   };
 
+  // Keep typed views inline without an intermediate vector allocation.
+  template <typename Values>
+  struct WritableTupleSlice {
+    Values arr;
+    std::function<void()> done_write;
+  };
+
   /**
    * Create a StateBuffer instance with the player_specs and shared_specs
    * provided.
@@ -150,38 +157,26 @@ class StateBuffer {
    * Externally, caller has to catch the exception and handle accordingly.
    */
   WritableSlice Allocate(std::size_t num_players, int order = -1) {
-    DCHECK_LE(num_players, max_num_players_);
-    std::size_t alloc_count = alloc_count_.fetch_add(1);
-    if (alloc_count < batch_) {
-      // Make a increment atomically on two uint32_t simultaneously
-      // This avoids lock
-      uint64_t increment = static_cast<uint64_t>(num_players) << 32 | 1;
-      uint64_t offsets = offsets_.fetch_add(increment);
-      uint32_t player_offset = offsets >> 32;
-      uint32_t shared_offset = offsets;
-      DCHECK_LE((std::size_t)shared_offset + 1, batch_);
-      DCHECK_LE((std::size_t)(player_offset + num_players),
-                batch_ * max_num_players_);
-      if (order != -1 && max_num_players_ == 1) {
-        // single player with sync setting: return ordered data
-        player_offset = shared_offset = order;
-      }
-      std::vector<Array> state;
-      state.reserve(arrays_.size());
-      for (std::size_t i = 0; i < arrays_.size(); ++i) {
-        const Array& a = arrays_[i];
-        if (is_player_state_[i]) {
-          state.emplace_back(
-              a.Slice(player_offset, player_offset + num_players));
-        } else {
-          state.emplace_back(a[shared_offset]);
-        }
-      }
-      return WritableSlice{.arr = std::move(state),
-                           .done_write = [this]() { Done(); }};
+    auto [player_offset, shared_offset] = Reserve(num_players, order);
+    std::vector<Array> state;
+    state.reserve(arrays_.size());
+    for (std::size_t i = 0; i < arrays_.size(); ++i) {
+      state.emplace_back(
+          MakeView(i, num_players, player_offset, shared_offset));
     }
-    DLOG(INFO) << "Allocation failed, continue to the next block of memory";
-    throw std::out_of_range("StateBuffer out of storage");
+    return WritableSlice{.arr = std::move(state),
+                         .done_write = [this]() { Done(); }};
+  }
+
+  template <typename Values>
+  WritableTupleSlice<Values> AllocateTuple(std::size_t num_players,
+                                           int order = -1) {
+    // A mismatched tuple must not consume any buffer quota or offsets.
+    CHECK_EQ(std::tuple_size_v<Values>, arrays_.size());
+    auto [player_offset, shared_offset] = Reserve(num_players, order);
+    return MakeTupleSlice<Values>(
+        num_players, player_offset, shared_offset,
+        std::make_index_sequence<std::tuple_size_v<Values>>{});
   }
 
   [[nodiscard]] std::pair<uint32_t, uint32_t> Offsets() const {
@@ -226,6 +221,48 @@ class StateBuffer {
                                                      : shared_offset);
     }
     return std::move(arrays_);
+  }
+
+ private:
+  std::pair<uint32_t, uint32_t> Reserve(std::size_t num_players, int order) {
+    DCHECK_LE(num_players, max_num_players_);
+    std::size_t alloc_count = alloc_count_.fetch_add(1);
+    if (alloc_count < batch_) {
+      // Make a increment atomically on two uint32_t simultaneously
+      // This avoids lock
+      uint64_t increment = static_cast<uint64_t>(num_players) << 32 | 1;
+      uint64_t offsets = offsets_.fetch_add(increment);
+      uint32_t player_offset = offsets >> 32;
+      uint32_t shared_offset = offsets;
+      DCHECK_LE((std::size_t)shared_offset + 1, batch_);
+      DCHECK_LE((std::size_t)(player_offset + num_players),
+                batch_ * max_num_players_);
+      if (order != -1 && max_num_players_ == 1) {
+        // single player with sync setting: return ordered data
+        player_offset = shared_offset = order;
+      }
+      return {player_offset, shared_offset};
+    }
+    DLOG(INFO) << "Allocation failed, continue to the next block of memory";
+    throw std::out_of_range("StateBuffer out of storage");
+  }
+
+  Array MakeView(std::size_t i, std::size_t num_players, uint32_t player_offset,
+                 uint32_t shared_offset) const {
+    const Array& a = arrays_[i];
+    if (is_player_state_[i]) {
+      return a.Slice(player_offset, player_offset + num_players);
+    }
+    return a[shared_offset];
+  }
+
+  template <typename Values, std::size_t... I>
+  WritableTupleSlice<Values> MakeTupleSlice(std::size_t num_players,
+                                            uint32_t player_offset,
+                                            uint32_t shared_offset,
+                                            std::index_sequence<I...>) {
+    return {Values{MakeView(I, num_players, player_offset, shared_offset)...},
+            [this]() { Done(); }};
   }
 };
 

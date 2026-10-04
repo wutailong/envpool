@@ -130,19 +130,13 @@ class StateBufferQueue {
    * It is safe to access from multiple threads.
    */
   StateBuffer::WritableSlice Allocate(std::size_t num_players, int order = -1) {
-    std::size_t pos = alloc_count_.fetch_add(1);
-    std::size_t offset = (pos / batch_) % queue_size_;
-    // if (pos % batch_ == 0) {
-    //   // At the time a new statebuffer is accessed, the first visitor
-    //   allocate
-    //   // a new state buffer and put it at the back of the queue.
-    //   std::size_t insert_pos = alloc_tail_.fetch_add(1);
-    //   std::size_t insert_offset = insert_pos % queue_size_;
-    //   queue_[insert_offset].reset(
-    //       new StateBuffer(batch_, max_num_players_, specs_,
-    //       is_player_state_));
-    // }
-    return queue_[offset]->Allocate(num_players, order);
+    return SelectBuffer().Allocate(num_players, order);
+  }
+
+  template <typename Values>
+  StateBuffer::WritableTupleSlice<Values> AllocateTuple(std::size_t num_players,
+                                                        int order = -1) {
+    return SelectBuffer().AllocateTuple<Values>(num_players, order);
   }
 
   /**
@@ -169,6 +163,13 @@ class StateBufferQueue {
     }
     std::swap(queue_[offset], newbuf);
     return arr;
+  }
+
+ private:
+  StateBuffer& SelectBuffer() {
+    std::size_t pos = alloc_count_.fetch_add(1);
+    std::size_t offset = (pos / batch_) % queue_size_;
+    return *queue_[offset];
   }
 };
 

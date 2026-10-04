@@ -1,0 +1,56 @@
+{
+  "checks": [
+    {
+      "label": "original",
+      "native_entries": 20,
+      "unchanged": true
+    },
+    {
+      "label": "round1",
+      "native_entries": 21,
+      "unchanged": true
+    },
+    {
+      "label": "safety",
+      "native_entries": 21,
+      "unchanged": true
+    },
+    {
+      "label": "final",
+      "native_entries": 21,
+      "unchanged": true
+    },
+    {
+      "label": "shutdown",
+      "native_entries": 21,
+      "unchanged": true
+    },
+    {
+      "label": "timing",
+      "native_entries": 21,
+      "unchanged": true
+    },
+    {
+      "label": "action-experiment",
+      "native_entries": 21,
+      "unchanged": true
+    },
+    {
+      "label": "direct-discount",
+      "native_entries": 21,
+      "unchanged": true
+    },
+    {
+      "label": "published-discount",
+      "native_entries": 21,
+      "unchanged": true
+    },
+    {
+      "label": "ownership",
+      "native_entries": 21,
+      "unchanged": true
+    }
+  ],
+  "total_native_entries": 209,
+  "all_unchanged": true
+}

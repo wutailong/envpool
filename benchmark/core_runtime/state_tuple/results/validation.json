@@ -1,0 +1,39 @@
+{
+  "control_commit": "bf2f16c0d724d01c480668703012342ab1f0fd4e",
+  "candidate_code_commit": "d1bdd646d667c83d4865bb117849bbcc46b285aa",
+  "native": 76,
+  "new_tuple_tests": 12,
+  "ASan_UBSan": {
+    "tests": 74,
+    "repeats": 3
+  },
+  "TSan": {
+    "tests": 74,
+    "repeats": 3
+  },
+  "LSan": false,
+  "Python_existing": 16,
+  "Python_conversion": 2,
+  "Python_conversion_sanitized": 50,
+  "inherited_harness_tests": 23,
+  "rollout_equal_arrays": 5499,
+  "cpu_xla_equal_cases": 8,
+  "full_ppo_exact_parity": true,
+  "box2d_test_mode_equal_cases": 4,
+  "box2d_output_records": 260,
+  "box2d_container_inner_arrays": 1040,
+  "box2d_retained_payloads": 8,
+  "throughput_samples": 224,
+  "initial_ppo_samples": 16,
+  "all_ppo_fingerprints_equal": true,
+  "all_executed_tests_passed": true,
+  "scope_limits": [
+    "Four rebuilt clients only",
+    "Box2D requires ENVPOOL_TEST",
+    "No GPU/Container-valued XLA",
+    "One synchronous PPO configuration",
+    "No whole-program leak-clean claim",
+    "No capsule-allocation failure injection",
+    "Descriptive intervals, no general speed or non-regression guarantee"
+  ]
+}
