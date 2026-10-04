@@ -3,10 +3,12 @@
 当前分支已清理中间测试原始文件，保留结论、负面结果、方法和限制。
 证据链接已固定到清理前提交；参见[归档与复现说明](ARCHIVE.md)。
 
-核验日期：2026-10-04 UTC。固定公开 ce1c47f2 源码复现后，补充了家族验证和两轮未采用的性能实验。当前分支再修复 NumPy 输入转换失败时的所有权泄漏；历史性能采样仍归属于各自版本。
+核验日期：2026-10-04 UTC。固定公开 ce1c47f2 源码复现后，补充了家族验证和两轮未采用的性能实验。当前分支随后修复 NumPy 输入转换失败时的所有权泄漏和 stock 分配线程关闭协议；历史性能采样仍归属于各自版本。
 这是累计修改链，不是一组互相独立、需要全部合并的补丁。
 
 ## 先看哪个版本
+
+- **最新保留修复**：[stock 分配线程的可取消关闭协议](stock_close/README.md)。不再依赖退出中的分配线程继续发布缓冲。9 个正向用例在普通/ASan+UBSan/TSan 三种构建通过；5,499 个轨迹数组、8 个 CPU XLA 记录和完整同步 PPO 对照一致。风险来自源码推断，未直接复现旧挂起；没有 LSan、全家族或新速度结论。当前源代码包含此修复，较早速度表仍只属于各自命名的二进制。
 
 - **最新未采用实验**：[缓存 max-player 元数据](wrapper_metadata/README.md)。重复配置构造确实减少，语义、CPU XLA 和完整 PPO 日志对照通过；但固定 160 个环境样本的五项区间都跨零，256/4 CartPole 与 16 次 PPO 有不利点估计。因此暂不加入这个缓存，仅保留未应用补丁、检查器、结论，以及支持 Python-only 变更身份核验的 PPO/计时工具改进。
 
@@ -16,7 +18,7 @@
 
 - **前一未采用实验**：[直接保存 Python 输入所有者](input_owner_storage/README.md)。每个转换确实少一次分配、8 字节分配流量，正确性和完整 PPO 对照通过；但 CartPole 256/256/4 有不利信号，四玩家 Dummy 有正向信号，PPO 未证实加速。因此保持下面已发布的引用泄漏修复，不将这个原型加入生产 core。
 
-- **最新保留修复**：[NumPy 输入转换异常安全](numpy_input_owner/README.md)。原版和 ce1 都会在拒绝正尺寸、只读输入时泄漏引用；当前分支加入 RAII 修复，保持拒绝行为和成功转换语义。它是 ce1 上的累计修复，不是新的通用加速结论。
+- **此前保留修复**：[NumPy 输入转换异常安全](numpy_input_owner/README.md)。原版和 ce1 都会在拒绝正尺寸、只读输入时泄漏引用；当前分支加入 RAII 修复，保持拒绝行为和成功转换语义。它是 ce1 上的累计修复，不是新的通用加速结论。
 
 - **较早未采用实验**：[直接生成 ActionSlice 批次](generated_enqueue/README.md)。每次 Send/Reset 少一次分配，256 个提交 ID 少 3,072 字节分配流量；八线程 CartPole 窗口内 +11.00%，但 HalfCheetah -4.44%，完整 PPO 未证实加速。经过完整并发、sanitizer、轨迹和修正后的家族验证，仍因跨负载取舍不加入通用 core，只保留未应用源码/测试和结论。
 
@@ -93,7 +95,7 @@ LeakSanitizer 在此环境未启用；泄漏修复另有精确析构计数回归
 
 ## 复现前核对
 
-1. **选择固定公开提交。** 当前保留的运行时代码为 ce1c47f2；需要 PPO 耗时诊断工具与该轮记录时选择 ad9650a6，其生产 core 相同。后续源码复现和家族验证记录见本页对应报告，ad9650a6 不包含这些后续新增内容。15f80b09 是停止在所有权修复的较早累计基线。报告中的 `local code commit` 是本地构建溯源标识，不保证可从 GitHub 获取；公开 checkout 应使用这里链接的发布提交。
+1. **选择固定公开提交。** 最新累计源码见本分支和[stock 关闭修复](stock_close/README.md)；ce1c47f2 是历史保留性能对照。需要历史 PPO 耗时诊断工具与该轮记录时选择 ad9650a6，其生产 core 与 ce1 相同。后续源码复现和家族验证记录见本页对应报告，ad9650a6 不包含这些后续新增内容。15f80b09 是停止在所有权修复的较早累计基线。报告中的 `local code commit` 是本地构建溯源标识，不保证可从 GitHub 获取；公开 checkout 应使用这里链接的发布提交。
 2. **不要把源码当成运行包。** 必须单独构建所选 revision，使用不同、冻结的 runtime 目录，并检查实际导入的包和 `.so`。EnvPool 的版本号在这些变体中都为 1.2.7，不能用它识别候选；应核对源码和 native SHA256。不要在测量进程运行时替换文件。
 3. **看清路径参数。** `ppo_phase --original-package/--retained-package`、`ppo/verify_ppo_parity.py --original/--candidate` 接收实际 `envpool/` 目录；`run_matrix.py`、`check_rollouts.py`、`xla/check_xla.py` 的 root 参数，以及 `state_tuple/run_paired_ppo.py --baseline-root/--candidate-root`，接收包含 `envpool/` 的父目录。
 4. **保持依赖与构建条件一致。** 记录的通用运行环境为 Python 3.12.14、NumPy 2.5.3、Gymnasium 1.3.0；PPO 和 NumPy sanitizer 转换检查另用 NumPy 1.26.4。PPO 还使用 Torch 2.5.1+cpu、Tianshou 0.5.1、Numba 0.68.0；CPU XLA 使用 JAX/jaxlib 0.11.1。不要把两个 Python 环境混作同一个依赖组合。
@@ -101,7 +103,7 @@ LeakSanitizer 在此环境未启用；泄漏修复另有精确析构计数回归
 6. **为实际使用的客户端重建。** 只重建四个客户端不代表全部安装模块都采用新 core。保持一致的 Python/native ABI 和客户端头文件版本；没有旧/新头文件混用的 ABI 保证。Box2D 的此处证据来自 `ENVPOOL_TEST` 诊断构建。
 7. **分开重算旧数据与测量新版本。** 所有输出使用新路径。[PPO phase 页面](ppo_phase/README.md#reproduce-and-inspect)明确列出两种命令，避免运行新 trial 后误总结归档 trial。性能运行应串行，避免构建、其他测试和截图取样负载；保留不利样本及 A/A 波动。
 
-当前分支包含最新累计修复。下面命令刻意取得历史 ce1 性能对照，不是最新输入所有权修复：
+当前分支包含最新累计修复。下面命令刻意取得历史 ce1 性能对照，不含后续输入所有权和 stock 关闭修复：
 
 ```sh
 git clone --branch docs/core-current-family-coverage https://github.com/wutailong/envpool.git envpool-retained

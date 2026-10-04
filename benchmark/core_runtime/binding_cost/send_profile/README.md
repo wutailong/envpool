@@ -3,7 +3,9 @@
 **Outcome: signal-path localization is useful; the follow-on batching prototype
 was rejected. No production change.**
 See [the uninstrumented follow-on screen](#follow-on-broadcast-backend-rejected).
-The retained core remains [97688bda](https://github.com/wutailong/envpool/commit/97688bdad104058ae2e4fd08be5579efce4dacac).
+During these diagnostic experiments, retained core was [97688bda](https://github.com/wutailong/envpool/commit/97688bdad104058ae2e4fd08be5579efce4dacac).
+The later [stock-allocator close repair](../../stock_close/README.md) is not covered
+by the speed measurements below.
 This consolidates three bounded diagnostic studies. Shared action ownership is
 not removed, and the queue's permit counts, publication order and stop-aware
 shutdown remain unchanged. The patches here are **unapplied instrumentation**.

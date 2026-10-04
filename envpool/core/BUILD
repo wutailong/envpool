@@ -143,6 +143,18 @@ cc_test(
     ],
 )
 
+cc_test(
+    name = "stock_close_test",
+    size = "small",
+    timeout = "short",
+    srcs = ["stock_close_test.cc"],
+    deps = [
+        ":circular_buffer",
+        ":state_buffer_queue",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "action_buffer_queue",
     hdrs = ["action_buffer_queue.h"],

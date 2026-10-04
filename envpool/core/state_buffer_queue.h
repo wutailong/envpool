@@ -98,15 +98,14 @@ class StateBufferQueue {
         std::max<std::size_t>(1, processor_count / 64);
     for (std::size_t i = 0; i < create_buffer_thread_num; ++i) {
       create_buffer_thread_.emplace_back([&]() {
-        while (true) {
+        while (!quit_) {
           auto buffer = std::make_unique<StateBuffer>(
               batch_, max_num_players_, specs_, is_player_state_, factories_);
           {
             std::scoped_lock lock(stock_buffer_put_mu_);
-            stock_buffer_.Put(std::move(buffer));
-          }
-          if (quit_) {
-            break;
+            if (!stock_buffer_.PutOrStop(std::move(buffer), quit_)) {
+              break;
+            }
           }
         }
       });
@@ -114,11 +113,10 @@ class StateBufferQueue {
   }
 
   ~StateBufferQueue() {
-    // stop the thread
+    // Wake producers without requiring another stock item to be published.
+    // Keep all owned storage alive until even a pre-stop admitted Put finishes.
     quit_ = true;
-    for (std::size_t i = 0; i < create_buffer_thread_.size(); ++i) {
-      stock_buffer_.Get();
-    }
+    stock_buffer_.WakeProducersForStop(create_buffer_thread_.size());
     for (auto& t : create_buffer_thread_) {
       t.join();
     }

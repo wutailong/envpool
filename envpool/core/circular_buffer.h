@@ -55,6 +55,34 @@ class CircularBuffer {
     sem_get_.signal();
   }
 
+  // Terminal-only cancellation: after stop becomes true, every participating
+  // producer must leave permanently on false. Do not return the acquired
+  // permit: it may be a shutdown wake rather than a free buffer slot.
+  // Keep the shared stop flag and this buffer alive through producer joins.
+  template <typename T>
+  bool PutOrStop(T&& v, const std::atomic<bool>& stop) {
+    while (!sem_put_.wait()) {
+    }
+    if (stop.load()) {
+      return false;
+    }
+    uint64_t tail = tail_.fetch_add(1);
+    auto offset = tail % size_;
+    buffer_[offset] = std::forward<T>(v);
+    sem_get_.signal();
+    return true;
+  }
+
+  // Call only after setting a shared, monotonic stop flag. Supply at least
+  // one wake per participating producer, including producers not yet waiting.
+  // Only PutOrStop may acquire these terminal wakes; never resume normal Put.
+  // Published items remain drainable, but wakes never publish consumer items.
+  void WakeProducersForStop(std::size_t count) {
+    for (std::size_t i = 0; i < count; ++i) {
+      sem_put_.signal();
+    }
+  }
+
   V Get() {
     while (!sem_get_.wait()) {
     }
