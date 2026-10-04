@@ -1,0 +1,49 @@
+{
+  "purpose": "Fixed direct Python input-owner storage comparison against the published minimal leak repair",
+  "blocks": 8,
+  "seconds": 3,
+  "warmup": 400,
+  "seed": 42,
+  "affinities": [
+    "default"
+  ],
+  "cases": [
+    {
+      "env": "CartPole-v1",
+      "n": 20,
+      "batch": 20,
+      "threads": 1
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 256,
+      "batch": 256,
+      "threads": 4
+    },
+    {
+      "env": "CartPole-v1",
+      "n": 1024,
+      "batch": 256,
+      "threads": 8
+    },
+    {
+      "env": "HalfCheetah-v4",
+      "n": 256,
+      "batch": 64,
+      "threads": 4
+    }
+  ],
+  "case_count": 4,
+  "expected_samples": 128,
+  "paired_replicates": true,
+  "orders": [
+    "acdb",
+    "cabd",
+    "bdca",
+    "dbac"
+  ],
+  "scope": "128 general plus 64 Dummy samples, then 16 full-budget PPO trials; no adaptive extension",
+  "baseline_commit": "97688bdad104058ae2e4fd08be5579efce4dacac",
+  "case_order_seed": 20261003,
+  "response_unit": "environment response, including auto-reset"
+}

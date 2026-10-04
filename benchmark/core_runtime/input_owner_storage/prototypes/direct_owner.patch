@@ -1,0 +1,71 @@
+diff --git a/benchmark/core_runtime/numpy_input_owner/test_numpy_input_owner.py b/benchmark/core_runtime/numpy_input_owner/test_numpy_input_owner.py
+index 10aec4c..d18449c 100644
+--- a/benchmark/core_runtime/numpy_input_owner/test_numpy_input_owner.py
++++ b/benchmark/core_runtime/numpy_input_owner/test_numpy_input_owner.py
+@@ -206,7 +206,7 @@ class AllocationAuditTest(unittest.TestCase):
+         self.assertTrue(audit["clean"])
+ 
+     def test_each_conversion_allocation_failure_reclaims_owner(self):
+-        """Reclaim the wrapper at wrapper, shape, and control-block failures."""
++        """Reclaim the Python owner at shape and control-block failures."""
+         self.assertTrue(probe.audit_enabled)
+         source = owning_array((2, 3, 4), np.int32)
+         observer = weakref.ref(source)
+@@ -216,20 +216,20 @@ class AllocationAuditTest(unittest.TestCase):
+         self.assertFalse(reference["bad_alloc"])
+         self.assertFalse(reference["other_exception"])
+         self.assertEqual(reference["source_refcount_delta"], 0)
+-        # ArrayT wrapper, ShapeSpec vector<int>, Array vector<size_t>, and
+-        # shared_ptr control block. No payload copy is needed for this input.
+-        self.assertEqual(reference["attempts"], 4)
++        # ShapeSpec vector<int>, Array vector<size_t>, and shared_ptr control
++        # block; the Python owner is stored directly, without an ArrayT heap.
++        self.assertEqual(reference["attempts"], 3)
+         for ordinal in range(1, reference["attempts"] + 2):
+             with self.subTest(fail_at=ordinal):
+                 trial = probe.audit_conversion(source, ordinal)
+                 failed = ordinal <= reference["attempts"]
+                 self.assertEqual(trial["bad_alloc"], failed)
+                 self.assertFalse(trial["other_exception"])
+-                self.assertEqual(trial["attempts"], min(ordinal, 4))
+-                self.assertEqual(trial["calls"], min(ordinal - 1, 4))
++                self.assertEqual(trial["attempts"], min(ordinal, 3))
++                self.assertEqual(trial["calls"], min(ordinal - 1, 3))
+                 self.assertEqual(
+                     trial["attempted_sizes"],
+-                    reference["attempted_sizes"][: min(ordinal, 4)],
++                    reference["attempted_sizes"][: min(ordinal, 3)],
+                 )
+                 self.assertTrue(trial["clean"])
+                 self.assertEqual(trial["source_refcount_delta"], 0)
+diff --git a/envpool/core/py_envpool.h b/envpool/core/py_envpool.h
+index 7f4a45a..cffa843 100644
+--- a/envpool/core/py_envpool.h
++++ b/envpool/core/py_envpool.h
+@@ -92,17 +92,18 @@ Array NumpyToArray(const py::array& arr) {
+ template <typename dtype>
+ Array NumpyToArrayIncRef(const py::array& arr) {
+   using ArrayT = py::array_t<dtype, py::array::c_style | py::array::forcecast>;
+-  auto owner = std::make_unique<ArrayT>(arr);
+-  ShapeSpec spec(
+-      owner->itemsize(),
+-      std::vector<int>(owner->shape(), owner->shape() + owner->ndim()));
+-  // Conversion and shape allocation can throw before Array owns the callback.
+-  char* data = reinterpret_cast<char*>(owner->mutable_data());
++  ArrayT converted(arr);
++  ShapeSpec spec(converted.itemsize(),
++                 std::vector<int>(converted.shape(),
++                                  converted.shape() + converted.ndim()));
++  char* data = reinterpret_cast<char*>(converted.mutable_data());
++  // Generic object: clearing it must not construct another NumPy array.
++  py::object owner(std::move(converted));
+   // NOLINTNEXTLINE(readability/casting)
+   return Array(spec, data, [owner = std::move(owner)](char* /*data*/) mutable {
+     py::gil_scoped_acquire acquire;
+-    // Release Python ownership now, not when a weak control block later dies.
+-    owner.reset();
++    // Drop Python ownership at strong release, before weak-only destruction.
++    owner = py::object();
+   });
+ }
+ 

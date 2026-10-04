@@ -8,9 +8,11 @@
 
 ## 先看哪个版本
 
+- **最新未采用实验**：[直接保存 Python 输入所有者](input_owner_storage/README.md)。每个转换确实少一次分配、8 字节分配流量，正确性和完整 PPO 对照通过；但 CartPole 256/256/4 有不利信号，四玩家 Dummy 有正向信号，PPO 未证实加速。因此保持下面已发布的引用泄漏修复，不将这个原型加入生产 core。
+
 - **最新保留修复**：[NumPy 输入转换异常安全](numpy_input_owner/README.md)。原版和 ce1 都会在拒绝正尺寸、只读输入时泄漏引用；当前分支加入 RAII 修复，保持拒绝行为和成功转换语义。它是 ce1 上的累计修复，不是新的通用加速结论。
 
-- **最新未采用实验**：[直接生成 ActionSlice 批次](generated_enqueue/README.md)。每次 Send/Reset 少一次分配，256 个提交 ID 少 3,072 字节分配流量；八线程 CartPole 窗口内 +11.00%，但 HalfCheetah -4.44%，完整 PPO 未证实加速。经过完整并发、sanitizer、轨迹和修正后的家族验证，仍因跨负载取舍不加入通用 core，只保留未应用源码/测试和结论。
+- **较早未采用实验**：[直接生成 ActionSlice 批次](generated_enqueue/README.md)。每次 Send/Reset 少一次分配，256 个提交 ID 少 3,072 字节分配流量；八线程 CartPole 窗口内 +11.00%，但 HalfCheetah -4.44%，完整 PPO 未证实加速。经过完整并发、sanitizer、轨迹和修正后的家族验证，仍因跨负载取舍不加入通用 core，只保留未应用源码/测试和结论。
 
 - **前一未采用实验**：[直接构造 Python recv 列表](recv_list/README.md)。每次确实少一次 C++ 分配，语义、生命周期和完整 PPO 对照通过；192 个吞吐样本没有可靠净提速，多玩家 Dummy 出现不利信号，16 次 PPO 也未证实加速。因此只保留未应用补丁、测试和结论；该实验结束时生产 core 仍为 ce1c47f2。
 

@@ -30,6 +30,11 @@ training, sanitizer, GPU, release or all-family validation is implied.
 
 ## Short conclusion map
 
+- The [direct input-owner storage prototype](input_owner_storage/README.md)
+  stays unapplied: one fewer allocation per conversion, but unresolved
+  cross-workload throughput tradeoffs and no PPO gain. Its comparison is
+  against the retained 97688bda repair, not the earlier ce1 baseline.
+
 - The later [NumPy input-owner repair](numpy_input_owner/README.md) is applied
   on top of ce1. It fixes leaked ownership on rejected conversions and keeps
   accepted alias/copy semantics. Its new regression checks and results belong
