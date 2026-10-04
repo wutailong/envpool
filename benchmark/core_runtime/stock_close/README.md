@@ -135,3 +135,41 @@ and [PPO](../ppo/README.md) tools with distinct explicit runtime roots/packages
 and freshly recorded hashes. Original raw records, model weights and binaries
 remain outside this repository; the retained source, regression test, configuration
 and concise results are sufficient to guide a fresh validation in its own setup.
+
+## Follow-on reserve accounting: defer capacity changes
+
+A fixed, four-process positive-size accounting check used this unchanged repair
+([2eb7d289](https://github.com/wutailong/envpool/commit/2eb7d2892d7b9829771d6a3f73c805c4735c589d)).
+A counting state factory delegated to ordinary `Array(spec)`, recording completed
+backing requests by constructor, background allocator and receive caller. Each
+case filled and checked 32 normal batches, released returned arrays and exited
+scope normally; internal/external deadlines were 20/30 seconds. All four passed
+once, with source/dependency hashes unchanged. No candidate or timing study ran.
+
+For `Q = 2 * (floor(N/B) + 2)` and `A = max(1, floor(hardware_concurrency/64))`, source
+ownership predicts `2Q+A` settled idle sets. This host reported nine hardware
+threads, hence `A=1`. Counted startup and post-32-receive construction totals were:
+
+| N/B | One positive field | Settled startup | Settled after 32 receives | Caller fallback requests |
+| --- | --- | ---: | ---: | ---: |
+| 1/1 | float[1] | 13 | 45 | 26 |
+| 16/4 | float[4] | 25 | 57 | 19 |
+| 17/8 | float[4] | 17 | 49 | 15 |
+| 256/256 | uint8[4,84,84] | 13 | 45 | 8 |
+
+The last row is **synthetic Atari-observation-shaped storage only**, not an Atari
+runtime or full state recipe. Its set requests 7,225,344 bytes (6.890625 MiB);
+13 settled sets imply 89.578125 MiB of requested backing. The 45 cumulative
+requests total 310.078125 MiB, **not live memory or RSS**. Metadata, allocator
+overhead and environment assets are excluded. Factory counters affect scheduling;
+the fallback split is one tight-loop observation, not a workload fallback rate or
+a guarantee about ready burst coverage. No generic multi-allocator run was made.
+
+Admission before construction could save `A` speculative sets at matched settled
+checkpoints, but not the one-new-buffer-per-receive slope. Doing construction
+inside the existing publication mutex would serialize currently parallel factories
+when `A >= 2`; preserving parallelism requires additional permit ownership,
+rollback and terminal-cancellation rules. Lowering stock capacity instead removes
+ready burst buffers and can move work into the receive caller. Neither tradeoff
+is justified by these counts. Both changes are deferred pending a concrete
+memory-constrained workload and representative stock-occupancy evidence.
