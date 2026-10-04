@@ -1,0 +1,37 @@
+--- a/envpool/core/py_envpool.h
++++ b/envpool/core/py_envpool.h
+@@ -191,0 +192,25 @@
++// Build the public Python list without an intermediate C++ vector. The
++// existing ToNumpy vector helper remains available to native callers.
++template <typename... Spec>
++py::list ToNumpyList(const std::vector<Array>& arrs,
++                     const std::tuple<Spec...>& specs) {
++  py::list ret(sizeof...(Spec));
++  std::size_t index = 0;
++  std::apply(
++      [&](auto&&... spec) {
++        (
++            [&] {
++              auto converted =
++                  ArrayToNumpyHelper<typename Spec::dtype>::Convert(
++                      arrs[index]);
++              // Each fresh list slot is assigned once. Transfer the reference
++              // instead of incrementing it only to decrement the temporary.
++              PyList_SET_ITEM(ret.ptr(), index, converted.release().ptr());
++              ++index;
++            }(),
++            ...);
++      },
++      specs);
++  return ret;
++}
++
+@@ -258 +283 @@
+-  std::vector<py::array> PyRecv() {
++  py::list PyRecv() {
+@@ -265,4 +290 @@
+-    std::vector<py::array> ret;
+-    ret.reserve(EnvPool::State::kSize);
+-    ToNumpy(arr, py_spec.state_spec, &ret);
+-    return ret;
++    return ToNumpyList(arr, py_spec.state_spec);

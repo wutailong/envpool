@@ -30,6 +30,11 @@ training, sanitizer, GPU, release or all-family validation is implied.
 
 ## Short conclusion map
 
+- The later [direct Python receive-list experiment](recv_list/README.md) is
+  unapplied: one allocation saved, no reliable net speed gain, and adverse
+  multi-player timings. Its current report contains conclusions and methods;
+  its newly generated raw runs are local, not in the older a1e56dde archive.
+
 - The retained runtime remains the cumulative **ce1c47f2** core. Completion
   lifetime, shutdown, timing initialization, player discount and Container
   ownership repairs are documented in [REVIEW.md](REVIEW.md).

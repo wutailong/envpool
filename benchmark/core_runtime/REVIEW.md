@@ -8,6 +8,8 @@
 
 ## 先看哪个版本
 
+- **最新未采用实验**：[直接构造 Python recv 列表](recv_list/README.md)。每次确实少一次 C++ 分配，语义、生命周期和完整 PPO 对照通过；192 个吞吐样本没有可靠净提速，多玩家 Dummy 出现不利信号，16 次 PPO 也未证实加速。因此只保留未应用补丁、测试和结论，生产 core 仍为 ce1c47f2。
+
 - **累计正确性修复基线**：[fix/core-container-ownership / 15f80b09](https://github.com/wutailong/envpool/tree/15f80b0934689f635c49ec8764e6b5211e5fd218)。包含完成通知生命周期、关闭队列、计时初始化、玩家 discount 和动态 Container 输出释放修复。
 - **前一轮分配优化实验**：[perf/core-container-storage / bf2f16c0](https://github.com/wutailong/envpool/tree/bf2f16c0d724d01c480668703012342ab1f0fd4e)。包含前面的全部修改，再减少 Container backing buffer 的重复内存分配。非标量字段每次创建由 5 次堆分配降为 3 次，端到端更快尚未证实。
 - **保留的直接 tuple 版本**：[perf/core-state-tuple / ce1c47f2](https://github.com/wutailong/envpool/tree/ce1c47f238a069454f732a70089d1b9857dcc6de)，[详细报告](state_tuple/README.md)。每个 CartPole state 少一次 576 字节的临时分配。固定本轮计时中，多线程 CartPole、Dummy 和 Box2D 诊断客户端有正向信号；小批量 CartPole、HalfCheetah 和完整 PPO 尚不能确认加速。
@@ -100,6 +102,8 @@ git -C envpool-retained rev-parse HEAD
 此前文档复查曾逐一核对 12 个公开分支的提交与父链接；历史分支现已精简为 main 和当前累计分支，历史版本仍可按固定提交访问。704 个吞吐原始样本的 7 份汇总、三轮各 16 次 PPO 和 32 次 phase 试验汇总均重算一致；初始不利的 8 次 PPO 窗口保持独立。18 个既有诊断工具测试通过，10 个测量源码指纹保持不变。修正 fresh PPO 汇总路径、分配探针控制组头文件的重放说明，以及两处表格舍入，原始证据不变。没有重跑训练或环境基准，也没有扩大旧测试的证明范围。
 
 ## 报告入口
+
+- [未采用的直接 Python recv 列表](recv_list/README.md)
 
 - [关闭唤醒修复](shutdown/README.md)
 - [计时初始化与未采用的游标方案](timing_initialization/README.md)
