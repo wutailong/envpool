@@ -59,6 +59,18 @@ That is 27 case executions, without retries or suppressions. ASan options were
 **LeakSanitizer is not covered:** this host's earlier LSan exit checks reported
 unsupported execution under ptrace. Disabling LSan does not establish leak freedom.
 
+Two existing positive typed-Container cases were also rebuilt against this same
+retained core: `ContainerOutputTest.ReceivedOutputLivesUntilLastArrayOwner` and
+`ContainerOutputTest.ExtractedPayloadOwnsItsStorage`. An explicit GTest filter
+selected only those cases; both passed once in optimized, ASan+UBSan and TSan
+(another six executions, with 300-second process deadlines). They verify normal
+received-output ownership and an extracted payload after pool destruction, using
+positive inner shape `{1}`. All 14 consumed project files matched the retained
+repair and 612 inputs remained frozen. Matching instrumented GoogleTest objects
+were reused after provenance checks; trusted Abseil archives remain uninstrumented.
+No full Container suite, forced shutdown schedule, stress or LSan coverage is
+implied. No production or test-source changes were needed for these checks.
+
 Fresh ClassicControl and MuJoCo Gym clients then passed ordinary API regressions
 against the prior retained runtime, whose relevant source is public
 [97688bda](https://github.com/wutailong/envpool/commit/97688bdad104058ae2e4fd08be5579efce4dacac):
