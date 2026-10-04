@@ -1,5 +1,14 @@
 # Deterministic synchronous PPO parity
 
+The `report.json` beside this page is the historical **first-round**
+[7de9691f](https://github.com/wutailong/envpool/commit/7de9691f724e5739f73c83d52a0ab57bf166d37b)
+comparison against original 9c31c547. Later cumulative revisions reused this
+harness and recorded their own baseline/candidate reports, including the
+[retained direct-tuple revision](../state_tuple/README.md). Do not relabel the
+old report as a new run. The separate [32-run PPO phase study](../ppo_phase/README.md)
+compares original against retained runtime using fingerprints; it is not a new
+full checkpoint/step-journal comparison.
+
 The original and optimized native runtimes match exactly in one CPU CartPole-v1
 PPO experiment, with identical initialization, seeds, hyperparameters and budgets.
 
@@ -18,10 +27,22 @@ work ran concurrently, so instrumented timings are not performance evidence.
 
 ## Reproduce
 
-Use Python 3.12 with the recorded dependencies in `requirements.txt`. Build the
+Set `PYTHON` to the Python 3.12 interpreter sharing the RL dependencies.
+Use the recorded dependencies in `requirements.txt`. This is an
+observed environment inventory, not a complete cross-platform lockfile or an
+independently validated clean-install recipe. To install the recorded Linux CPU
+Torch variant, use the [official PyTorch CPU wheel index](https://pytorch.org/get-started/previous-versions/#v251):
+
+```sh
+"$PYTHON" -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+```
+
+Check that `torch.__version__` is `2.5.1+cpu` in the resulting Linux environment,
+and match the remaining recorded dependencies before comparing runs. This
+documentation audit did not install packages or validate a fresh resolver run.
+Build the
 original and candidate EnvPool packages separately. Set `ORIGINAL_PACKAGE` and
-`CANDIDATE_PACKAGE` to their `envpool` package directories (not site-packages),
-and `PYTHON` to the interpreter sharing the RL dependencies:
+`CANDIDATE_PACKAGE` to their `envpool` package directories (not site-packages):
 
 ```sh
 "$PYTHON" benchmark/core_runtime/ppo/verify_ppo_parity.py run \

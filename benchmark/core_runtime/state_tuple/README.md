@@ -126,6 +126,14 @@ The [analysis plan](results/analysis-plan.json) only aliases it as
 `expected_samples` for the unchanged inherited summarizer; sampling did not
 change. Keep both records. Recompute summaries into fresh output files:
 
+The allocation entries in `results/build-commands.json` are historical commands
+from a checkout used first before and then after the edit. Both contain the
+placeholder `$CANDIDATE_SOURCE`; replaying both against today's candidate would
+incorrectly compare two candidates. For a fresh allocation-control build, use
+`-I "$CONTROL_SOURCE"` pointing to **bf2f16c0** headers; the candidate include root
+must point to **ce1c47f2**. Preserve separate output files and verify those source
+revisions. The archived commands remain unchanged as execution evidence.
+
 ```sh
 D=benchmark/core_runtime/state_tuple
 R="$D/results"

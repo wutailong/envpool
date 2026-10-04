@@ -112,9 +112,9 @@ bootstrap resamples provide descriptive intervals, not significance guarantees.
 
 | Configuration (environments / batch / threads) | Rate effect | Exploratory 95% interval |
 | --- | ---: | ---: |
-| CartPole 20 / 20 / 1 | -0.06% | -4.34% to +4.85% |
+| CartPole 20 / 20 / 1 | -0.07% | -4.34% to +4.85% |
 | CartPole 256 / 256 / 4 | -1.19% | -7.28% to +5.41% |
-| CartPole 1024 / 256 / 8 | -3.11% | -9.44% to +3.26% |
+| CartPole 1024 / 256 / 8 | -3.11% | -9.43% to +3.26% |
 | HalfCheetah 256 / 64 / 4 | -0.18% | -1.18% to +0.83% |
 | BipedalWalker test mode 64 / 16 / 4 | +0.43% | -0.72% to +1.73% |
 | Dummy, max players 1, 64 / 64 / 4 | +6.96% | -1.31% to +14.94% |

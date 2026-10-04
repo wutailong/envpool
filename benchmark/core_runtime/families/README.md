@@ -1,5 +1,11 @@
 # Additional ToyText / MiniGrid core validation
 
+This is historical **first-round** validation of
+[7de9691f](https://github.com/wutailong/envpool/commit/7de9691f724e5739f73c83d52a0ab57bf166d37b)
+against the original 9c31c547 runtime. These two families were not rebuilt for
+the later cumulative core changes. Their recorded success must not be attributed
+to the current retained ce1c47f2 core; see the [current scope](../REVIEW.md).
+
 All work is isolated from the original checkout, installed wheel, Bazel outputs,
 and the primary candidate runtime. No production-source files were edited here.
 The candidate family modules were rebuilt against the five modified core headers.

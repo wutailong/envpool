@@ -98,6 +98,10 @@ and pooled medians are different statistics, not interchangeable estimates.
 
 This is a small favorable signal in one four-block window, not a guaranteed PPO
 speedup or evidence that raw stepping gains transfer unchanged to training.
+It compares the installed original with the cumulative retained native build,
+not a newly rebuilt same-flags original. The inherited
+[build limitations](../README.md#controls-and-build-limitations) apply: the
+contrast does not isolate one patch from all cumulative code/build differences.
 Same-binary variation remains material. Intervals below use 10,000 complete-block
 resamples, seed 738; updates/calls are not independent experimental repetitions.
 
@@ -140,7 +144,21 @@ other phases. No algorithm change follows from this thought experiment.
 ```sh
 D=benchmark/core_runtime/ppo_phase
 python -B "$D/run_profile_blocks.py" --python "$PPO_PYTHON" --original-package "$ORIGINAL_PACKAGE" --retained-package "$RETAINED_PACKAGE" --output new-trial
-python -B "$D/summarize_profile_blocks.py" "$D/results/trial" --output new-summary.json
+python -B "$D/summarize_profile_blocks.py" new-trial --output new-summary.json
+```
+
+Here `ORIGINAL_PACKAGE` and `RETAINED_PACKAGE` are the actual `envpool/`
+directories, not their parents. `PPO_PYTHON` is the interpreter containing the
+shared RL dependencies: recorded Python 3.12.14, NumPy 1.26.4, Torch 2.5.1+cpu,
+Tianshou 0.5.1, Gymnasium 1.3.0 and Numba 0.68.0. See the observed
+[dependency snapshot](../ppo/requirements.txt) and
+[reproduction checklist](../REVIEW.md#复现前核对).
+
+To recompute the **published historical trial** without running any training,
+use this separate command instead:
+
+```sh
+python -B "$D/summarize_profile_blocks.py" "$D/results/trial" --output archived-summary-recomputed.json
 ```
 
 Outputs must be fresh paths. Keep the same pinned dependencies and separate frozen

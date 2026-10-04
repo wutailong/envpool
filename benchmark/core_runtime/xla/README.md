@@ -1,5 +1,12 @@
 # CPU XLA / JAX correctness
 
+This page and `comparison.json` record the **first-round**
+[7de9691f](https://github.com/wutailong/envpool/commit/7de9691f724e5739f73c83d52a0ab57bf166d37b)
+comparison against original 9c31c547: twelve cases, including MiniGrid.
+The later retained ce1c47f2 core reran eight CartPole/HalfCheetah cases against
+its preceding Container-storage baseline; MiniGrid was not rebuilt or retested
+for that core revision. See [that scope and evidence](../state_tuple/README.md).
+
 Tested JAX and jaxlib 0.11.1 on CPU with x64 enabled. Three environments cover
 small numeric states (CartPole), floating-point dynamics (HalfCheetah), and
 image/dictionary states (MiniGrid-Empty-5x5).
