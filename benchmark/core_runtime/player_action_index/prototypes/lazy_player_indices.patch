@@ -1,0 +1,46 @@
+diff --git a/envpool/core/env.h b/envpool/core/env.h
+index 5bdb785..0a423f8 100644
+--- a/envpool/core/env.h
++++ b/envpool/core/env.h
+@@ -157,20 +157,31 @@ class Env {
+       std::vector<int> env_player_index;
+       int* player_env_id = static_cast<int*>((*action_batch_)[1].Data());
+       int player_offset = (*action_batch_)[1].Shape(0);
++      int player_num = 0;
++      int start = 0;
++      int end = 0;
++      bool scattered = false;
+       for (int i = 0; i < player_offset; ++i) {
+         if (player_env_id[i] == env_id_) {
+-          env_player_index.push_back(i);
++          if (player_num == 0) {
++            start = i;
++          } else if (!scattered && i != end) {
++            // Materialize indices only once a later matching row has a gap.
++            // Keep the same push_back sequence as the original gather path.
++            for (int j = start; j < end; ++j) {
++              env_player_index.push_back(j);
++            }
++            scattered = true;
++          }
++          if (scattered) {
++            env_player_index.push_back(i);
++          }
++          ++player_num;
++          end = i + 1;
+         }
+       }
+-      int player_num = env_player_index.size();
+-      bool continuous = false;
+-      int start = 0;
+-      int end = 0;
+-      if (player_num > 0) {
+-        start = env_player_index[0];
+-        end = env_player_index[player_num - 1] + 1;
+-        continuous = (player_num == end - start);
+-      }
++      // Empty selections retain the existing owning zero-array path.
++      bool continuous = player_num > 0 && !scattered;
+       for (std::size_t i = 0; i < action_size; ++i) {
+         if (is_player_action_[i]) {
+           if (continuous) {

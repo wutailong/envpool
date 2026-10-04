@@ -1,0 +1,25 @@
+{
+  "reason": "Initial predeclared PPO trial with same-binary A/A controls",
+  "blocks": 4,
+  "samples": 16,
+  "orders": [
+    "acdb",
+    "cabd",
+    "bdca",
+    "dbac"
+  ],
+  "roots": {
+    "a": "$CONTROL_RUNTIME",
+    "b": "$CONTROL_RUNTIME",
+    "c": "$CANDIDATE_RUNTIME",
+    "d": "$CANDIDATE_RUNTIME"
+  },
+  "native_hashes": {
+    "a": "accfaebe22982718d595f45a2c7c4ba67515e22f4d8084bf656cd9768c1b164c",
+    "b": "accfaebe22982718d595f45a2c7c4ba67515e22f4d8084bf656cd9768c1b164c",
+    "c": "83a9d232f998c61d7ed6b247ec1c3d46a207ac2a9608446d21b489ecac065702",
+    "d": "83a9d232f998c61d7ed6b247ec1c3d46a207ac2a9608446d21b489ecac065702"
+  },
+  "budget": "Unchanged bench_ppo.py: 256000 responses, 100 updates, 8000 optimizer steps; two discarded priming updates",
+  "scope": "One initial predeclared trial; retain all 16 full-budget samples, no adaptive stopping or source changes"
+}

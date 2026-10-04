@@ -1,0 +1,332 @@
+{
+  "schema_version": 1,
+  "source_sha256": "a634a7bfbb0957e79bb036309142186bfa0445ff37e76aac0f96ac8b7a840d4e",
+  "samples": 32,
+  "plan": {
+    "purpose": "Measure ParseAction with interleaved player action rows",
+    "blocks": 8,
+    "seconds": 3.0,
+    "warmup": 400,
+    "seed": 42,
+    "affinities": [
+      "default"
+    ],
+    "case_count": 1,
+    "cases": [
+      {
+        "env": "DummyInterleavedPlayers4",
+        "n": 64,
+        "batch": 64,
+        "threads": 4,
+        "max_num_players": 4,
+        "player_order": "interleaved-by-player-index",
+        "env_seed": [
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42,
+          42
+        ]
+      }
+    ],
+    "expected_samples": 32,
+    "paired_replicates": true,
+    "orders": [
+      "acdb",
+      "cabd",
+      "bdca",
+      "dbac"
+    ],
+    "case_order_seed": 20261003,
+    "roots": {
+      "a": "$CONTROL_RUNTIME",
+      "b": "$CONTROL_RUNTIME",
+      "c": "$CANDIDATE_RUNTIME",
+      "d": "$CANDIDATE_RUNTIME"
+    },
+    "python": "$PYTHON_VENV/bin/python",
+    "response_unit": "environment response, including auto-reset",
+    "interpretation": "Synchronized equal-player stress workload; normal Container conversion and per-step indexed copies in both variants. Keep separate from normal-seed or grouped-player samples."
+  },
+  "control_labels": [
+    "a",
+    "b"
+  ],
+  "treatment_labels": [
+    "c",
+    "d"
+  ],
+  "primary_estimand": "mean_blocks(mean(log(c), log(d)) - mean(log(a), log(b)))",
+  "bootstrap_replicates": 10000,
+  "bootstrap_seed": 738,
+  "bootstrap_caveat": "Few blocks; descriptive uncertainty, not proof of statistical significance. Each interval resamples complete blocks.",
+  "configurations": [
+    {
+      "config": [
+        "DummyInterleavedPlayers4",
+        64,
+        64,
+        4,
+        false
+      ],
+      "blocks": 8,
+      "settings": {
+        "warmup": 400,
+        "requested_seconds": 3.0,
+        "seed": 42,
+        "async": false,
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "worker_affinity_offset": -1,
+        "runtime_selection": "explicit-root"
+      },
+      "same_binary_pairs": {
+        "status": "verified",
+        "hash_fields": [
+          "binary_sha256"
+        ],
+        "by_label": {
+          "a": {
+            "binary_sha256": "f7b41ba3f71cfb1e5896c14813bee58ef0a374de6b3c605156ae5934499aa577"
+          },
+          "b": {
+            "binary_sha256": "f7b41ba3f71cfb1e5896c14813bee58ef0a374de6b3c605156ae5934499aa577"
+          },
+          "c": {
+            "binary_sha256": "4a9433ff89c45251ae1212236b89f200d9357cc8ba54889ba73ad86d48e06fd5"
+          },
+          "d": {
+            "binary_sha256": "4a9433ff89c45251ae1212236b89f200d9357cc8ba54889ba73ad86d48e06fd5"
+          }
+        }
+      },
+      "metrics": {
+        "a": {
+          "n": 8,
+          "median": 358084.11280612624,
+          "min": 326272.0821314822,
+          "max": 407876.8333604278,
+          "cv": 0.07983670309735112,
+          "cpu_us_per_response": 5.964437832045148,
+          "runnable_wait_ns_per_response": 8.362728278047296,
+          "voluntary_switches_per_1m_responses": 93789.16522132404,
+          "scheduler_thread_sets_stable": true
+        },
+        "c": {
+          "n": 8,
+          "median": 355693.26071762154,
+          "min": 328855.6200312546,
+          "max": 436357.4302600269,
+          "cv": 0.0979358422112673,
+          "cpu_us_per_response": 6.030811498412512,
+          "runnable_wait_ns_per_response": 9.566202159785115,
+          "voluntary_switches_per_1m_responses": 93718.48744670238,
+          "scheduler_thread_sets_stable": true
+        },
+        "d": {
+          "n": 8,
+          "median": 367996.9936127672,
+          "min": 329912.09987306246,
+          "max": 426398.91971752053,
+          "cv": 0.08630708546351713,
+          "cpu_us_per_response": 5.9097514013901,
+          "runnable_wait_ns_per_response": 7.201726804858577,
+          "voluntary_switches_per_1m_responses": 93732.85442148254,
+          "scheduler_thread_sets_stable": true
+        },
+        "b": {
+          "n": 8,
+          "median": 375017.5598548123,
+          "min": 325780.919637693,
+          "max": 471076.00865093217,
+          "cv": 0.11660171971966711,
+          "cpu_us_per_response": 5.726671221226421,
+          "runnable_wait_ns_per_response": 8.064017764270535,
+          "voluntary_switches_per_1m_responses": 93825.85918850108,
+          "scheduler_thread_sets_stable": true
+        }
+      },
+      "primary": {
+        "block_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "block_log_effects": [
+          -0.12016156982109472,
+          -0.06661728575960169,
+          -0.17835326843736077,
+          -0.07425856619594384,
+          0.20733039699118372,
+          0.017799197906049002,
+          0.0030687550230759086,
+          0.11987180818075416
+        ],
+        "block_geomean_effect_pct": -1.1350161840823982,
+        "block_effects_pct": [
+          -11.322285128330812,
+          -6.444681764427227,
+          -16.33531896348713,
+          -7.156839822468634,
+          23.03890214628561,
+          1.795854765769695,
+          0.3073468472011856,
+          12.735232497054014
+        ],
+        "exploratory_block_bootstrap_95pct": [
+          -8.660317749953915,
+          7.362293746533884
+        ]
+      },
+      "aa_diagnostics": {
+        "b_over_a": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            0.05842349796796498,
+            0.009360538581573152,
+            0.30928242077553847,
+            -0.0634012465074072,
+            0.0882978890933952,
+            0.03198816904941637,
+            0.08366863986442041,
+            -0.0015065112355916455
+          ],
+          "block_geomean_effect_pct": 6.664069744796233,
+          "block_effects_pct": [
+            6.016387790123178,
+            0.9404485437895019,
+            36.24470995396105,
+            -6.143319852607826,
+            9.2313461835051,
+            3.250528971379759,
+            8.726855665509452,
+            -0.15053770171825875
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            0.3985326663729271,
+            15.32750585287205
+          ]
+        },
+        "d_over_c": {
+          "block_ids": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "block_log_effects": [
+            0.029981000163180838,
+            0.11413428394358505,
+            -0.04639744878257268,
+            0.02243398159021126,
+            -0.023086362322771947,
+            -0.05051390632819164,
+            0.14513423395331237,
+            -0.028161508690775605
+          ],
+          "block_geomean_effect_pct": 2.0650872608449675,
+          "block_effects_pct": [
+            3.0434955671514845,
+            12.090263400451674,
+            -4.533754265259918,
+            2.268751573224124,
+            -2.2821911240452306,
+            -4.9259292731903885,
+            15.619476044538672,
+            -2.776866968908027
+          ],
+          "exploratory_block_bootstrap_95pct": [
+            -2.3375587089702523,
+            7.4369529508498315
+          ]
+        }
+      }
+    }
+  ]
+}

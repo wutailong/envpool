@@ -1,0 +1,14 @@
+{
+  "production_baseline_remote_commit": "ce1c47f238a069454f732a70089d1b9857dcc6de",
+  "production_baseline_local_commit": "5cae056ab167f9d3ecc7a81aba0dda2453d21bca",
+  "verified_common_baseline_tree": "7521d1b10ca2f53d6098d0c8d24667a6c5f59358",
+  "candidate_patch_applied": false,
+  "new_runtime_code": false,
+  "published_envpool_changes": [
+    "envpool/core/BUILD test target only",
+    "envpool/core/player_action_index_test.cc new regression tests"
+  ],
+  "local_rejected_code_commit": "4969498a2e15c73fdcbd7b16607cb4c07f2676e2",
+  "local_rejected_harness_commit": "4010af8",
+  "note": "Git-data publication has different commit metadata from local commits; baseline trees are identical."
+}

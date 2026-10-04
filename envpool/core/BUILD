@@ -195,6 +195,20 @@ cc_test(
     ],
 )
 
+cc_test(
+    name = "player_action_index_test",
+    size = "small",
+    srcs = ["player_action_index_test.cc"],
+    deps = [
+        ":array",
+        ":env",
+        ":env_spec",
+        ":spec",
+        ":state_buffer_queue",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "envpool",
     hdrs = ["envpool.h"],

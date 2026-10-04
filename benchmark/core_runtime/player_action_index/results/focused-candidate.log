@@ -1,0 +1,33 @@
+Running main() from $GTEST_ROOT/src/gtest_main.cc
+[==========] Running 12 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 12 tests from PlayerActionIndexTest
+[ RUN      ] PlayerActionIndexTest.EmptyInputKeepsOwningZeroPlayerArrays
+[       OK ] PlayerActionIndexTest.EmptyInputKeepsOwningZeroPlayerArrays (0 ms)
+[ RUN      ] PlayerActionIndexTest.NoMatchingIdsKeepsOwningZeroPlayerArrays
+[       OK ] PlayerActionIndexTest.NoMatchingIdsKeepsOwningZeroPlayerArrays (0 ms)
+[ RUN      ] PlayerActionIndexTest.OneMatchingPlayerUsesSingletonSlice
+[       OK ] PlayerActionIndexTest.OneMatchingPlayerUsesSingletonSlice (0 ms)
+[ RUN      ] PlayerActionIndexTest.ContiguousPrefixIgnoresForeignSuffix
+[       OK ] PlayerActionIndexTest.ContiguousPrefixIgnoresForeignSuffix (0 ms)
+[ RUN      ] PlayerActionIndexTest.ContiguousMiddleRetainsParentBatch
+[       OK ] PlayerActionIndexTest.ContiguousMiddleRetainsParentBatch (0 ms)
+[ RUN      ] PlayerActionIndexTest.ContiguousSuffixUsesOffsetSlice
+[       OK ] PlayerActionIndexTest.ContiguousSuffixUsesOffsetSlice (0 ms)
+[ RUN      ] PlayerActionIndexTest.AllIdsMatchUsesWholeBatchSlice
+[       OK ] PlayerActionIndexTest.AllIdsMatchUsesWholeBatchSlice (0 ms)
+[ RUN      ] PlayerActionIndexTest.EarlyGapGathersEveryLaterMatchInInputOrder
+[       OK ] PlayerActionIndexTest.EarlyGapGathersEveryLaterMatchInInputOrder (0 ms)
+[ RUN      ] PlayerActionIndexTest.LateGapIncludesEntireContiguousPrefix
+[       OK ] PlayerActionIndexTest.LateGapIncludesEntireContiguousPrefix (0 ms)
+[ RUN      ] PlayerActionIndexTest.ContiguousSlicePreservesEmptyInnerDimension
+[       OK ] PlayerActionIndexTest.ContiguousSlicePreservesEmptyInnerDimension (0 ms)
+[ RUN      ] PlayerActionIndexTest.RepeatedStepsReplaceIndicesAndInputBatch
+[       OK ] PlayerActionIndexTest.RepeatedStepsReplaceIndicesAndInputBatch (0 ms)
+[ RUN      ] PlayerActionIndexTest.SinglePlayerUsesBatchIndexWithoutScanningIds
+[       OK ] PlayerActionIndexTest.SinglePlayerUsesBatchIndexWithoutScanningIds (0 ms)
+[----------] 12 tests from PlayerActionIndexTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 12 tests from 1 test suite ran. (1 ms total)
+[  PASSED  ] 12 tests.
