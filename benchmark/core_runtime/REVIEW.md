@@ -8,7 +8,9 @@
 
 ## 先看哪个版本
 
-- **最新未采用实验**：[直接构造 Python recv 列表](recv_list/README.md)。每次确实少一次 C++ 分配，语义、生命周期和完整 PPO 对照通过；192 个吞吐样本没有可靠净提速，多玩家 Dummy 出现不利信号，16 次 PPO 也未证实加速。因此只保留未应用补丁、测试和结论，生产 core 仍为 ce1c47f2。
+- **最新未采用实验**：[直接生成 ActionSlice 批次](generated_enqueue/README.md)。每次 Send/Reset 少一次分配，256 个提交 ID 少 3,072 字节分配流量；八线程 CartPole 窗口内 +11.00%，但 HalfCheetah -4.44%，完整 PPO 未证实加速。经过完整并发、sanitizer、轨迹和修正后的家族验证，仍因跨负载取舍不加入通用 core，只保留未应用源码/测试和结论。
+
+- **前一未采用实验**：[直接构造 Python recv 列表](recv_list/README.md)。每次确实少一次 C++ 分配，语义、生命周期和完整 PPO 对照通过；192 个吞吐样本没有可靠净提速，多玩家 Dummy 出现不利信号，16 次 PPO 也未证实加速。因此只保留未应用补丁、测试和结论，生产 core 仍为 ce1c47f2。
 
 - **累计正确性修复基线**：[fix/core-container-ownership / 15f80b09](https://github.com/wutailong/envpool/tree/15f80b0934689f635c49ec8764e6b5211e5fd218)。包含完成通知生命周期、关闭队列、计时初始化、玩家 discount 和动态 Container 输出释放修复。
 - **前一轮分配优化实验**：[perf/core-container-storage / bf2f16c0](https://github.com/wutailong/envpool/tree/bf2f16c0d724d01c480668703012342ab1f0fd4e)。包含前面的全部修改，再减少 Container backing buffer 的重复内存分配。非标量字段每次创建由 5 次堆分配降为 3 次，端到端更快尚未证实。
@@ -102,6 +104,8 @@ git -C envpool-retained rev-parse HEAD
 此前文档复查曾逐一核对 12 个公开分支的提交与父链接；历史分支现已精简为 main 和当前累计分支，历史版本仍可按固定提交访问。704 个吞吐原始样本的 7 份汇总、三轮各 16 次 PPO 和 32 次 phase 试验汇总均重算一致；初始不利的 8 次 PPO 窗口保持独立。18 个既有诊断工具测试通过，10 个测量源码指纹保持不变。修正 fresh PPO 汇总路径、分配探针控制组头文件的重放说明，以及两处表格舍入，原始证据不变。没有重跑训练或环境基准，也没有扩大旧测试的证明范围。
 
 ## 报告入口
+
+- [未采用的直接 ActionSlice 批量入队](generated_enqueue/README.md)
 
 - [未采用的直接 Python recv 列表](recv_list/README.md)
 

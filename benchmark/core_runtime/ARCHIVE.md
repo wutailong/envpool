@@ -30,6 +30,11 @@ training, sanitizer, GPU, release or all-family validation is implied.
 
 ## Short conclusion map
 
+- The later [generated ActionSlice batch experiment](generated_enqueue/README.md)
+  is also unapplied: less allocation and a favorable CartPole signal, but
+  adverse HalfCheetah results. Its fresh raw data stays local; it is not part
+  of the historical a1e56dde evidence archive.
+
 - The later [direct Python receive-list experiment](recv_list/README.md) is
   unapplied: one allocation saved, no reliable net speed gain, and adverse
   multi-player timings. Its current report contains conclusions and methods;

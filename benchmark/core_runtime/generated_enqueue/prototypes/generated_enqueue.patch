@@ -1,0 +1,796 @@
+diff --git a/envpool/core/BUILD b/envpool/core/BUILD
+index c8cabe2..36d0e98 100644
+--- a/envpool/core/BUILD
++++ b/envpool/core/BUILD
+@@ -233,0 +234,15 @@ cc_library(
++cc_test(
++    name = "generated_enqueue_test",
++    size = "small",
++    srcs = ["generated_enqueue_test.cc"],
++    deps = [
++        ":action_buffer_queue",
++        ":array",
++        ":async_envpool",
++        ":env",
++        ":env_spec",
++        ":spec",
++        "@com_google_googletest//:gtest_main",
++    ],
++)
++
+diff --git a/envpool/core/action_buffer_queue.h b/envpool/core/action_buffer_queue.h
+index b457b76..98ac123 100644
+--- a/envpool/core/action_buffer_queue.h
++++ b/envpool/core/action_buffer_queue.h
+@@ -25,0 +26 @@
++#include <type_traits>
+@@ -60 +61,14 @@ class ActionBufferQueue {
+-    // ensure only one enqueue_bulk happens at any time
++    EnqueueBulkGenerated(
++        action.size(), [&action](std::size_t i) noexcept { return action[i]; });
++  }
++
++  // Generate scalar payloads synchronously without a temporary batch. The
++  // getter must not throw, block, reenter the queue, or publish work itself.
++  // Producers still bound outstanding actions; this adds no backpressure.
++  template <typename Getter,
++            std::enable_if_t<std::is_nothrow_invocable_r_v<ActionSlice, Getter&,
++                                                           std::size_t>,
++                             int> = 0>
++  void EnqueueBulkGenerated(std::size_t count, Getter&& get_action) {
++    // Keep reservation and publication identical to the vector API. A
++    // throwing getter could leave unpublished slots after advancing alloc_ptr_.
+@@ -63,3 +77,3 @@ class ActionBufferQueue {
+-    uint64_t pos = alloc_ptr_.fetch_add(action.size());
+-    for (std::size_t i = 0; i < action.size(); ++i) {
+-      queue_[(pos + i) % queue_size_] = action[i];
++    uint64_t pos = alloc_ptr_.fetch_add(count);
++    for (std::size_t i = 0; i < count; ++i) {
++      queue_[(pos + i) % queue_size_] = get_action(std::size_t{i});
+@@ -67 +81 @@ class ActionBufferQueue {
+-    sem_.signal(action.size());
++    sem_.signal(count);
+diff --git a/envpool/core/async_envpool.h b/envpool/core/async_envpool.h
+index 5668381..f0e931c 100644
+--- a/envpool/core/async_envpool.h
++++ b/envpool/core/async_envpool.h
+@@ -22,0 +23 @@
++#include <stdexcept>
+@@ -63,2 +64,4 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
+-    std::vector<ActionSlice> actions;
+-    actions.reserve(shared_offset);
++    // Preserve the former vector::reserve rejection before changing any Env.
++    if (shared_offset < 0) {
++      throw std::length_error("action batch count exceeds supported range");
++    }
+@@ -70,5 +72,0 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
+-      actions.emplace_back(ActionSlice{
+-          .env_id = eid,
+-          .order = is_sync_ ? i : -1,
+-          .force_reset = false,
+-      });
+@@ -81 +79,6 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
+-    action_buffer_queue_->EnqueueBulk(actions);
++    action_buffer_queue_->EnqueueBulkGenerated(
++        shared_offset, [env_id, is_sync = is_sync_](std::size_t i) noexcept {
++          return ActionSlice{.env_id = env_id[i],
++                             .order = is_sync ? static_cast<int>(i) : -1,
++                             .force_reset = false};
++        });
+@@ -231,5 +234,9 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
+-    std::vector<ActionSlice> actions(shared_offset);
+-    for (int i = 0; i < shared_offset; ++i) {
+-      actions[i].force_reset = true;
+-      actions[i].env_id = tenv_ids[i];
+-      actions[i].order = is_sync_ ? i : -1;
++    // The removed vector constructor rejected negative narrowed counts.
++    if (shared_offset < 0) {
++      throw std::length_error("reset batch count exceeds supported range");
++    }
++    const int* env_id = static_cast<const int*>(tenv_ids.Data());
++    // Reset historically takes the first scalar from each first-axis row.
++    std::size_t id_stride = 1;
++    for (std::size_t axis = 1; axis < tenv_ids.ndim; ++axis) {
++      id_stride *= tenv_ids.Shape(axis);
+@@ -240 +247,7 @@ class AsyncEnvPool : public EnvPool<typename Env::Spec> {
+-    action_buffer_queue_->EnqueueBulk(actions);
++    action_buffer_queue_->EnqueueBulkGenerated(
++        shared_offset,
++        [env_id, id_stride, is_sync = is_sync_](std::size_t i) noexcept {
++          return ActionSlice{.env_id = env_id[i * id_stride],
++                             .order = is_sync ? static_cast<int>(i) : -1,
++                             .force_reset = true};
++        });
+diff --git a/envpool/core/generated_enqueue_test.cc b/envpool/core/generated_enqueue_test.cc
+new file mode 100644
+index 0000000..82c0578
+--- /dev/null
++++ b/envpool/core/generated_enqueue_test.cc
+@@ -0,0 +1,687 @@
++// Copyright 2026 Garena Online Private Limited
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//      http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++#include <gtest/gtest.h>
++
++#include <algorithm>
++#include <array>
++#include <atomic>
++#include <condition_variable>
++#include <cstddef>
++#include <cstdint>
++#include <deque>
++#include <future>
++#include <limits>
++#include <memory>
++#include <mutex>
++#include <thread>
++#include <type_traits>
++#include <utility>
++#include <vector>
++
++#include "envpool/core/action_buffer_queue.h"
++#include "envpool/core/array.h"
++#include "envpool/core/async_envpool.h"
++#include "envpool/core/env.h"
++#include "envpool/core/env_spec.h"
++#include "envpool/core/spec.h"
++
++namespace {
++
++using Queue = ActionBufferQueue;
++using ActionSlice = Queue::ActionSlice;
++
++ActionSlice MakeAction(int order) noexcept {
++  return ActionSlice{.env_id = (order * 7 + 3) % 13,
++                     .order = order,
++                     .force_reset = order % 3 == 0};
++}
++
++struct NothrowGetter {
++  ActionSlice operator()(std::size_t) noexcept;
++};
++
++struct ThrowingGetter {
++  ActionSlice operator()(std::size_t);
++};
++
++struct WrongResultGetter {
++  int operator()(std::size_t) noexcept;
++};
++
++struct RvalueNothrowGetter {
++  int* rvalue_calls;
++  int* lvalue_calls;
++
++  ActionSlice operator()(std::size_t&& i) noexcept {
++    ++*rvalue_calls;
++    return MakeAction(static_cast<int>(i));
++  }
++
++  ActionSlice operator()(std::size_t&) {
++    ++*lvalue_calls;
++    return MakeAction(0);
++  }
++};
++
++struct LvalueNothrowGetter {
++  ActionSlice operator()(std::size_t&&);
++  ActionSlice operator()(std::size_t&) noexcept;
++};
++
++template <typename Getter>
++using BulkResult = decltype(std::declval<Queue&>().EnqueueBulkGenerated(
++    std::declval<std::size_t>(), std::declval<Getter>()));
++
++template <typename Getter, typename = void>
++struct CanGenerateBulk : std::false_type {};
++
++template <typename G>
++struct CanGenerateBulk<G, std::void_t<BulkResult<G>>> : std::true_type {};
++
++static_assert(CanGenerateBulk<NothrowGetter>::value);
++static_assert(CanGenerateBulk<NothrowGetter&>::value);
++static_assert(!CanGenerateBulk<ThrowingGetter>::value);
++static_assert(!CanGenerateBulk<ThrowingGetter&>::value);
++static_assert(!CanGenerateBulk<WrongResultGetter>::value);
++static_assert(CanGenerateBulk<RvalueNothrowGetter>::value);
++static_assert(CanGenerateBulk<RvalueNothrowGetter&>::value);
++static_assert(!CanGenerateBulk<LvalueNothrowGetter>::value);
++static_assert(!CanGenerateBulk<LvalueNothrowGetter&>::value);
++// Keeping the legacy API unoverloaded preserves existing member pointers.
++using LegacyEnqueue = void (Queue::*)(const std::vector<ActionSlice>&);
++static_assert(std::is_same_v<decltype(&Queue::EnqueueBulk), LegacyEnqueue>);
++
++class InspectableQueue : public ActionBufferQueue {
++ public:
++  explicit InspectableQueue(std::size_t num_envs, std::uint64_t position = 0)
++      : ActionBufferQueue(num_envs) {
++    alloc_ptr_.store(position);
++    done_ptr_.store(position);
++  }
++
++  std::uint64_t Allocated() const { return alloc_ptr_.load(); }
++  std::uint64_t Dequeued() const { return done_ptr_.load(); }
++  ActionSlice Slot(std::size_t index) const { return queue_[index]; }
++};
++
++// The queue has no backpressure. Reserve a whole batch before enqueueing and
++// return credits only after Dequeue has copied its payload out of the ring.
++class QueueCredits {
++ public:
++  explicit QueueCredits(std::size_t capacity) : available_(capacity) {}
++
++  void Acquire(std::size_t count) {
++    std::unique_lock<std::mutex> lock(mutex_);
++    ready_.wait(lock, [&] { return available_ >= count; });
++    available_ -= count;
++  }
++
++  void Release() {
++    {
++      std::lock_guard<std::mutex> lock(mutex_);
++      ++available_;
++    }
++    ready_.notify_all();
++  }
++
++ private:
++  std::mutex mutex_;
++  std::condition_variable ready_;
++  std::size_t available_;
++};
++
++void ExpectSame(const ActionSlice& actual, const ActionSlice& expected) {
++  EXPECT_EQ(actual.env_id, expected.env_id);
++  EXPECT_EQ(actual.order, expected.order);
++  EXPECT_EQ(actual.force_reset, expected.force_reset);
++}
++
++void Enqueue(InspectableQueue* queue, int first, int count, bool generated) {
++  if (generated) {
++    queue->EnqueueBulkGenerated(count, [first](std::size_t i) noexcept {
++      return MakeAction(first + static_cast<int>(i));
++    });
++  } else {
++    std::vector<ActionSlice> actions;
++    for (int i = 0; i < count; ++i) {
++      actions.push_back(MakeAction(first + i));
++    }
++    queue->EnqueueBulk(actions);
++  }
++}
++
++void CompareBatches(std::size_t num_envs, std::uint64_t start,
++                    const std::vector<std::size_t>& counts) {
++  InspectableQueue vector_queue(num_envs, start);
++  InspectableQueue generated_queue(num_envs, start);
++  int first = 0;
++  std::uint64_t position = start;
++  for (const auto count : counts) {
++    SCOPED_TRACE(first);
++    std::vector<ActionSlice> expected;
++    for (std::size_t i = 0; i < count; ++i) {
++      expected.push_back(MakeAction(first + static_cast<int>(i)));
++    }
++    std::size_t calls = 0;
++    bool increasing_indices = true;
++    auto getter = [&](std::size_t i) noexcept {
++      increasing_indices = increasing_indices && i == calls;
++      ++calls;
++      return MakeAction(first + static_cast<int>(i));
++    };
++    vector_queue.EnqueueBulk(expected);
++    generated_queue.EnqueueBulkGenerated(count, getter);
++    EXPECT_EQ(calls, count);
++    EXPECT_TRUE(increasing_indices);
++    position += count;
++    EXPECT_EQ(vector_queue.Allocated(), position);
++    EXPECT_EQ(generated_queue.Allocated(), position);
++    EXPECT_EQ(vector_queue.SizeApprox(), count);
++    EXPECT_EQ(generated_queue.SizeApprox(), count);
++    for (std::size_t i = 0; i < count; ++i) {
++      ExpectSame(vector_queue.Dequeue(), expected[i]);
++      ExpectSame(generated_queue.Dequeue(), expected[i]);
++      EXPECT_EQ(vector_queue.SizeApprox(), count - i - 1);
++      EXPECT_EQ(generated_queue.SizeApprox(), count - i - 1);
++    }
++    EXPECT_EQ(vector_queue.Dequeued(), position);
++    EXPECT_EQ(generated_queue.Dequeued(), position);
++    first += static_cast<int>(count);
++  }
++}
++
++}  // namespace
++
++TEST(GeneratedEnqueueTest, InvokesTheNoexceptRvalueIndexOverload) {
++  InspectableQueue queue(2);
++  int rvalue_calls = 0;
++  int lvalue_calls = 0;
++  RvalueNothrowGetter getter{&rvalue_calls, &lvalue_calls};
++  queue.EnqueueBulkGenerated(3, getter);
++  EXPECT_EQ(rvalue_calls, 3);
++  EXPECT_EQ(lvalue_calls, 0);
++  for (int i = 0; i < 3; ++i) {
++    ExpectSame(queue.Dequeue(), MakeAction(i));
++  }
++  EXPECT_EQ(queue.SizeApprox(), 0);
++}
++
++TEST(GeneratedEnqueueTest, MatchesVectorAcrossPositiveSizeRingWraps) {
++  for (std::size_t num_envs : {1U, 3U, 4U}) {
++    SCOPED_TRACE(num_envs);
++    std::vector<std::size_t> counts;
++    for (std::size_t i = 0; i < 64; ++i) {
++      counts.push_back(1 + i % (2 * num_envs));
++    }
++    CompareBatches(num_envs, 0, counts);
++  }
++}
++
++TEST(GeneratedEnqueueTest, MatchesVectorAtUnsignedCounterRollover) {
++  constexpr auto kStart = std::numeric_limits<std::uint64_t>::max() - 2;
++  // The first four tickets visit distinct slots even for the six-entry ring:
++  // 1, 2, 3, 0. Do not exceed that rollover window before draining it.
++  for (std::size_t num_envs : {3U, 4U}) {
++    SCOPED_TRACE(num_envs);
++    CompareBatches(num_envs, kStart, {4, 2 * num_envs, 1, 3, 2 * num_envs, 5});
++  }
++}
++
++TEST(GeneratedEnqueueTest, MixedApisPreserveFifoWithPendingActions) {
++  InspectableQueue queue(3);
++  std::deque<ActionSlice> expected;
++  int next = 0;
++  auto enqueue = [&](int count, bool generated) {
++    Enqueue(&queue, next, count, generated);
++    for (int i = 0; i < count; ++i) {
++      expected.push_back(MakeAction(next++));
++    }
++    EXPECT_EQ(queue.SizeApprox(), expected.size());
++  };
++  auto dequeue = [&](int count) {
++    for (int i = 0; i < count; ++i) {
++      ExpectSame(queue.Dequeue(), expected.front());
++      expected.pop_front();
++      EXPECT_EQ(queue.SizeApprox(), expected.size());
++    }
++  };
++  enqueue(4, false);
++  dequeue(3);
++  enqueue(4, true);  // Wrap with one vector-produced action still pending.
++  dequeue(2);
++  enqueue(3, true);  // Fill all six slots without overwriting pending work.
++  dequeue(6);
++  enqueue(2, true);
++  enqueue(3, false);
++  dequeue(5);
++  EXPECT_TRUE(expected.empty());
++  EXPECT_EQ(queue.Allocated(), next);
++  EXPECT_EQ(queue.Dequeued(), next);
++}
++
++TEST(GeneratedEnqueueTest, BoundedMixedProducersConsumersDeliverExactlyOnce) {
++  constexpr int kProducers = 3;
++  constexpr int kConsumers = 3;
++  constexpr int kPerProducer = 192;
++  constexpr int kTotal = kProducers * kPerProducer;
++  for (int num_envs : {1, 3}) {
++    SCOPED_TRACE(num_envs);
++    InspectableQueue queue(num_envs);
++    const int capacity = 2 * num_envs;
++    QueueCredits credits(capacity);
++    std::promise<void> start;
++    auto ready = start.get_future().share();
++    std::array<std::vector<ActionSlice>, kConsumers> received;
++    std::vector<std::thread> consumers;
++    std::vector<std::thread> producers;
++    for (int consumer = 0; consumer < kConsumers; ++consumer) {
++      consumers.emplace_back([&, consumer] {
++        auto& actions = received[consumer];
++        actions.reserve(kTotal / kConsumers);
++        ready.wait();
++        for (int i = 0; i < kTotal / kConsumers; ++i) {
++          actions.push_back(queue.Dequeue());
++          credits.Release();
++        }
++      });
++    }
++    for (int producer = 0; producer < kProducers; ++producer) {
++      producers.emplace_back([&, producer] {
++        ready.wait();
++        for (int sent = 0; sent < kPerProducer;) {
++          const int count =
++              std::min(1 + (sent + producer) % std::min(capacity, 3),
++                       kPerProducer - sent);
++          credits.Acquire(count);
++          Enqueue(&queue, producer * kPerProducer + sent, count,
++                  (producer + sent) % 2 == 0);
++          sent += count;
++        }
++      });
++    }
++    start.set_value();
++    for (auto& producer : producers) {
++      producer.join();
++    }
++    for (auto& consumer : consumers) {
++      consumer.join();
++    }
++    std::vector<ActionSlice> all;
++    for (const auto& actions : received) {
++      all.insert(all.end(), actions.begin(), actions.end());
++    }
++    ASSERT_EQ(all.size(), kTotal);
++    std::sort(all.begin(), all.end(), [](const auto& lhs, const auto& rhs) {
++      return lhs.order < rhs.order;
++    });
++    for (int i = 0; i < kTotal; ++i) {
++      ExpectSame(all[i], MakeAction(i));
++    }
++    EXPECT_EQ(queue.SizeApprox(), 0);
++    EXPECT_EQ(queue.Allocated(), kTotal);
++    EXPECT_EQ(queue.Dequeued(), kTotal);
++  }
++}
++
++TEST(GeneratedEnqueueTest, ConcurrentMixedBulksPublishContiguousPayloads) {
++  constexpr int kRounds = 64;
++  constexpr int kStride = 4;
++  constexpr std::array<int, 3> kBatchSizes{1, 2, 3};
++  constexpr int kTotal = kRounds * 6;
++  InspectableQueue queue(5);
++  QueueCredits credits(10);
++  std::promise<void> start;
++  auto ready = start.get_future().share();
++  std::vector<ActionSlice> received;
++  std::thread consumer([&] {
++    received.reserve(kTotal);
++    ready.wait();
++    for (int i = 0; i < kTotal; ++i) {
++      received.push_back(queue.Dequeue());
++      credits.Release();
++    }
++  });
++  std::vector<std::thread> producers;
++  for (int producer = 0; producer < 3; ++producer) {
++    producers.emplace_back([&, producer] {
++      ready.wait();
++      for (int round = 0; round < kRounds; ++round) {
++        const int batch = producer * kRounds + round;
++        credits.Acquire(kBatchSizes[producer]);
++        Enqueue(&queue, batch * kStride, kBatchSizes[producer],
++                (producer + round) % 2 == 0);
++      }
++    });
++  }
++  start.set_value();
++  for (auto& producer : producers) {
++    producer.join();
++  }
++  consumer.join();
++  ASSERT_EQ(received.size(), kTotal);
++  std::array<int, 3 * kRounds> seen{};
++  for (int pos = 0; pos < kTotal;) {
++    const int order = received[pos].order;
++    ASSERT_GE(order, 0);
++    ASSERT_EQ(order % kStride, 0);
++    const int batch = order / kStride;
++    ASSERT_LT(batch, static_cast<int>(seen.size()));
++    const int count = kBatchSizes[batch / kRounds];
++    ASSERT_LE(pos + count, kTotal);
++    ++seen[batch];
++    for (int i = 0; i < count; ++i) {
++      ExpectSame(received[pos + i], MakeAction(order + i));
++    }
++    pos += count;
++  }
++  for (const int count : seen) {
++    EXPECT_EQ(count, 1);
++  }
++  EXPECT_EQ(queue.SizeApprox(), 0);
++  EXPECT_EQ(queue.Allocated(), kTotal);
++  EXPECT_EQ(queue.Dequeued(), kTotal);
++}
++
++TEST(GeneratedEnqueueTest, DelayedConsumerKeepsGeneratedPayloadAcrossReuse) {
++  constexpr int kTotal = 256;
++  InspectableQueue queue(1);
++  Enqueue(&queue, 0, 2, true);
++  std::promise<void> copied;
++  auto first_copied = copied.get_future();
++  std::promise<void> finish;
++  auto may_finish = finish.get_future();
++  ActionSlice delayed{};
++  std::thread consumer([&] {
++    delayed = queue.Dequeue();
++    copied.set_value();
++    may_finish.wait();
++  });
++  first_copied.wait();
++  // Hold the consumer after its copy, never inside the getter or dequeue.
++  // At most two actions remain outstanding, including that delayed action.
++  for (int i = 1; i < kTotal; ++i) {
++    if (i > 1) {
++      Enqueue(&queue, i, 1, i % 2 == 0);
++    }
++    ExpectSame(queue.Dequeue(), MakeAction(i));
++  }
++  finish.set_value();
++  consumer.join();
++  ExpectSame(delayed, MakeAction(0));
++  EXPECT_EQ(queue.SizeApprox(), 0);
++  EXPECT_EQ(queue.Allocated(), kTotal);
++  EXPECT_EQ(queue.Dequeued(), kTotal);
++}
++
++TEST(GeneratedEnqueueTest, StopAwareShutdownDoesNotReadGeneratedSlots) {
++  constexpr std::size_t kConsumers = 5;
++  for (bool leave_pending : {false, true}) {
++    SCOPED_TRACE(leave_pending);
++    InspectableQueue queue(1);
++    std::atomic<int> stop{0};
++    Enqueue(&queue, 0, 2, true);
++    if (!leave_pending) {
++      for (int i = 0; i < 2; ++i) {
++        ActionSlice output{};
++        ASSERT_TRUE(queue.DequeueOrStop(&output, stop));
++        ExpectSame(output, MakeAction(i));
++      }
++    }
++    const auto dequeued = queue.Dequeued();
++    const ActionSlice untouched{.env_id = -1, .order = -2, .force_reset = true};
++    std::array<ActionSlice, kConsumers> output;
++    output.fill(untouched);
++    std::array<bool, kConsumers> delivered{};
++    std::vector<std::thread> consumers;
++    // Producers are quiescent before stop and wake, even with real permits
++    // pending. More consumers than slots must not need dummy payload writes.
++    stop.store(1, std::memory_order_release);
++    for (std::size_t i = 0; i < kConsumers; ++i) {
++      consumers.emplace_back(
++          [&, i] { delivered[i] = queue.DequeueOrStop(&output[i], stop); });
++    }
++    queue.WakeForShutdown(kConsumers);
++    for (auto& consumer : consumers) {
++      consumer.join();
++    }
++    for (std::size_t i = 0; i < kConsumers; ++i) {
++      EXPECT_FALSE(delivered[i]);
++      ExpectSame(output[i], untouched);
++    }
++    EXPECT_EQ(queue.Allocated(), 2);
++    EXPECT_EQ(queue.Dequeued(), dequeued);
++    EXPECT_EQ(queue.SizeApprox(), leave_pending ? 2 : 0);
++    ExpectSame(queue.Slot(0), MakeAction(0));
++    ExpectSame(queue.Slot(1), MakeAction(1));
++  }
++}
++
++namespace {
++
++constexpr int kPoolBatch = 3;
++constexpr std::array<int, kPoolBatch> kReorderedIds{2, 0, 1};
++
++struct ParseGate {
++  explicit ParseGate(bool enabled) : open(!enabled) { prepared.fill(-1); }
++
++  void BeforeParse(int env_id) {
++    std::unique_lock<std::mutex> lock(mutex);
++    if (!open && prepared[env_id] < 0) {
++      prepared[env_id] = set_actions.load();
++      ++entered;
++      condition.notify_all();
++    }
++    condition.wait(lock, [&] { return open; });
++  }
++
++  void WaitForWorkers() {
++    std::unique_lock<std::mutex> lock(mutex);
++    condition.wait(lock, [&] { return entered == kPoolBatch; });
++  }
++
++  void Open() {
++    {
++      std::lock_guard<std::mutex> lock(mutex);
++      open = true;
++    }
++    condition.notify_all();
++  }
++
++  std::atomic<int> set_actions{0};
++  std::array<int, kPoolBatch> prepared;
++  std::mutex mutex;
++  std::condition_variable condition;
++  int entered{0};
++  bool open;
++};
++
++class GeneratedPoolFns {
++ public:
++  static auto DefaultConfig() {
++    return MakeDict("gate"_.Bind(std::shared_ptr<ParseGate>()));
++  }
++
++  template <typename Config>
++  static auto StateSpec(const Config&) {
++    return MakeDict("obs"_.Bind(Spec<int>({})));
++  }
++
++  template <typename Config>
++  static auto ActionSpec(const Config&) {
++    return MakeDict("value"_.Bind(Spec<int>({})));
++  }
++};
++
++using GeneratedPoolSpec = EnvSpec<GeneratedPoolFns>;
++
++class GeneratedPoolEnv : public Env<GeneratedPoolSpec> {
++ public:
++  GeneratedPoolEnv(const Spec& spec, int env_id)
++      : Env<GeneratedPoolSpec>(spec, env_id), gate_(spec.config["gate"_]) {}
++
++  void SetAction(std::shared_ptr<std::vector<Array>> batch, int index) {
++    Env<GeneratedPoolSpec>::SetAction(std::move(batch), index);
++    ++gate_->set_actions;
++  }
++
++  bool IsDone() override {
++    // AsyncEnvPool calls IsDone before ParseAction. The second call, from
++    // Allocate, passes immediately after the test opens this gate.
++    gate_->BeforeParse(env_id_);
++    return false;
++  }
++
++  void Reset() override {
++    auto state = Allocate();
++    state["obs"_] = -1000 - env_id_;
++    state["reward"_].Fill(0.0F);
++  }
++
++  void Step(const Action& action) override {
++    auto state = Allocate();
++    state["obs"_] = static_cast<int>(action["value"_]);
++    state["reward"_].Fill(0.0F);
++  }
++
++ private:
++  std::shared_ptr<ParseGate> gate_;
++};
++
++using GeneratedPool = AsyncEnvPool<GeneratedPoolEnv>;
++
++GeneratedPoolSpec MakePoolSpec(const std::shared_ptr<ParseGate>& gate,
++                               bool synchronous) {
++  auto config = GeneratedPoolSpec::kDefaultConfig;
++  config["num_envs"_] = synchronous ? kPoolBatch : kPoolBatch + 1;
++  config["batch_size"_] = kPoolBatch;
++  config["num_threads"_] = kPoolBatch;
++  config["gate"_] = gate;
++  return GeneratedPoolSpec(config);
++}
++
++std::vector<Array> MakePoolActions() {
++  std::vector<Array> batch;
++  for (int field = 0; field < 3; ++field) {
++    batch.emplace_back(Spec<int>({kPoolBatch}));
++    for (int i = 0; i < kPoolBatch; ++i) {
++      batch.back()[i] = field < 2 ? kReorderedIds[i] : 100 + i * 17;
++    }
++  }
++  return batch;
++}
++
++void ExpectPoolOutput(const std::vector<Array>& output, bool synchronous,
++                      bool reset) {
++  GeneratedPoolEnv::State state(output);
++  ASSERT_EQ(state["info:env_id"_].size, kPoolBatch);
++  ASSERT_EQ(state["obs"_].size, kPoolBatch);
++  std::array<int, kPoolBatch> seen{};
++  for (int row = 0; row < kPoolBatch; ++row) {
++    const int env_id = state["info:env_id"_][row];
++    ASSERT_GE(env_id, 0);
++    ASSERT_LT(env_id, kPoolBatch);
++    ++seen[env_id];
++    if (synchronous) {
++      EXPECT_EQ(env_id, kReorderedIds[row]);
++    }
++    const auto found =
++        std::find(kReorderedIds.begin(), kReorderedIds.end(), env_id);
++    const int index = static_cast<int>(found - kReorderedIds.begin());
++    EXPECT_EQ(static_cast<int>(state["obs"_][row]),
++              reset ? -1000 - env_id : 100 + index * 17);
++  }
++  for (const int count : seen) {
++    EXPECT_EQ(count, 1);
++  }
++}
++
++}  // namespace
++
++TEST(GeneratedEnqueueTest, PoolSendOverloadsRetainActionsBeforePublication) {
++  for (bool synchronous : {false, true}) {
++    for (int overload = 0; overload < 3; ++overload) {
++      SCOPED_TRACE(synchronous);
++      SCOPED_TRACE(overload);
++      auto gate = std::make_shared<ParseGate>(true);
++      auto pool =
++          std::make_unique<GeneratedPool>(MakePoolSpec(gate, synchronous));
++      std::vector<std::weak_ptr<char>> storage;
++      {
++        auto batch = MakePoolActions();
++        for (const auto& array : batch) {
++          storage.emplace_back(array.SharedPtr());
++        }
++        if (overload == 0) {
++          pool->Send(static_cast<const std::vector<Array>&>(batch));
++        } else if (overload == 1) {
++          pool->Send(std::move(batch));
++        } else {
++          GeneratedPoolEnv::Action action(batch);
++          pool->Send(action);
++        }
++      }
++      // No caller-owned Array remains. Workers are held before ParseAction,
++      // and none accesses the destroyed/moved-from source vector.
++      gate->WaitForWorkers();
++      bool retained = true;
++      for (const auto& observer : storage) {
++        retained = retained && !observer.expired();
++      }
++      gate->Open();
++      auto output = pool->Recv();
++      pool.reset();  // Join all workers before inspecting their records.
++      EXPECT_TRUE(retained);
++      EXPECT_EQ(gate->set_actions.load(), kPoolBatch);
++      for (const int prepared : gate->prepared) {
++        EXPECT_EQ(prepared, kPoolBatch);
++      }
++      ExpectPoolOutput(output, synchronous, false);
++      for (const auto& observer : storage) {
++        EXPECT_TRUE(observer.expired());
++      }
++    }
++  }
++}
++
++TEST(GeneratedEnqueueTest, PoolResetPreservesTemporaryReorderedIds) {
++  for (bool synchronous : {false, true}) {
++    for (const std::vector<int>& shape :
++         {std::vector<int>{kPoolBatch}, {kPoolBatch, 2}, {kPoolBatch, 2, 2}}) {
++      SCOPED_TRACE(synchronous);
++      SCOPED_TRACE(shape.size());
++      auto gate = std::make_shared<ParseGate>(false);
++      auto pool =
++          std::make_unique<GeneratedPool>(MakePoolSpec(gate, synchronous));
++      {
++        Array ids{Spec<int>(shape)};
++        auto* values = static_cast<int*>(ids.Data());
++        const std::size_t stride = ids.size / kPoolBatch;
++        for (int row = 0; row < kPoolBatch; ++row) {
++          for (std::size_t col = 0; col < stride; ++col) {
++            // Rank two is [[2,1], [0,2], [1,0]]. Only each row's first
++            // element is an ID, matching TArray<int>::operator[] semantics.
++            values[row * stride + col] =
++                col == 0 ? kReorderedIds[row] : (row + col) % kPoolBatch;
++          }
++        }
++        pool->Reset(ids);
++      }
++      auto output = pool->Recv();
++      pool.reset();
++      ExpectPoolOutput(output, synchronous, true);
++      EXPECT_EQ(gate->set_actions.load(), 0);
++    }
++  }
++}
