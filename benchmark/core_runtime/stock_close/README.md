@@ -287,3 +287,82 @@ This validates the narrow lock repair and normal ThreadPool lifecycle target.
 It does not execute exceptional constructor-launch paths or establish current
 ClassicControl, full PPO, all-family, cross-platform or throughput results.
 Raw logs and generated binaries remain outside the repository.
+
+### Direct original-main comparison (2026-10-05 UTC)
+
+This new comparison uses freshly built **original main `9c31c547` versus
+latest `8f868d1b`**, not the intermediate stock-close baseline above. It measures
+CartPole environment stepping only; it does not measure PPO or training.
+
+| Environments / batch / threads | Main median steps/s | Latest median steps/s | Paired rate change (descriptive 95% interval) | Positive blocks |
+| --- | ---: | ---: | ---: | ---: |
+| 20 / 20 / 1, synchronous | 381,436 | 408,361 | +9.7% (+5.0% to +14.2%) | 7/8 |
+| 256 / 256 / 4, synchronous | 1,570,101 | 2,119,196 | +30.6% (+22.2% to +38.5%) | 8/8 |
+| 1,024 / 256 / 8, asynchronous | 3,370,461 | 3,385,983 | +8.2% (+3.3% to +13.4%) | 7/8 |
+
+The synchronous 256 case was consistently faster **in this run**: both independent
+latest/main contrasts were favorable in all eight blocks. The 20 case shows a
+smaller positive signal. **Async acceleration remains inconclusive**, despite its
+positive block-bootstrap interval: pooled medians differ by only 0.46%, and
+identical latest-build replicas differ by -17.8% geometrically. Only two of eight
+second-replica async contrasts favor latest. Do not treat these intervals as a
+guarantee or add the gains to historical intermediate-version results.
+
+Same-build replicate variation is substantial. Main b/a and latest d/c geometric
+changes, respectively, were +2.9%/+0.3% (20), -8.6%/-1.5% (256), and
++3.8%/-17.8% (async). Individual main/latest repeat ranges were -10.2..+15.2% /
+-9.6..+12.2%, -30.6..+15.8% / -18.6..+18.3%, and -17.5..+31.2% /
+-38.3..+13.2%. The whole-block bootstrap does not resolve arbitrary scheduling
+variation or systematic replica effects.
+
+#### Method and provenance
+
+Both checkouts used official Bazel 9.2.0, GCC 14.2, `--config=test` (O3),
+`--lockfile_mode=error`, `--jobs=2`, `--local_resources=memory=4096`, and
+`--spawn_strategy=local` for `//envpool/classic_control:classic_control_test`.
+Each fresh build passed all five cases. Builds completed before timing.
+The process-local trust setting described above left the system store unchanged.
+
+The loader reads `PYTHON_BINARY_ACTUAL` from each official Bazel test launcher,
+starts that runfiles interpreter with `-I -S`, and adds only its `_main` root and
+runfiles `*/site-packages` paths. It requires the real namespace `envpool` package,
+imports `envpool.classic_control.registration`, and uses
+`envpool.registration.make_gymnasium`; there are no all-family stubs or source-tree
+initializer imports. Actual interpreter/module paths and SHA256 fingerprints are
+checked in every subprocess. Both builds use the same CPython 3.12.13 executable
+and identical loaded external dependencies and Python wrappers. Only the loaded
+EnvPool native module differs. Classic environment sources and Bazel configs match.
+The four differing OpenCV archives become byte-identical after normalizing only
+execroot paths and the single embedded build timestamp; other external archives
+match directly.
+
+Before timing, 19,730 action/output array records match exactly by shape, dtype
+and bytes. Five Classic tasks each use N20/T1 and N32/T4, reset plus 240 varying-
+action steps, seed 42, and episode limit 79; retained early outputs are checked
+for immutability. An async CartPole N32/B8/T4 gate additionally compares 240
+responses per environment (reset plus 239 steps), ordered by environment ID and
+per-environment response count, with actions derived from those values. All
+7,680 async rows and actions match; arrival order is not treated as semantic order.
+This is focused positive coverage, not all-family or constructor-failure coverage.
+
+Timing uses eight blocks x three configurations x four fresh-process slots,
+**96 samples**, 16 per build/configuration. Slots a/b use main; c/d use latest.
+Orders `acdb`, `cabd`, `bdca`, `dbac` repeat twice. Each sample uses seed 42,
+400 untimed warmup calls, preallocated zero actions, and at least four timed
+seconds in chunks of 128 calls. N=B uses reset/step; N>B uses async_reset and
+send/recv with returned environment IDs. Rate is batch size x calls / elapsed
+wall seconds. Imports, setup, warmup, hashing, and serialization are not timed.
+There is no CPU pinning; all children retain affinity CPUs 0..8. BLAS/OMP/MKL
+thread counts are one. No concurrent builds or benchmark work ran.
+
+For each block, log-rate effect is `(log(c)+log(d)-log(a)-log(b))/2`. Reported
+effect is the exponential of the eight-block mean, minus one. Intervals resample
+whole blocks 10,000 times with seed 42; absolute medians are a different summary.
+The frozen local harness SHA256 is
+`dd12ed9c2f398a44609242f7a25bd370693d168ec5660aa8a409ff37ae3ed455`.
+Native SHA256: main
+`6832d128d1dc4a3314fa7fd5b9e9ecc3b43a8dd2dbfd397f8823002ef0a617a0`, latest
+`1de29a332e021b3aa2f9360a934f313ad5795ce6cc1b65623ce4f1caa56a3f69`.
+All 96 samples retain those identities. Raw records and helper outputs remain
+outside the repository. There is no new PPO, GPU, render, cross-platform,
+all-family, or universal speed claim.
