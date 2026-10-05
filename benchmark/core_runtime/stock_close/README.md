@@ -267,3 +267,23 @@ positive tests named above. The recorded build used focused GCC commands, not a
 fresh Bazel dependency build. CI workflows trigger on main pushes or pull requests
 (and release tags where configured); this non-main branch update alone does not
 produce hosted CI evidence. Raw records and binaries remain outside the repository.
+
+### Bazel lock refresh (2026-10-05 UTC)
+
+Official Bazel 9.2.0 regenerated `MODULE.bazel.lock` from the published
+constructor-cleanup source. The narrow change updates the repository-extension
+digest and records `constructor_rollback.patch` after `invoke_result.patch`;
+dependency versions and archive checksums are unchanged. The resulting lock's
+SHA256 is `02d7e5053d2d0ddbb16fcf6a21f344fe65030b964d731aa16cf849d30991a066`.
+
+`//envpool/core:threadpool_lifecycle_test` passed all four ordinary cases with
+`--config=test --lockfile_mode=update`, then passed all four again with
+`--lockfile_mode=error --nocache_test_results`. The second run reused compiled
+actions but executed the tests again. These runs used the existing system Java
+truststore only through a process-local JVM setting; certificate verification
+remained enabled, with no certificate import or system truststore changes.
+
+This validates the narrow lock repair and normal ThreadPool lifecycle target.
+It does not execute exceptional constructor-launch paths or establish current
+ClassicControl, full PPO, all-family, cross-platform or throughput results.
+Raw logs and generated binaries remain outside the repository.

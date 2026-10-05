@@ -286,7 +286,7 @@
   "moduleExtensions": {
     "//envpool:workspace0.bzl%repositories": {
       "general": {
-        "bzlTransitiveDigest": "w2ac76Ier/VaE2lZgY10uztTpVtOYwJDqH/gB0ZuNgk=",
+        "bzlTransitiveDigest": "28swScdZYeA/GDovA02rVnZdiLUARPYYd7v5radWNh4=",
         "usagesDigest": "SajRKIR8nOGpEzuKj8QlLVuws2HdnARUg1NP1i0Q7/M=",
         "recordedInputs": [
           "REPO_MAPPING:,bazel_tools bazel_tools"
@@ -487,7 +487,8 @@
               ],
               "build_file": "@@//third_party/threadpool:threadpool.BUILD",
               "patches": [
-                "@@//third_party/threadpool:invoke_result.patch"
+                "@@//third_party/threadpool:invoke_result.patch",
+                "@@//third_party/threadpool:constructor_rollback.patch"
               ]
             }
           },
