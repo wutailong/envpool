@@ -366,3 +366,59 @@ Native SHA256: main
 All 96 samples retain those identities. Raw records and helper outputs remain
 outside the repository. There is no new PPO, GPU, render, cross-platform,
 all-family, or universal speed claim.
+
+### Direct full CPU PPO comparison (2026-10-05 UTC)
+
+**No end-to-end PPO speedup was demonstrated.** Using the same freshly built
+main/latest native pair as above, the paired full-training rate change over
+16 trials is **-0.16%**, with a descriptive four-block bootstrap 95% interval
+**-4.02% to +5.61%**. Main median training time is **19.912 s** (18.813..22.408),
+latest **20.058 s** (19.407..21.818). Only one of four block effects is positive.
+This does not establish a regression either; the effect is unresolved within
+repeat variation. Environment-only stepping gains do not transfer directly to
+this fixed end-to-end learner workload.
+
+Each trial performs 100 synchronous CPU CartPole PPO updates, 256,000 environment
+transitions and 8,000 Adam steps, using the existing reference configuration:
+20 environments, two EnvPool threads, one Torch intra/inter-op thread and the
+unchanged Tianshou PPO implementation/network/hyperparameters. Two disposable
+untimed warmup updates precede fresh reseeded policy, optimizer, collector and
+pool creation. The measured whole-training interval includes collection and PPO
+updates, not setup, initial reset, imports, provenance checks or output writing.
+The four predeclared orders are `acdb`, `cabd`, `bdca`, `dbac`; a/b use main, c/d
+latest. All 16 trials are included, eight per build. The paired estimator and
+whole-block bootstrap are the same as above. Main same-build b/a is +1.88%
+geometrically (individual -7.44..+9.22%); latest d/c is -4.21%
+(-11.05..-0.26%). Four blocks are limited single-host evidence.
+
+Before timing, a new complete correctness pair compares 101 checkpoints,
+4,925 tensors, 223 arrays and 106,238 scalar values with maximum difference zero.
+Both runs execute the full budget; journals, processed batches, model/optimizer
+states, RNG states and evaluation outputs use the existing exact comparator.
+Three negative controls detect injected metric, array and tensor changes. All
+16 timing trials also share the same semantic fingerprint and full budget.
+This is focused synchronous PPO coverage, not general training equivalence.
+
+Both builds use one isolated CPython **3.12.13** environment, with the selected
+historical CPU dependency pins: Torch **2.5.1+cpu**, Tianshou **0.5.1**,
+NumPy **1.26.4**, Gymnasium **1.3.0**, Numba **0.68.0**, llvmlite **0.50.0** and
+optree **0.20.0**. The historical environment used Python 3.12.14; this is a new
+controlled comparison, not an exact replay of that environment. Forty-three
+pinned binary packages came from official PyPI/PyTorch CPU sources; dependency
+validation passes. No EnvPool distribution, asset packs, CUDA dependencies or
+source-build fallback was installed. Wheel bytes total 319,879,916; environment
+and retained setup files use about 1.49 GB of allocated disk.
+
+The full [correctness harness](../ppo/verify_ppo_parity.py) and
+[timing harness](../experiments/bench_ppo.py) were copied outside the repository.
+Their local adaptation changes only genuine runfiles selection, registration
+factory access and provenance; full training/timing AST correspondence and
+byte-identical configuration are checked, with 33 static tests passing. Unlike
+the environment-only loader, PPO adds only the selected `_main` source root:
+all third-party dependencies come from the common isolated environment, never
+either Bazel third-party path. No synthetic package modules are used. Per-trial
+guards verify exact interpreter, affinity, helper/config, wrapper and native
+identities against the full correctness gate, before and after execution.
+All processes retain CPUs 0..8 without pinning; no concurrent builds or benchmark
+work ran. Raw journals/checkpoints/trials and adapted helpers remain outside the
+repository. Main, native binaries and truststore remain unchanged.
